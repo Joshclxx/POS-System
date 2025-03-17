@@ -74,9 +74,9 @@ const OrdersMenu = () => {
             className="flex flex-col items-center rounded-xl bg-bgWhite w-full max-w-[180px] h-auto gap-2"
           >
             {/* IMAGE */}
-            <div className="flex items-center justify-center bg-primaryGray w-full rounded-[8px] p-3">
+            <div className="flex items-center justify-center bg-[#DDD9D6] w-full rounded-[8px] p-3">
               <div className="flex flex-col menu-title items-center justify-center">
-                <p className="container rounded-md w-full bg-primaryGray border-2 text-center font-semibold menu-title text-white drop-shadow-[0_2px_2px_#131a15]">
+                <p className="text-center font-semibold menu-title text-white">
                   {order.imageTitle}
                 </p>
                 <div className="flex items-center justify-center w-[140px] h-[140px]">
@@ -107,9 +107,9 @@ const OrdersMenu = () => {
             key={index}
             className="flex flex-col items-center rounded-xl bg-bgWhite w-[48%] max-w-[280px] h-auto gap-2"
           >
-            <div className="flex items-center justify-center bg-primaryGray w-full rounded-[8px] p-3">
+            <div className="flex items-center justify-center bg-[#DDD9D6] w-full rounded-[8px] p-3">
               <div className="flex flex-col items-center justify-center w-full">
-                <p className="container rounded-md w-full bg-primaryGray border-2 text-center font-semibold menu-title text-white drop-shadow-[0_2px_2px_#131a15]">
+                <p className="text-center font-semibold menu-title text-white">
                   {order.imageTitle}
                 </p>
 
