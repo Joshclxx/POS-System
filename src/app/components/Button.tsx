@@ -38,7 +38,7 @@ const Button = ({
       break;
     case "dine-out":
       className +=
-        "relative w-[212px] h-[60px] text-lg font-medium transition-all duration-300 bg-colorBlue text-tertiary";
+        "relative w-[218px] h-[60px] text-lg font-medium transition-all duration-300 bg-colorBlue text-tertiary";
       break;
     case "total":
       className +=
@@ -50,7 +50,7 @@ const Button = ({
       break;
     case "clear":
       className +=
-        "relative w-[192px] h-[57px] text-lg font-medium transition-all duration-300 bg-colorRed rounded-[4px] text-tertiary";
+        "relative w-[220px] h-[57px] text-lg font-medium transition-all duration-300 bg-colorRed rounded-[4px] text-tertiary";
       break;
     case "size":
       className +=

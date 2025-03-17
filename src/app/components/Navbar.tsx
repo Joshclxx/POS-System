@@ -26,7 +26,7 @@ const Navbar = () => {
 
         {/* POS NAME HEEBREW */}
         <div className="flex-1 flex justify-center">
-          <span className="text-colorRed font-bold text-[32px]">
+          <span className="text-primary font-bold text-[32px]">
             HEEBREW CAFE
           </span>
         </div>
