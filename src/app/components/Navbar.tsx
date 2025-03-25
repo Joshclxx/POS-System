@@ -33,7 +33,12 @@ const Navbar = () => {
 
         {/* ABOUT POS ICON */}
         <div className="flex items-center justify-end flex-1">
-          <Image src="/icon/posInfo.svg" alt="POS" width={32} height={32} />
+          <Image
+            src="/icon/pos-icon-dark.svg"
+            alt="POS"
+            width={32}
+            height={32}
+          />
         </div>
       </div>
     </nav>

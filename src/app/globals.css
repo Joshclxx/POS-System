@@ -50,3 +50,13 @@ body {
 .menu-size-title {
   @apply flex items-center text-left font-semibold text-[12px] text-primary pl-1;
 }
+
+/* PRODUCTS TEXT */
+
+.item-title {
+  @apply text-[14px] font-semibold text-colorDirtyWhite container bg-primary w-full h-[32px] rounded-[8px] text-center flex justify-center items-center;
+}
+
+.item-price {
+  @apply text-[16px] font-semibold text-primary;
+}
