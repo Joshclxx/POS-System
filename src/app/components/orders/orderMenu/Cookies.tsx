@@ -2,38 +2,32 @@ import React from "react";
 import SectionContainer from "../../SectionContainer";
 import OrderImageContainer from "../OrderImageContainer";
 
-interface IcedCoffeeItem {
+interface CookiesItem {
   imageSrc: string;
   imageAlt: string;
   imageTitle: string;
   price: number;
 }
 
-const IcedCoffee = () => {
-  const orderList: IcedCoffeeItem[] = [
+const Cookies = () => {
+  const orderList: CookiesItem[] = [
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
-      imageTitle: "Chill Brew",
-      price: 90,
+      imageTitle: "Chip Bite",
+      price: 50,
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
-      imageTitle: "Ice Mocha",
-      price: 100,
+      imageTitle: "Oat Choco",
+      price: 55,
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
-      imageTitle: "Frost Latte",
-      price: 110,
-    },
-    {
-      imageSrc: "/image/default.svg",
-      imageAlt: "Espresso",
-      imageTitle: "Cold Buzz",
-      price: 95,
+      imageTitle: "Sugar Crunch",
+      price: 50,
     },
   ];
 
@@ -41,22 +35,20 @@ const IcedCoffee = () => {
     <SectionContainer background="mt-[4px] w-full h-[850px]">
       <div className="bg-colorDirtyWhite w-full h-[710px] flex items-start justify-center text-[14px]">
         <div className="grid grid-cols-3 gap-4 max-h-[710px] overflow-y-auto w-full max-w-[580px] mx-auto">
-          {orderList.map((IcedCoffee, index) => (
+          {orderList.map((Cookies, index) => (
             <div
               key={index}
               className="flex flex-col items-center rounded-xl bg-DDD9D6 w-full max-w-[180px] gap-2 p-3"
             >
               <div className="flex flex-col items-center justify-start bg-[#DDD9D6] w-full rounded-[8px] p-3">
-                <p className="item-title text-center">
-                  {IcedCoffee.imageTitle}
-                </p>
+                <p className="item-title text-center">{Cookies.imageTitle}</p>
 
                 <OrderImageContainer
-                  imageSrc={IcedCoffee.imageSrc}
-                  imageAlt={IcedCoffee.imageAlt}
+                  imageSrc={Cookies.imageSrc}
+                  imageAlt={Cookies.imageAlt}
                   imageWidth={140}
                   imageHeight={140}
-                  imagePrice={IcedCoffee.price}
+                  imagePrice={Cookies.price}
                   className="block"
                 />
               </div>
@@ -68,4 +60,4 @@ const IcedCoffee = () => {
   );
 };
 
-export default IcedCoffee;
+export default Cookies;

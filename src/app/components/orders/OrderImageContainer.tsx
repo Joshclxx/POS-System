@@ -8,7 +8,7 @@ type OrderImageContainerProps = {
   imageSrc: string;
   imageAlt: string;
   imageTitle?: string;
-  imagePrice?: string;
+  imagePrice?: number;
   className?: string;
   imageHeight: number;
   imageWidth: number;
@@ -18,7 +18,10 @@ const OrderImageContainer: React.FC<OrderImageContainerProps> = ({
   imageSrc,
   imageAlt,
   imageTitle,
+  imagePrice,
   className,
+  imageHeight,
+  imageWidth,
 }) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
@@ -28,43 +31,56 @@ const OrderImageContainer: React.FC<OrderImageContainerProps> = ({
         className || ""
       }`}
     >
-      <div className="relative w-[120px] h-[120px]">
+      <div
+        className={`relative`}
+        style={{ width: imageWidth, height: imageHeight }}
+      >
         <Image
           src={imageSrc}
           alt={imageAlt}
-          width={120}
-          height={120}
+          width={imageWidth}
+          height={imageHeight}
           className="object-contain hover-trans"
         />
       </div>
 
+      {/* PRODUCT NAME */}
       {imageTitle && (
         <h3 className="text-title hover-trans mt-2">{imageTitle}</h3>
       )}
 
-      {/* SIZE BUTTONS */}
-      <div className="flex justify-center gap-2 mt-4 text-center">
-        <Button
-          variant="btn-size"
-          isActive={selectedSize === "R"}
-          onClick={() => setSelectedSize("R")}
-        >
-          R
-        </Button>
-        <Button
-          variant="btn-size"
-          isActive={selectedSize === "M"}
-          onClick={() => setSelectedSize("M")}
-        >
-          M
-        </Button>
-        <Button
-          variant="btn-size"
-          isActive={selectedSize === "L"}
-          onClick={() => setSelectedSize("L")}
-        >
-          L
-        </Button>
+      {/* PRODUCT PRICE */}
+      {imagePrice !== undefined && (
+        <p className="item-price text-center mt-1">{`₱ ${imagePrice.toFixed(
+          2
+        )}`}</p>
+      )}
+
+      {/* BUTTON SIZE */}
+      <div className="container bg-primary w-full h-[30px]">
+        <div className="flex justify-center gap-2 mt-1 text-center">
+          <Button
+            variant="btn-size"
+            isActive={selectedSize === "R"}
+            onClick={() => setSelectedSize("R")}
+          >
+            PT
+          </Button>
+          <Button
+            variant="btn-size"
+            isActive={selectedSize === "M"}
+            onClick={() => setSelectedSize("M")}
+          >
+            RG
+          </Button>
+          <Button
+            variant="btn-size"
+            isActive={selectedSize === "L"}
+            onClick={() => setSelectedSize("L")}
+          >
+            GR
+          </Button>
+        </div>
       </div>
     </div>
   );

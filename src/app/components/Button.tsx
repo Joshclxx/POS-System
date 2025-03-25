@@ -66,7 +66,7 @@ const Button = ({
       break;
     case "order-navbar":
       className += `relative container text-center text-[14px] font-semibold ${
-        isActive ? "bg-[#ff8800] text-tertiary" : "bg-primary text-tertiary"
+        isActive ? "bg-[#ff8800] text-primary" : "bg-primary text-tertiary"
       }`;
       break;
     case "btn-size":

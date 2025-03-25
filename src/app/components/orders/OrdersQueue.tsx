@@ -15,7 +15,7 @@ const OrdersQueue = () => {
         {/* CLEAR BUTTON */}
         <div className="absolute bottom-[4px] left-1/2 -translate-x-1/2 flex items-center">
           <Button variant="clear" className="w-[192px]">
-            CLEAR
+            BUMP
           </Button>
         </div>
       </div>
