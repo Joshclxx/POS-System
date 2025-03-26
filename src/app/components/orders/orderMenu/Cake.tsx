@@ -6,7 +6,11 @@ interface CakeItem {
   imageSrc: string;
   imageAlt: string;
   imageTitle: string;
-  price: number;
+  price: {
+    PT: number;
+    RG: number;
+    GR: number;
+  };
 }
 
 const Cake = () => {
@@ -15,31 +19,51 @@ const Cake = () => {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Soft SLice",
-      price: 120,
+      price: {
+        PT: 110,
+        RG: 120,
+        GR: 135,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Berry Bliss",
-      price: 130,
+      price: {
+        PT: 120,
+        RG: 130,
+        GR: 145,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Fudge Dream",
-      price: 140,
+      price: {
+        PT: 130,
+        RG: 140,
+        GR: 155,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Caramel Drip",
-      price: 130,
+      price: {
+        PT: 120,
+        RG: 130,
+        GR: 145,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Velvet Touch",
-      price: 150,
+      price: {
+        PT: 140,
+        RG: 150,
+        GR: 165,
+      },
     },
   ];
 

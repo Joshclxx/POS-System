@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import SectionContainer from "../../SectionContainer";
 import OrderImageContainer from "../OrderImageContainer";
+import { useOrderStore } from "@/hooks/useOrder";
 
 interface EspressoItem {
   imageSrc: string;
   imageAlt: string;
   imageTitle: string;
-  price: number;
+  price: {
+    PT: number;
+    RG: number;
+    GR: number;
+  };
 }
 
 const Espresso = () => {
@@ -15,99 +20,189 @@ const Espresso = () => {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Full Crema",
-      price: 80,
+      price: {
+        PT: 65,
+        RG: 75,
+        GR: 90,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Classic Shot",
-      price: 60,
+      price: {
+        PT: 55,
+        RG: 65,
+        GR: 80,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Intense Brew",
-      price: 70,
+      price: {
+        PT: 60,
+        RG: 70,
+        GR: 85,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Golden Pull",
-      price: 75,
+      price: {
+        PT: 70,
+        RG: 80,
+        GR: 95,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Pure Shot",
-      price: 60,
+      price: {
+        PT: 60,
+        RG: 70,
+        GR: 85,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Dark Roast",
-      price: 65,
+      price: {
+        PT: 55,
+        RG: 65,
+        GR: 80,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Strong Brew",
-      price: 70,
+      price: {
+        PT: 50,
+        RG: 60,
+        GR: 75,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Espresso Fix",
-      price: 60,
+      price: {
+        PT: 60,
+        RG: 70,
+        GR: 85,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Black Gold",
-      price: 99,
+      price: {
+        PT: 55,
+        RG: 65,
+        GR: 80,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Bold Kick",
-      price: 70,
+      price: {
+        PT: 75,
+        RG: 85,
+        GR: 100,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Smooth Shot",
-      price: 65,
+      price: {
+        PT: 60,
+        RG: 70,
+        GR: 85,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Rich Brew",
-      price: 75,
+      price: {
+        PT: 65,
+        RG: 75,
+        GR: 90,
+      },
     },
   ];
+
+  // Track selected sizes
+  const [selectedSizes, setSelectedSizes] = useState<
+    Record<number, "PT" | "RG" | "GR">
+  >({});
+
+  // Handle both size selection and adding to cart
+  const handleSizeSelection = (
+    index: number,
+    size: "PT" | "RG" | "GR",
+    item: EspressoItem
+  ) => {
+    // Update UI state first for immediate feedback
+    setSelectedSizes((prev) => ({ ...prev, [index]: size }));
+
+    // Then add to cart
+    useOrderStore.getState().addProduct({
+      ...item,
+      size,
+    });
+  };
+
+  // Helper function to get size display name
+  const getSizeName = (size: string) => {
+    const sizeNames = {
+      PT: "Petite",
+      RG: "Regular",
+      GR: "Grande",
+    };
+    return sizeNames[size as keyof typeof sizeNames] || size;
+  };
 
   return (
     <SectionContainer background="mt-[4px] w-full h-[850px]">
       <div className="bg-colorDirtyWhite w-full h-[710px] flex items-start justify-center text-[14px]">
         <div className="grid grid-cols-3 gap-4 max-h-[710px] overflow-y-auto w-full max-w-[580px] mx-auto">
-          {orderList.map((Espresso, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center rounded-xl bg-DDD9D6 w-full max-w-[180px] gap-2 p-3"
-            >
-              <div className="flex flex-col items-center justify-start bg-[#DDD9D6] w-full rounded-[8px]">
-                <p className="item-title text-center">{Espresso.imageTitle}</p>
+          {orderList.map((item, index) => {
+            const selectedSize = selectedSizes[index] || "PT";
+            const selectedPrice = item.price[selectedSize];
 
-                <OrderImageContainer
-                  imageSrc={Espresso.imageSrc}
-                  imageAlt={Espresso.imageAlt}
-                  imageWidth={140}
-                  imageHeight={140}
-                  imagePrice={Espresso.price}
-                  className="block"
-                />
+            return (
+              <div
+                key={index}
+                className="flex flex-col items-center rounded-xl bg-DDD9D6 w-full max-w-[180px] gap-2 p-3"
+              >
+                <div className="flex flex-col items-center justify-start bg-[#DDD9D6] w-full rounded-[8px]">
+                  <p className="item-title text-center">{item.imageTitle}</p>
+                  <p className="text-primary font-semibold">
+                    ₱{selectedPrice.toFixed(2)}
+                  </p>
+
+                  <OrderImageContainer
+                    imageSrc={item.imageSrc}
+                    imageAlt={item.imageAlt}
+                    imagePrice={item.price}
+                    imageWidth={140}
+                    imageHeight={140}
+                    selectedSize={selectedSize}
+                    onSizeChange={(size) =>
+                      handleSizeSelection(index, size, item)
+                    }
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </SectionContainer>

@@ -6,7 +6,11 @@ interface CookiesItem {
   imageSrc: string;
   imageAlt: string;
   imageTitle: string;
-  price: number;
+  price: {
+    PT: number;
+    RG: number;
+    GR: number;
+  };
 }
 
 const Cookies = () => {
@@ -15,19 +19,31 @@ const Cookies = () => {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Chip Bite",
-      price: 50,
+      price: {
+        PT: 40,
+        RG: 50,
+        GR: 65,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Oat Choco",
-      price: 55,
+      price: {
+        PT: 45,
+        RG: 55,
+        GR: 70,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Sugar Crunch",
-      price: 50,
+      price: {
+        PT: 40,
+        RG: 50,
+        GR: 65,
+      },
     },
   ];
 

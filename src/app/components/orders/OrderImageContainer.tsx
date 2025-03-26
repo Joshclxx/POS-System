@@ -8,10 +8,16 @@ type OrderImageContainerProps = {
   imageSrc: string;
   imageAlt: string;
   imageTitle?: string;
-  imagePrice?: number;
+  imagePrice?: {
+    PT: number;
+    RG: number;
+    GR: number;
+  };
   className?: string;
   imageHeight: number;
   imageWidth: number;
+  selectedSize: "PT" | "RG" | "GR";
+  onSizeChange: (size: "PT" | "RG" | "GR") => void;
 };
 
 const OrderImageContainer: React.FC<OrderImageContainerProps> = ({
@@ -22,8 +28,12 @@ const OrderImageContainer: React.FC<OrderImageContainerProps> = ({
   className,
   imageHeight,
   imageWidth,
+  selectedSize,
+  onSizeChange,
 }) => {
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const getPrice = () => {
+    return imagePrice ? imagePrice[selectedSize] : 0;
+  };
 
   return (
     <div
@@ -32,7 +42,7 @@ const OrderImageContainer: React.FC<OrderImageContainerProps> = ({
       }`}
     >
       <div
-        className={`relative`}
+        className="relative"
         style={{ width: imageWidth, height: imageHeight }}
       >
         <Image
@@ -44,39 +54,36 @@ const OrderImageContainer: React.FC<OrderImageContainerProps> = ({
         />
       </div>
 
-      {/* PRODUCT NAME */}
       {imageTitle && (
         <h3 className="text-title hover-trans mt-2">{imageTitle}</h3>
       )}
 
-      {/* PRODUCT PRICE */}
-      {imagePrice !== undefined && (
-        <p className="item-price text-center mt-1">{`₱ ${imagePrice.toFixed(
+      {imagePrice && (
+        <p className="item-price text-center mt-1">{`₱ ${getPrice().toFixed(
           2
         )}`}</p>
       )}
 
-      {/* BUTTON SIZE */}
-      <div className="container bg-primary w-full h-[30px]">
+      <div className="container bg-primary w-full h-[40px] flex items-center justify-center ">
         <div className="flex justify-center gap-2 mt-1 text-center">
           <Button
             variant="btn-size"
-            isActive={selectedSize === "R"}
-            onClick={() => setSelectedSize("R")}
+            isActive={selectedSize === "PT"}
+            onClick={() => onSizeChange("PT")}
           >
             PT
           </Button>
           <Button
             variant="btn-size"
-            isActive={selectedSize === "M"}
-            onClick={() => setSelectedSize("M")}
+            isActive={selectedSize === "RG"}
+            onClick={() => onSizeChange("RG")}
           >
             RG
           </Button>
           <Button
             variant="btn-size"
-            isActive={selectedSize === "L"}
-            onClick={() => setSelectedSize("L")}
+            isActive={selectedSize === "GR"}
+            onClick={() => onSizeChange("GR")}
           >
             GR
           </Button>

@@ -13,7 +13,8 @@ type ButtonProps = {
     | "size"
     | "largeSize"
     | "order-navbar"
-    | "btn-size";
+    | "btn-size"
+    | "feature";
   isActive?: boolean;
   icon?: string;
   className?: string;
@@ -72,11 +73,14 @@ const Button = ({
     case "btn-size":
       className += `relative container w-[22px] h-[22px] text-[12px] font-medium text-center rounded-full transition-colors duration-200 ease-in-out mb-2 flex justify-center items-center ${
         isActive
-          ? "bg-colorOrange text-colorDirtyWhite border border-primary"
+          ? "bg-colorOrange text-primary font-semibold border-2 border-colorDirtyWhite"
           : "bg-primaryGray text-primary border-1 border-primary hover:bg-colorOrange"
       }`;
       break;
-
+    case "feature":
+      className +=
+        "relative container bg-secondaryGray h-[52px] text-primary text-center text-[14px] font-semibold rounded-lg";
+      break;
     default:
       className += " bg-gray-500 text-white";
   }
