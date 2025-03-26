@@ -6,7 +6,11 @@ interface IcedCoffeeItem {
   imageSrc: string;
   imageAlt: string;
   imageTitle: string;
-  price: number;
+  price: {
+    PT: number;
+    RG: number;
+    GR: number;
+  };
 }
 
 const IcedCoffee = () => {
@@ -15,25 +19,41 @@ const IcedCoffee = () => {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Chill Brew",
-      price: 90,
+      price: {
+        PT: 80,
+        RG: 90,
+        GR: 105,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Ice Mocha",
-      price: 100,
+      price: {
+        PT: 90,
+        RG: 100,
+        GR: 115,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Frost Latte",
-      price: 110,
+      price: {
+        PT: 100,
+        RG: 110,
+        GR: 125,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Cold Buzz",
-      price: 95,
+      price: {
+        PT: 85,
+        RG: 95,
+        GR: 110,
+      },
     },
   ];
 

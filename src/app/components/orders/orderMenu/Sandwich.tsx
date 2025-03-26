@@ -6,7 +6,11 @@ interface SandwichItem {
   imageSrc: string;
   imageAlt: string;
   imageTitle: string;
-  price: number;
+  price: {
+    PT: number;
+    RG: number;
+    GR: number;
+  };
 }
 
 const Sandwich = () => {
@@ -15,43 +19,71 @@ const Sandwich = () => {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Toast Fill",
-      price: 95,
+      price: {
+        PT: 85,
+        RG: 95,
+        GR: 110,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Grill Melt",
-      price: 105,
+      price: {
+        PT: 95,
+        RG: 105,
+        GR: 120,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Cheese Stack",
-      price: 110,
+      price: {
+        PT: 100,
+        RG: 110,
+        GR: 125,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Ham Delight",
-      price: 115,
+      price: {
+        PT: 105,
+        RG: 115,
+        GR: 130,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Egg Sandwich",
-      price: 100,
+      price: {
+        PT: 90,
+        RG: 100,
+        GR: 115,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Club Bite",
-      price: 120,
+      price: {
+        PT: 110,
+        RG: 120,
+        GR: 135,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Chicken Crisp",
-      price: 125,
+      price: {
+        PT: 115,
+        RG: 125,
+        GR: 140,
+      },
     },
   ];
 

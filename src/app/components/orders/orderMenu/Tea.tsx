@@ -6,7 +6,11 @@ interface TeaItem {
   imageSrc: string;
   imageAlt: string;
   imageTitle: string;
-  price: number;
+  price: {
+    PT: number;
+    RG: number;
+    GR: number;
+  };
 }
 
 const Tea = () => {
@@ -15,37 +19,61 @@ const Tea = () => {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "milk Bliss",
-      price: 80,
+      price: {
+        PT: 70,
+        RG: 80,
+        GR: 95,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Fruit Zest",
-      price: 85,
+      price: {
+        PT: 75,
+        RG: 85,
+        GR: 100,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Citrus Bloom",
-      price: 90,
+      price: {
+        PT: 80,
+        RG: 90,
+        GR: 105,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Honey Twist",
-      price: 85,
+      price: {
+        PT: 75,
+        RG: 85,
+        GR: 100,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Berry Breeze",
-      price: 90,
+      price: {
+        PT: 80,
+        RG: 90,
+        GR: 105,
+      },
     },
     {
       imageSrc: "/image/default.svg",
       imageAlt: "Espresso",
       imageTitle: "Matcha Calm",
-      price: 100,
+      price: {
+        PT: 90,
+        RG: 100,
+        GR: 115,
+      },
     },
   ];
 
