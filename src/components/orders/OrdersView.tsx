@@ -33,12 +33,53 @@ const OrdersView = () => {
     }
   };
 
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+
+  const removeProduct = useOrderStore((state) => state.removeProduct);
+
+  const [isEditingQty, setIsEditingQty] = useState(false);
+  const [tempQty, setTempQty] = useState<number | null>(null);
+
   return (
     <SectionContainer background="mt-1 w-full max-w-[428px] h-[914px]">
       {/* DELETE & DINE IN */}
       <div className="flex gap-[4px] w-full">
-        <Button variant="primary" className="flex-1">
-          DELETE
+        <Button
+          variant="view-dlt"
+          isSave={selectedIdx !== null}
+          className="flex-1"
+          onClick={() => {
+            if (selectedIdx !== null) {
+              removeProduct(selectedIdx);
+              setSelectedIdx(null);
+              setIsEditingQty(false);
+              setTempQty(null);
+            }
+          }}
+        >
+          DLT
+        </Button>
+        <Button
+          variant="view-qty"
+          isSave={selectedIdx !== null || isEditingQty}
+          className="flex-1"
+          onClick={() => {
+            if (isEditingQty && selectedIdx !== null && tempQty !== null) {
+              useOrderStore.setState((state) => {
+                const update = [...state.selectedProducts];
+                update[selectedIdx].quantity = tempQty;
+                return { selectedProducts: update };
+              });
+              setSelectedIdx(null);
+              setIsEditingQty(false);
+              setTempQty(null);
+            } else if (selectedIdx !== null) {
+              setIsEditingQty(true);
+              setTempQty(selectedProducts[selectedIdx].quantity || 1);
+            }
+          }}
+        >
+          {isEditingQty ? "Save" : "QTY"}
         </Button>
         <div className="relative w-[212px]">
           <button
@@ -84,13 +125,25 @@ const OrdersView = () => {
           </div>
         </div>
 
+        <div className="w-full text-left mt-2">
+          <p className="text-[16px] font-semibold text-primary px-2">
+            {selectedOption}
+          </p>
+        </div>
+
         {/* SELECTED ORDERED ITEMS */}
         <div className="divide-y">
           {selectedProducts.map((item, idx) => (
             <motion.div
               key={idx}
-              className="flex justify-between items-center py-2 px-2 text-primary"
-              initial={{ opacity: 0, scale: 0 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedIdx(idx);
+              }}
+              className={`flex justify-between items-center py-2 px-2 text-primary cursor-pointer ${
+                selectedIdx === idx ? "bg-[#ceb395]" : ""
+              }`}
+              initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
             >
               <div className="w-1/2">
@@ -103,10 +156,24 @@ const OrdersView = () => {
                   </p>
                 </div>
               </div>
-              <p className="w-1/4 text-center">{item.quantity}</p>
-              <p className="w-1/4 text-right">{`₱ ${(
-                item.price[item.size] * (item.quantity || 1)
-              ).toFixed(2)}`}</p>
+              <p className="w-1/4 text-center">
+                {isEditingQty && selectedIdx === idx ? (
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="number"
+                      min={1}
+                      value={tempQty ?? 1}
+                      onChange={(e) => setTempQty(Number(e.target.value))}
+                      className="w-12 text-center border rounded"
+                    />
+                  </div>
+                ) : (
+                  item.quantity
+                )}
+              </p>
+              <p className="w-1/4 text-right">
+                {(item.price[item.size] * (item.quantity || 1)).toFixed(2)}
+              </p>
             </motion.div>
           ))}
         </div>
@@ -114,14 +181,18 @@ const OrdersView = () => {
 
       {/* TOTAL & PAY */}
       <div className="flex gap-[4px] w-full mt-1">
-        <div className="container bg-primary w-[279px] menu-total flex items-center text-[24px] px-2 text-white">
+        <div className="flex-[3] h-[60px] bg-primary menu-total flex items-center text-[24px] px-2 text-white">
           <div className="flex justify-between w-full">
             <p>Total</p>
             <p>{`₱ ${total.toFixed(2)}`}</p>
           </div>
         </div>
 
-        <Button variant="pay" className="flex-1">
+        <Button
+          variant="pay"
+          className="flex-[1]"
+          disabled={selectedProducts.length === 0}
+        >
           PAY
         </Button>
       </div>

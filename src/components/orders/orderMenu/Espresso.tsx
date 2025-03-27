@@ -159,24 +159,14 @@ const Espresso = () => {
     });
   };
 
-  // Helper function to get size display name
-  const getSizeName = (size: string) => {
-    const sizeNames = {
-      PT: "Petite",
-      RG: "Regular",
-      GR: "Grande",
-    };
-    return sizeNames[size as keyof typeof sizeNames] || size;
-  };
-
   return (
     <SectionContainer background="mt-[4px] w-full h-[850px]">
       <div className="bg-colorDirtyWhite w-full h-[710px] flex items-start justify-center text-[14px]">
         <div className="grid grid-cols-3 gap-4 max-h-[710px] overflow-y-auto w-full max-w-[580px] mx-auto">
           {orderList.map((item, index) => {
-            const selectedSize = selectedSizes[index] || "PT";
-            const selectedPrice = item.price[selectedSize];
-
+            const selectedSize = selectedSizes[index]; // could be undefined
+            const displaySize = selectedSize || "PT"; // fallback for price display only
+            const displayPrice = item.price[displaySize];
             return (
               <div
                 key={index}
@@ -184,9 +174,6 @@ const Espresso = () => {
               >
                 <div className="flex flex-col items-center justify-start bg-[#DDD9D6] w-full rounded-[8px]">
                   <p className="item-title text-center">{item.imageTitle}</p>
-                  <p className="text-primary font-semibold">
-                    ₱{selectedPrice.toFixed(2)}
-                  </p>
 
                   <OrderImageContainer
                     imageSrc={item.imageSrc}

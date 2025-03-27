@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import OrdersMenu from "./components/orders/OrdersMenu";
-import OrdersMenuNavBar from "./components/orders/OrdersMenuNavBar";
-import OrdersQueue from "./components/orders/OrdersQueue";
-import OrdersView from "./components/orders/OrdersView";
-import SectionContainer from "./components/SectionContainer";
+import OrdersMenu from "@/components/orders/OrdersMenu";
+import OrdersMenuNavBar from "@/components/orders/OrdersMenuNavBar";
+import OrdersQueue from "@/components/orders/OrdersQueue";
+import OrdersView from "@/components/orders/OrdersView";
+import SectionContainer from "@/components/SectionContainer";
 
 export default function Home() {
   const [activeKey, setActiveKey] = useState("espresso");

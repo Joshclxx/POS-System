@@ -14,13 +14,19 @@ type ButtonProps = {
     | "largeSize"
     | "order-navbar"
     | "btn-size"
-    | "feature";
+    | "feature"
+    | "view-btn"
+    | "view-dlt"
+    | "cancel"
+    | "add"
+    | "view-qty";
   isActive?: boolean;
   icon?: string;
   className?: string;
   children: JSX.Element | string;
   onClick?: () => void;
   disabled?: boolean;
+  isSave?: boolean;
 };
 
 const Button = ({
@@ -35,7 +41,7 @@ const Button = ({
   switch (variant) {
     case "navbar":
       className +=
-        "relative container bg-primary text-center text-[14px] font-semibold";
+        "relative container w-[120px] bg-primary text-center text-[14px] font-semibold";
       break;
     case "primary":
       className +=
@@ -47,12 +53,16 @@ const Button = ({
       break;
     case "total":
       className +=
-        "relative text-left w-[200px] h-[60px] text-lg font-medium transition-all duration-300 bg-primary text-tertiary";
+        "relative text-left w-[145px] h-[60px] text-lg font-medium transition-all duration-300 bg-primary text-tertiary";
       break;
     case "pay":
       className +=
-        "relative w-[145px] h-[60px] text-lg font-medium transition-all duration-300 bg-colorGreen text-tertiary";
+        " relative h-[60px] text-lg font-medium transition-all duration-300 " +
+        (props.disabled
+          ? "bg-[#18773c] text-tertiary cursor-not-allowed"
+          : "bg-colorGreen text-tertiary hover:brightness-95");
       break;
+
     case "clear":
       className +=
         "relative w-[220px] h-[57px] text-lg font-medium transition-all duration-300 bg-colorRed rounded-[4px] text-tertiary";
@@ -81,6 +91,25 @@ const Button = ({
       className +=
         "relative container bg-secondaryGray h-[52px] text-primary text-center text-[14px] font-semibold rounded-lg";
       break;
+    case "view-dlt":
+      className += `relative w-[106px] h-[60px] text-lg font-medium transition-all duration-300 ${
+        props.isSave ? "bg-[#d32f2f] text-white" : "bg-primary text-tertiary"
+      }`;
+      break;
+    case "view-qty":
+      className += `relative w-[106px] h-[60px] text-lg font-medium transition-all duration-300 ${
+        props.isSave ? "bg-[#6dbe45] text-white" : "bg-primary text-tertiary"
+      }`;
+      break;
+    case "cancel":
+      className +=
+        " relative text-lg font-medium text-white transition-all duration-300 text-color2 bg-[#8F1600] rounded-lg";
+      break;
+    case "add":
+      className +=
+        " relative text-lg font-medium text-white transition-all duration-300 text-color2 bg-[#00A652] rounded-lg";
+      break;
+
     default:
       className += " bg-gray-500 text-white";
   }
