@@ -1,55 +1,64 @@
 "use client";
 
-import { JSX, Key, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { NAV_LINKS } from "../constants"; // adjust this import based on your file
+import { useRouter } from "next/navigation";
+
+import { NAV_LINKS, MENU_FEATURE_LINKS } from "@/app/constants";
 import Button from "./Button";
-import { UrlObject } from "url";
+
+// Function to split array into chunks of 2
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+}
 
 export default function Navbar() {
   const [isOpenMenu, setOpenMenu] = useState(false);
   const [isOpenPos, setOpenPos] = useState(false);
+  const router = useRouter();
+
+  const chunkedMenu = chunkArray(MENU_FEATURE_LINKS, 2);
 
   return (
     <>
       <nav className="bg-navbar w-full h-[48px] mt-4 flex items-center z-30 relative">
         <div className="w-full max-w-[1280px] mx-auto flex justify-between items-center px-4">
-          {/* MENU AND BUTTON */}
+          {/* LEFT SECTION: Menu + Nav */}
           <div className="flex items-center gap-4 flex-1">
-            {/* MENU FEATURES BUTTON */}
             <button onClick={() => setOpenMenu(true)}>
               <Image src="/icon/menu.svg" alt="Menu" width={32} height={32} />
             </button>
 
             <ul className="flex gap-2">
-              {NAV_LINKS.map(
-                (link: {
-                  key: Key | null | undefined;
-                  href: string | UrlObject;
-                  label: string | JSX.Element;
-                }) => (
-                  <li key={link.key}>
-                    <Link href={link.href}>
-                      <Button variant="navbar">{link.label}</Button>
-                    </Link>
-                  </li>
-                )
-              )}
+              {NAV_LINKS.map((link) => (
+                <li key={link.key}>
+                  <Link href={link.href}>
+                    <Button variant="navbar">{link.label}</Button>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* POS NAME */}
-          <div className="flex-1 flex justify-center">
-            <span className="text-primary font-bold text-[32px]">
+          {/* CENTER: POS Name */}
+          <div className="flex justify-center items-center flex-1">
+            <span
+              className="text-primary font-bold text-[24px] cursor-pointer"
+              onClick={() => setOpenPos(true)}
+            >
               HEEBREW CAFE
             </span>
           </div>
 
-          {/* ABOUT POS ICON */}
-          <div className="flex items-center justify-end flex-1">
+          {/* RIGHT SECTION: POS Icon */}
+          <div className="flex justify-end items-center flex-1">
             <button onClick={() => setOpenPos(true)}>
-              <img
+              <Image
                 src="/icon/pos-icon-dark.svg"
                 alt="POS"
                 width={32}
@@ -60,17 +69,16 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* MENU PANEL */}
+      {/* POS PANEL */}
       {isOpenPos && (
         <>
           <div
             className="fixed inset-0 bg-black bg-opacity-40 z-40"
             onClick={() => setOpenPos(false)}
           />
-
           <div className="fixed top-2 right-2 h-3/4 w-1/2 bg-primary z-50 shadow-lg rounded-xl transition-transform duration-300 ease-in-out">
             <div className="p-4 flex justify-between">
-              <h2 className="text-xl font-bold mb-4">BSIS 32A1 POS SYSTEM </h2>
+              <h2 className="text-xl font-bold mb-4">BSIS 32A1 POS SYSTEM</h2>
               <button
                 onClick={() => setOpenPos(false)}
                 className="text-primary underline"
@@ -82,7 +90,6 @@ export default function Navbar() {
                 />
               </button>
             </div>
-            {/* MENU FEATURES CONTENT */}
             <div className="flex flex-col w-full items-center justify-center gap-6 p-4">
               <div className="container bg-colorDirtyWhite w-full h-[580px] rounded-xl">
                 <div className="text-center text-primary items-center flex flex-col justify-between px-12">
@@ -140,16 +147,26 @@ export default function Navbar() {
                 />
               </button>
             </div>
-            {/* MENU FEATURES CONTENT */}
             <div className="flex flex-col w-full items-center justify-center gap-6">
-              <div className="flex w-full justify-center gap-12 p-6">
-                <Button variant="feature">SPOTCHECK</Button>
-                <Button variant="feature">CASH PICK</Button>
-              </div>
-              <div className="flex w-full justify-center gap-12 p-6">
-                <Button variant="feature">PRODUCTS</Button>
-                <Button variant="feature">VOID ORDER</Button>
-              </div>
+              {chunkedMenu.map((row, idx) => (
+                <div
+                  key={idx}
+                  className="flex w-full justify-center gap-12 p-6"
+                >
+                  {row.map((link) => (
+                    <Button
+                      key={link.key}
+                      variant="feature"
+                      onClick={() => {
+                        setOpenMenu(false);
+                        router.push(link.href);
+                      }}
+                    >
+                      {link.label}
+                    </Button>
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
         </>

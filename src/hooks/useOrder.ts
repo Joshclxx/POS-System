@@ -14,9 +14,11 @@ interface EspressoItem {
 }
 
 interface OrderStore {
+  [x: string]: any;
   selectedProducts: EspressoItem[];
   addProduct: (item: EspressoItem) => void;
   clearProducts: () => void;
+  removeProduct: (index: number) => void;
 }
 
 export const useOrderStore = create<OrderStore>((set, get) => ({
@@ -42,4 +44,9 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     }
   },
   clearProducts: () => set({ selectedProducts: [] }),
+
+  removeProduct: (index) =>
+    set((state) => ({
+      selectedProducts: state.selectedProducts.filter((_, i) => i !== index),
+    })),
 }));

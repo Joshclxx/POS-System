@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "./components/Navbar";
+import NavbarWrapper from "@/components/NavbarWrapper";
 
 export const metadata: Metadata = {
   title: "POS SYSTEM",
@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="!bg-bgWhite min-h-screen w-full mx-auto max-w-[1280px]">
-        <Navbar />
+        <NavbarWrapper />
         <main className="relative overflow-hidden">{children}</main>
       </body>
     </html>

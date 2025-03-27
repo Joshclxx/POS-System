@@ -32,7 +32,16 @@ const OrderImageContainer: React.FC<OrderImageContainerProps> = ({
   onSizeChange,
 }) => {
   const getPrice = () => {
-    return imagePrice ? imagePrice[selectedSize] : 0;
+    if (!imagePrice) return 0;
+
+    // Use selectedSize if defined, otherwise return the first available price
+    if (selectedSize && imagePrice[selectedSize] !== undefined) {
+      return imagePrice[selectedSize];
+    }
+
+    // Fallback: first price in the object
+    const firstPriceKey = Object.keys(imagePrice)[0] as keyof typeof imagePrice;
+    return imagePrice[firstPriceKey] || 0;
   };
 
   return (
