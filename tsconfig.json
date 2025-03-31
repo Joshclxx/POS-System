@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "../tailwind.config.ts"
+    "../tailwind.config.ts",
+    "src/hooks/use"
   ],
   "exclude": ["node_modules"]
 }
