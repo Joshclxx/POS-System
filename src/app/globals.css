@@ -60,3 +60,14 @@ body {
 .item-price {
   @apply text-[16px] font-semibold text-primary;
 }
+
+/* PRIMARY TEXT */
+
+.primary-title {
+  @apply text-[18px] font-bold text-primary;
+}
+
+/* HOVER */
+.hover-trans {
+  @apply transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-2xl;
+}
