@@ -138,21 +138,17 @@ const Espresso = () => {
     },
   ];
 
-  // Track selected sizes
   const [selectedSizes, setSelectedSizes] = useState<
     Record<number, "PT" | "RG" | "GR">
   >({});
 
-  // Handle both size selection and adding to cart
   const handleSizeSelection = (
     index: number,
     size: "PT" | "RG" | "GR",
     item: EspressoItem
   ) => {
-    // Update UI state first for immediate feedback
     setSelectedSizes((prev) => ({ ...prev, [index]: size }));
 
-    // Then add to cart
     useOrderStore.getState().addProduct({
       ...item,
       size,

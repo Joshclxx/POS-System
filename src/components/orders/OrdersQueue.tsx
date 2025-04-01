@@ -20,14 +20,14 @@ const OrdersQueue = () => {
   };
 
   return (
-    <SectionContainer background="mt-1 w-[231px] h-[914px]">
+    <SectionContainer background="mt-1 w-[235px] h-[914px]">
       {/* ORDER QUEUE HEADER */}
-      <div className="bg-primary w-[231px] h-[60px] flex items-center justify-center menu-total text-[18px]">
+      <div className="bg-primary w- h-[60px] flex items-center justify-center menu-total text-[18px]">
         ORDER QUEUE
       </div>
 
       {/* Order List */}
-      <div className="bg-colorDirtyWhite w-[231px] h-[670px] mt-[4px] p-2 overflow-y-auto">
+      <div className="bg-colorDirtyWhite w-full h-[670px] mt-[4px] p-2 overflow-y-auto">
         <div className="flex flex-col gap-3 text-center">
           {ordersQueue.map((order) => (
             <div
@@ -42,11 +42,15 @@ const OrdersQueue = () => {
               }
             >
               <p className="primary-title">{order.id}</p>
-              <div className="text-[12px] mt-1 text-primary font-medium">
-                {order.items.map((item, idx) => (
-                  <p key={idx}>{item}</p>
-                ))}
-              </div>
+
+              {/* Conditionally show items only if this order is selected */}
+              {selectedOrder === order.id && (
+                <div className="text-[12px] mt-1 text-primary font-medium">
+                  {order.items.map((item, idx) => (
+                    <p key={idx}>{item}</p>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
