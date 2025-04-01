@@ -1,4 +1,3 @@
-// OrdersView.tsx
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
@@ -13,14 +12,12 @@ interface OrdersViewProps {
   isPaying: boolean;
   setIsPaying: Dispatch<SetStateAction<boolean>>;
   setTotal: Dispatch<SetStateAction<number>>;
-  onClearOrders: () => void;
 }
 
 const OrdersView: React.FC<OrdersViewProps> = ({
   isPaying,
   setIsPaying,
   setTotal,
-  onClearOrders,
 }) => {
   const [selectedOption, setSelectedOption] = useState("DINE IN");
   const [isOpen, setIsOpen] = useState(false);
@@ -35,6 +32,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({
     0
   );
 
+  // update total in parent
   useEffect(() => {
     setTotal(total);
   }, [total, setTotal]);
@@ -233,8 +231,9 @@ const OrdersView: React.FC<OrdersViewProps> = ({
         <div className="flex-[3] h-[60px] bg-primary menu-total flex items-center text-[24px] px-2 text-white">
           <div className="flex justify-between w-full">
             <p>Total</p>
-            <p>{`\u20B1 ${total.toLocaleString("en-PH", {
+            <p>{`₱ ${total.toLocaleString("en-PH", {
               minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
             })}`}</p>
           </div>
         </div>
@@ -242,12 +241,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({
           variant="pay"
           className="flex-[1]"
           disabled={selectedProducts.length === 0}
-          onClick={() => {
-            if (isPaying) {
-              onClearOrders();
-            }
-            setIsPaying((prev) => !prev);
-          }}
+          onClick={() => setIsPaying((prev) => !prev)}
         >
           {isPaying ? "ORDERS" : "PAY"}
         </Button>
