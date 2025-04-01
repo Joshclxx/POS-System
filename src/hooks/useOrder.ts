@@ -19,6 +19,12 @@ interface OrderStore {
   addProduct: (item: EspressoItem) => void;
   clearProducts: () => void;
   removeProduct: (index: number) => void;
+
+  // OREDER QUEUE MANAGEMENT
+  ordersQueue: { id: number; items: string[]; confirmedAt: number }[];
+  nextOrderNumber: number;
+  addOrderToQueue: (confirmedAt: number) => void; // ACCEPT TIME STAMP
+  bumpOrder: () => void;
 }
 
 export const useOrderStore = create<OrderStore>((set, get) => ({
@@ -48,5 +54,25 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   removeProduct: (index) =>
     set((state) => ({
       selectedProducts: state.selectedProducts.filter((_, i) => i !== index),
+    })),
+
+  ordersQueue: [],
+  nextOrderNumber: 30000,
+  addOrderToQueue: (confirmedAt) => {
+    console.log("confirmedAt:", confirmedAt);
+    const currentOrder = get().selectedProducts;
+    const items = currentOrder.map(
+      (item) => `${item.imageTitle} (${item.size})`
+    );
+
+    const next = get().nextOrderNumber + 1;
+    set((state) => ({
+      ordersQueue: [...state.ordersQueue, { id: next, items, confirmedAt }],
+      nextOrderNumber: next,
+    }));
+  },
+  bumpOrder: () =>
+    set((state) => ({
+      ordersQueue: state.ordersQueue.slice(1),
     })),
 }));

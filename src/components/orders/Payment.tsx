@@ -10,7 +10,12 @@ type PaymentProps = {
   onBackToOrders: () => void;
 };
 
-const Payment = ({ amountType, setAmountType, itemAmount }: PaymentProps) => {
+const Payment = ({
+  amountType,
+  setAmountType,
+  itemAmount,
+  onBackToOrders,
+}: PaymentProps) => {
   const handleKeyClick = (key: string) => {
     if (key === "←") {
       setAmountType((prev) => prev.slice(0, -1));
@@ -52,10 +57,6 @@ const Payment = ({ amountType, setAmountType, itemAmount }: PaymentProps) => {
   };
 
   const [okPressed, setOkPressed] = useState(false);
-
-  function onBackToOrders() {
-    throw new Error("Function not implemented.");
-  }
 
   return (
     <SectionContainer background="mt-1 w-[900px] h-auto">
@@ -144,8 +145,9 @@ const Payment = ({ amountType, setAmountType, itemAmount }: PaymentProps) => {
                 key={label}
                 onClick={() => {
                   if (label === "CONFIRM") {
-                    setOkPressed(false); // optional reset
-                    onBackToOrders(); // 🔥 THIS triggers the switch back
+                    if (!okPressed) return;
+                    setOkPressed(false);
+                    onBackToOrders();
                   } else {
                     handleKeyClick(label);
                   }

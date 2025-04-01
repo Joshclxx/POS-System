@@ -1,4 +1,3 @@
-// PAGE.tsx
 "use client";
 
 import { useState } from "react";
@@ -17,7 +16,8 @@ export default function Home() {
   const [total, setTotal] = useState(0);
 
   const handleConfirmPayment = () => {
-    useOrderStore.setState({ selectedProducts: [] });
+    useOrderStore.getState().addOrderToQueue(Date.now());
+    useOrderStore.getState().clearProducts();
     setIsPaying(false);
   };
 
