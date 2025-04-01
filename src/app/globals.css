@@ -71,3 +71,19 @@ body {
 .hover-trans {
   @apply transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-2xl;
 }
+
+/* PRODUCT MENU & ITEM */
+
+.menu-title {
+  @apply text-[28px] font-semibold text-primary container text-center flex justify-center items-center;
+}
+
+.product-menu {
+  @apply text-[24px] font-semibold text-primary container text-center flex justify-center items-center;
+}
+.product-name {
+  @apply text-[20px] text-primary font-semibold;
+}
+.product-price {
+  @apply text-[15px] font-semibold text-secondary container text-center flex justify-center items-center;
+}
