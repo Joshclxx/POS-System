@@ -210,37 +210,87 @@ const Product = () => {
               ADD MENU ITEM
             </p>
           </div>
+
           <div className="flex-1 overflow-y-auto mt-4 px-2">
             {menuItem.length === 0 ? (
               <p className="text-primary text-center font-semibold italic">
                 No menu products added yet.
               </p>
             ) : (
-              // Use a static grid container and AnimatePresence for individual card animations.
-              <div className="grid grid-cols-4 gap-4 w-full pb-16">
-                <AnimatePresence>
-                  {menuItem.map((item, idx) => (
-                    <motion.div
-                      key={item.id}
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0 }}
-                      transition={{
-                        delay: idx * 0.1,
-                        duration: 0.2,
-                        ease: "easeOut",
-                      }}
-                    >
-                      <MenuItemCard item={item} />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
+              <table className="w-full table-auto text-left">
+                <thead className="bg-secondaryGray text-primary">
+                  <tr>
+                    <th className="px-4 py-2">Menu</th>
+
+                    <th className="px-4 py-2">Product Name</th>
+
+                    <th className="px-4 py-2">Price PT (₱)</th>
+
+                    <th className="px-4 py-2">Price RG (₱)</th>
+
+                    <th className="px-4 py-2">Price GR (₱)</th>
+
+                    <th className="px-4 py-2 text-center">Action</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <AnimatePresence>
+                    {menuItem.map((item, idx) => (
+                      <motion.tr
+                        key={item.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ delay: idx * 0.1, duration: 0.2 }}
+                        className="border-b hover:bg-secondaryGray/50"
+                      >
+                        <td className="px-4 py-2">{item.menu}</td>
+
+                        <td className="px-4 py-2">{item.name}</td>
+
+                        <td className="px-4 py-2">
+                          {item.prices.PT.toFixed(2)}
+                        </td>
+
+                        <td className="px-4 py-2">
+                          {item.prices.RG.toFixed(2)}
+                        </td>
+
+                        <td className="px-4 py-2">
+                          {item.prices.GR.toFixed(2)}
+                        </td>
+
+                        <td className="px-4 py-2 text-center">
+                          <button
+                            onClick={() => {
+                              setSelectedMenuItem(item);
+
+                              setDrawerMode("deleteMenuItem");
+
+                              setOpenDrawer(true);
+                            }}
+                          >
+                            <Image
+                              src="/icon/delete.png"
+                              alt="delete"
+                              width={20}
+                              height={20}
+                            />
+                          </button>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </tbody>
+              </table>
             )}
           </div>
+
           <button
             onClick={() => {
               setDrawerMode("menuItem");
+
               setOpenDrawer(true);
             }}
             className="absolute bottom-4 right-4"
