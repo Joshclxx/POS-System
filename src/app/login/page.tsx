@@ -13,7 +13,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     // Dummy auth logic — replace with your own
-    if (email === "admin@example.com" && password === "password") {
+    if (email === "heebrew@cafe.com" && password === "heebrew") {
       router.push("/"); // Redirect to home or dashboard
     } else {
       alert("Invalid credentials");

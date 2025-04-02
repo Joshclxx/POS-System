@@ -1,57 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SectionContainer from "../../SectionContainer";
 import Image from "next/image";
 import { Drawer } from "vaul";
 import React from "react";
 import Button from "@/components/Button";
+import { motion, AnimatePresence } from "motion/react";
+import useGlobal from "@/hooks/useGlobal";
 
 const Product = () => {
+  // Drawer state and additional states for add/delete functionality only
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [drawerMode, setDrawerMode] = useState<"menu" | "menuItem" | null>(
-    null
-  );
+  const [drawerMode, setDrawerMode] = useState<
+    "menu" | "menuItem" | "deleteMenu" | "deleteMenuItem" | null
+  >(null);
 
-  const [menus, setMenus] = useState<string[]>([]);
+  // Selected item states for delete operations
+  const [selectedMenu, setSelectedMenu] = useState<string | null>(null);
+  const [selectedMenuItem, setSelectedMenuItem] = useState<any>(null);
+
+  // Form states for add operations
   const [newMenuName, setNewMenuName] = useState("");
-
-  const [menuItems, setMenuItems] = useState<
-    {
-      name: string;
-      menu: string;
-      prices: { PT: number; RG: number; GR: number };
-    }[]
-  >([]);
-
   const [itemName, setItemName] = useState("");
   const [itemMenu, setItemMenu] = useState("");
   const [itemPrices, setItemPrices] = useState({ PT: "", RG: "", GR: "" });
 
+  // Global state functions
+  const removeMenu = useGlobal((state) => state.removeMenu);
+  const removeMenuItemsByMenu = useGlobal(
+    (state) => state.removeMenuItemsByMenu
+  );
+  const addMenu = useGlobal((state) => state.addMenu);
+  const removeMenuItem = useGlobal((state) => state.removeMenuItem);
+  const addMenuItem = useGlobal((state) => state.addMenuItem);
+  const menu = useGlobal((state) => state.menus);
+  const menuItem = useGlobal((state) => state.menuItems);
+
+  // Cancel action and reset states
   const handleCancel = () => {
     setOpenDrawer(false);
+    setDrawerMode(null);
     setNewMenuName("");
     setItemName("");
     setItemMenu("");
     setItemPrices({ PT: "", RG: "", GR: "" });
+    setSelectedMenu(null);
+    setSelectedMenuItem(null);
   };
 
+  // Submit handler for add or delete actions
   const handleSubmit = () => {
-    if (drawerMode === "menu" && newMenuName.trim() !== "") {
-      setMenus([...menus, newMenuName.trim()]);
-      setNewMenuName("");
-      setOpenDrawer(false);
-    } else if (
-      drawerMode === "menuItem" &&
-      itemName.trim() &&
-      itemMenu &&
-      itemPrices.PT &&
-      itemPrices.RG &&
-      itemPrices.GR
-    ) {
-      setMenuItems([
-        ...menuItems,
-        {
+    if (drawerMode === "menu") {
+      if (newMenuName.trim() !== "") {
+        addMenu(newMenuName.trim());
+      }
+      handleCancel();
+    } else if (drawerMode === "menuItem") {
+      if (
+        itemName.trim() &&
+        itemMenu &&
+        itemPrices.PT &&
+        itemPrices.RG &&
+        itemPrices.GR
+      ) {
+        addMenuItem({
+          id: crypto.randomUUID(),
           name: itemName.trim(),
           menu: itemMenu,
           prices: {
@@ -59,37 +73,116 @@ const Product = () => {
             RG: Number(itemPrices.RG),
             GR: Number(itemPrices.GR),
           },
-        },
-      ]);
-      setItemName("");
-      setItemMenu("");
-      setItemPrices({ PT: "", RG: "", GR: "" });
-      setOpenDrawer(false);
+        });
+      }
+      handleCancel();
+    } else if (drawerMode === "deleteMenu") {
+      if (selectedMenu) {
+        removeMenu(selectedMenu);
+        removeMenuItemsByMenu(selectedMenu);
+      }
+      handleCancel();
+    } else if (drawerMode === "deleteMenuItem") {
+      if (selectedMenuItem) {
+        removeMenuItem(selectedMenuItem.id);
+      }
+      handleCancel();
     }
   };
+
+  // Component for rendering each menu item card (delete only)
+  const MenuItemCard = ({ item }: { item: any }) => {
+    return (
+      <div className="bg-secondaryGray text-primary flex flex-col p-2 rounded-lg">
+        <div className="w-full bg-primaryGray flex justify-between items-center p-1 rounded-md mb-2">
+          <p className="product-menu text-center">{item.menu}</p>
+          <button
+            onClick={() => {
+              setSelectedMenuItem(item);
+              setDrawerMode("deleteMenuItem");
+              setOpenDrawer(true);
+            }}
+          >
+            <Image src="/icon/delete.png" alt="delete" width={24} height={24} />
+          </button>
+        </div>
+        <Image
+          src="/image/default.svg"
+          alt="Product"
+          width={105}
+          height={105}
+          className="mx-auto mb-2"
+        />
+        <p className="product-name text-center mb-2">{item.name}</p>
+        <div className="bg-primaryGray w-full h-[32px] flex items-center justify-center px-4 rounded-md">
+          <div className="text-center flex justify-between w-full items-center product-price gap-4">
+            <p>₱{item.prices.PT.toFixed(2)}</p>
+            <p>₱{item.prices.RG.toFixed(2)}</p>
+            <p>₱{item.prices.GR.toFixed(2)}</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Determine the button text based on the drawer mode
+  const buttonText =
+    drawerMode === "menu"
+      ? "Add Menu"
+      : drawerMode === "menuItem"
+      ? "Add Menu Item"
+      : drawerMode === "deleteMenu" || drawerMode === "deleteMenuItem"
+      ? "Confirm Delete"
+      : "";
 
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
       <div className="grid grid-cols-12 gap-5 mt-4">
-        {/* ADD MENU */}
-        <div className="col-span-3 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[782px] relative">
+        {/* ADD MENU Section */}
+        <div className="col-span-3 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[782px] relative flex flex-col">
           <div className="bg-primary w-full h-[52px] flex items-center justify-center rounded-lg">
-            <p className="text-colorDirtyWhite font-bold text-[24px] text-center">
+            <p className="text-colorDirtyWhite font-bold text-[24px]">
               ADD MENU
             </p>
           </div>
-          <div className="flex items-center justify-center w-full flex-col mt-4 px-2 space-y-2">
-            {menus.length === 0 ? (
-              <p className="text-primary font-semibold italic">
+          <div className="flex-1 overflow-y-auto mt-4 space-y-2 px-2">
+            {menu.length === 0 ? (
+              <p className="text-primary font-semibold italic text-center">
                 No menu added yet.
               </p>
             ) : (
-              menus.map((menu, idx) => (
-                <div key={idx} className="w-full">
-                  <p className="bg-secondaryGray w-full h-auto p-2 rounded-lg text-center menu-title">
-                    {menu}
-                  </p>
-                </div>
+              menu.map((menuName, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0 }}
+                  transition={{
+                    delay: idx * 0.1,
+                    duration: 0.2,
+                    ease: "easeOut",
+                  }}
+                >
+                  <div className="flex items-center justify-between bg-secondaryGray p-2 rounded-lg">
+                    <span className="menu-title font-bold text-lg">
+                      {menuName}
+                    </span>
+                    <button
+                      onClick={() => {
+                        setSelectedMenu(menuName);
+                        setDrawerMode("deleteMenu");
+                        setOpenDrawer(true);
+                      }}
+                    >
+                      <Image
+                        src="/icon/delete.png"
+                        alt="delete"
+                        width={24}
+                        height={24}
+                      />
+                    </button>
+                  </div>
+                </motion.div>
               ))
             )}
           </div>
@@ -98,56 +191,50 @@ const Product = () => {
               setDrawerMode("menu");
               setOpenDrawer(true);
             }}
+            className="absolute bottom-4 right-4"
           >
             <Image
               src="/icon/add.svg"
               alt="Add"
               width={44}
               height={44}
-              className="opacity-80 transition-opacity duration-200 hover:opacity-100 absolute bottom-4 right-4"
+              className="opacity-80 transition-opacity duration-200 hover:opacity-100"
             />
           </button>
         </div>
 
-        {/* ADD MENU ITEM */}
-        <div className="col-span-9 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[782px] relative">
+        {/* ADD MENU ITEM Section */}
+        <div className="col-span-9 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[782px] relative flex flex-col">
           <div className="bg-primary w-full h-[52px] flex items-center justify-center rounded-lg">
-            <p className="text-colorDirtyWhite font-bold text-[24px] text-center">
+            <p className="text-colorDirtyWhite font-bold text-[24px]">
               ADD MENU ITEM
             </p>
           </div>
-          <div className="w-full mt-4 px-2">
-            {menuItems.length === 0 ? (
+          <div className="flex-1 overflow-y-auto mt-4 px-2">
+            {menuItem.length === 0 ? (
               <p className="text-primary text-center font-semibold italic">
-                No menu items added yet.
+                No menu products added yet.
               </p>
             ) : (
-              <div className="grid grid-cols-4 gap-4 mt-4 w-full">
-                {menuItems.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-secondaryGray w-full text-primary flex flex-col p-2 rounded-lg"
-                  >
-                    <div className="w-full bg-primaryGray mb-2">
-                      <p className="product-menu text-center">{item.menu}</p>
-                    </div>
-                    <Image
-                      src="/image/default.svg"
-                      alt="Product"
-                      width={105}
-                      height={105}
-                      className="mx-auto mb-2"
-                    />
-                    <p className="product-name text-center mb-2">{item.name}</p>
-                    <div className="bg-primaryGray w-full h-[32px] flex items-center justify-center px-4">
-                      <div className="text-center flex justify-between w-full items-center product-price gap-4">
-                        <p>₱{item.prices.PT.toFixed(2)}</p>
-                        <p>₱{item.prices.RG.toFixed(2)}</p>
-                        <p>₱{item.prices.GR.toFixed(2)}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              // Use a static grid container and AnimatePresence for individual card animations.
+              <div className="grid grid-cols-4 gap-4 w-full pb-16">
+                <AnimatePresence>
+                  {menuItem.map((item, idx) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0 }}
+                      transition={{
+                        delay: idx * 0.1,
+                        duration: 0.2,
+                        ease: "easeOut",
+                      }}
+                    >
+                      <MenuItemCard item={item} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             )}
           </div>
@@ -169,27 +256,36 @@ const Product = () => {
         </div>
       </div>
 
-      {/* Drawer */}
+      {/* Drawer Component */}
       <Drawer.Root open={openDrawer} onOpenChange={setOpenDrawer}>
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 bg-black/40" />
           <Drawer.Content className="fixed bottom-0 left-1/2 transform -translate-x-1/2 items-center bg-secondary rounded-t-xl p-6 transition-all duration-300 w-[1024px] max-h-[80vh]">
             <div className="text-center text-colorDirtyWhite">
-              <p className="text-lg font-semibold">
-                {drawerMode === "menu" ? "Add Menu" : "Add Menu Item"}
-              </p>
+              {drawerMode === "menu" && (
+                <p className="text-lg font-semibold">Add Menu</p>
+              )}
+              {drawerMode === "menuItem" && (
+                <p className="text-lg font-semibold">Add Menu Item</p>
+              )}
+              {(drawerMode === "deleteMenu" ||
+                drawerMode === "deleteMenuItem") && (
+                <p className="text-lg font-semibold">Confirm Delete</p>
+              )}
             </div>
 
             <div className="mt-6 space-y-4 w-[600px] mx-auto">
-              {drawerMode === "menu" ? (
+              {drawerMode === "menu" && (
                 <input
                   type="text"
                   placeholder="Menu Name"
                   value={newMenuName}
                   onChange={(e) => setNewMenuName(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
                   className="w-full px-4 py-2 rounded border"
                 />
-              ) : (
+              )}
+              {drawerMode === "menuItem" && (
                 <>
                   <div className="flex justify-between w-full gap-4">
                     <input
@@ -197,6 +293,7 @@ const Product = () => {
                       placeholder="Product Name"
                       value={itemName}
                       onChange={(e) => setItemName(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
                       className="w-full px-4 py-2 rounded border"
                     />
                   </div>
@@ -205,11 +302,12 @@ const Product = () => {
                       className="w-full px-4 py-2 rounded border"
                       value={itemMenu}
                       onChange={(e) => setItemMenu(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <option value="">Select Menu</option>
-                      {menus.map((menu, idx) => (
-                        <option key={idx} value={menu}>
-                          {menu}
+                      {menu.map((menuName, idx) => (
+                        <option key={idx} value={menuName}>
+                          {menuName}
                         </option>
                       ))}
                     </select>
@@ -219,6 +317,7 @@ const Product = () => {
                       type="number"
                       placeholder="Price PT"
                       value={itemPrices.PT}
+                      onClick={(e) => e.stopPropagation()}
                       onChange={(e) =>
                         setItemPrices({ ...itemPrices, PT: e.target.value })
                       }
@@ -228,6 +327,7 @@ const Product = () => {
                       type="number"
                       placeholder="Price RG"
                       value={itemPrices.RG}
+                      onClick={(e) => e.stopPropagation()}
                       onChange={(e) =>
                         setItemPrices({ ...itemPrices, RG: e.target.value })
                       }
@@ -237,6 +337,7 @@ const Product = () => {
                       type="number"
                       placeholder="Price GR"
                       value={itemPrices.GR}
+                      onClick={(e) => e.stopPropagation()}
                       onChange={(e) =>
                         setItemPrices({ ...itemPrices, GR: e.target.value })
                       }
@@ -244,6 +345,23 @@ const Product = () => {
                     />
                   </div>
                 </>
+              )}
+              {(drawerMode === "deleteMenu" ||
+                drawerMode === "deleteMenuItem") && (
+                <div className="text-center">
+                  {drawerMode === "deleteMenu" && selectedMenu && (
+                    <p>
+                      Are you sure you want to delete the menu "{selectedMenu}"
+                      and all its items?
+                    </p>
+                  )}
+                  {drawerMode === "deleteMenuItem" && selectedMenuItem && (
+                    <p>
+                      Are you sure you want to delete the product "
+                      {selectedMenuItem.name}"?
+                    </p>
+                  )}
+                </div>
               )}
             </div>
 
@@ -256,7 +374,7 @@ const Product = () => {
                 Cancel
               </Button>
               <Button variant="add" className="w-full" onClick={handleSubmit}>
-                {drawerMode === "menu" ? "Add Menu" : "Add Menu Item"}
+                {buttonText}
               </Button>
             </div>
           </Drawer.Content>
