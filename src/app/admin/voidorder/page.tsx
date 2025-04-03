@@ -1,10 +1,10 @@
-import Spotcheck from "@/components/admin/spotcheck/Spotcheck";
+import VoidOrder from "@/components/admin/voidorder/VoidOrder";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <Spotcheck />
+      <VoidOrder />
     </div>
   );
 };

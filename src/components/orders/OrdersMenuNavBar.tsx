@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { ORDERS_NAV_LINKS } from "@/app/constants";
 import Button from "../Button";
+import useGlobal from "@/hooks/useGlobal";
 
 interface Props {
   activeKey: string;
@@ -10,22 +10,29 @@ interface Props {
 }
 
 const OrdersMenuNavBar = ({ activeKey, setActiveKey }: Props) => {
+  const { menus } = useGlobal();
+
   return (
-    <nav className="bg-colorDirtyWhite w-full h-[60px] flex items-center mt-[12px]">
-      <div className="w-full max-w-[1280px] mx-auto flex justify-between items-center px-4">
-        <ul className="flex gap-2">
-          {ORDERS_NAV_LINKS.map((link) => (
-            <li key={link.key}>
-              <Button
-                variant="order-navbar"
-                isActive={activeKey === link.key}
-                onClick={() => setActiveKey(link.key)}
-              >
-                {link.label}
-              </Button>
-            </li>
-          ))}
-        </ul>
+    <nav className="bg-colorDirtyWhite w-[585px] h-[60px] flex items-center mt-[12px]">
+      <div className="w-full max-w-[1280px] mx-auto flex items-center px-4">
+        <div
+          className="overflow-x-auto scroll-smooth thin-scrollbar"
+          style={{ scrollSnapType: "x mandatory" }}
+        >
+          <ul className="flex gap-2 flex-nowrap min-w-max">
+            {menus.map((menu, index) => (
+              <li key={index} style={{ scrollSnapAlign: "start" }}>
+                <Button
+                  variant="order-navbar"
+                  isActive={activeKey === menu}
+                  onClick={() => setActiveKey(menu)}
+                >
+                  {menu}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </nav>
   );
