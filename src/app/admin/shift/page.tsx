@@ -1,10 +1,10 @@
-import Spotcheck from "@/components/admin/spotcheck/Spotcheck";
+import Shift from "@/components/admin/shift/Shift";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <Spotcheck />
+      <Shift />
     </div>
   );
 };

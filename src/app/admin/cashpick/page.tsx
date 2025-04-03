@@ -1,10 +1,10 @@
-import Spotcheck from "@/components/admin/spotcheck/Spotcheck";
+import Cashpick from "@/components/admin/cashpick/Cashpick";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <Spotcheck />
+      <Cashpick />
     </div>
   );
 };
