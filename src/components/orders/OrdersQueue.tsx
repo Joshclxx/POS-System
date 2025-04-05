@@ -5,10 +5,12 @@ import React from "react";
 import Button from "../Button";
 import SectionContainer from "../SectionContainer";
 import { useOrderStore } from "@/hooks/useOrder";
+import { useTimer } from "@/hooks/useTimer";
 
 const OrdersQueue = () => {
   const ordersQueue = useOrderStore((state) => state.ordersQueue);
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
+  const { formatTimer, start, reset, stop } = useTimer()
 
   const bumpSelectedOrder = () => {
     if (selectedOrder !== null) {
@@ -19,11 +21,13 @@ const OrdersQueue = () => {
     }
   };
 
+  //test
+  start()
   return (
     <SectionContainer background="mt-1 w-[235px] h-[914px]">
       {/* ORDER QUEUE HEADER */}
       <div className="bg-primary w- h-[60px] flex items-center justify-center menu-total text-[18px]">
-        ORDER QUEUE
+        ORDER QUEUE {formatTimer()}
       </div>
 
       {/* Order List */}
