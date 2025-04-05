@@ -23,6 +23,7 @@ export const useTimer = create<Timer>((set, get) => {
 
   const reset = () => {
     if (intervalId) clearInterval(intervalId)
+
     intervalId = null
     set({ duration: 0 })
     start()
@@ -30,6 +31,7 @@ export const useTimer = create<Timer>((set, get) => {
 
   const stop = () => {
     if (intervalId) clearInterval(intervalId)
+        
     intervalId = null
   }
 
