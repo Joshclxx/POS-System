@@ -10,7 +10,7 @@ import { useTimer } from "@/hooks/useTimer";
 const OrdersQueue = () => {
   const ordersQueue = useOrderStore((state) => state.ordersQueue);
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
-  const { formatTimer, start, reset, stop } = useTimer()
+  const { formatTimer, start, reset, stop } = useTimer();
 
   const bumpSelectedOrder = () => {
     if (selectedOrder !== null) {
@@ -22,17 +22,20 @@ const OrdersQueue = () => {
   };
 
   //test
-  start()
+  start();
   return (
     <SectionContainer background="mt-1 w-[235px] h-[914px]">
       {/* ORDER QUEUE HEADER */}
       <div className="bg-primary w- h-[60px] flex items-center justify-center menu-total text-[18px]">
-        ORDER QUEUE {formatTimer()}
+        ORDER QUEUE
       </div>
 
       {/* Order List */}
-      <div className="bg-colorDirtyWhite w-full h-[670px] mt-[4px] p-2 overflow-y-auto">
+      <div className="bg-colorDirtyWhite w-full h-[674px] mt-[4px] p-2 overflow-y-auto">
         <div className="flex flex-col gap-3 text-center">
+          <div className="container bg-primaryGray w-full h-[32px] flex items-center text-center justify-center">
+            <p className="text-primary font-semibold">{formatTimer()}</p>
+          </div>
           {ordersQueue.map((order) => (
             <div
               key={order.id}

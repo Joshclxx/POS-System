@@ -8,7 +8,6 @@ type ButtonProps = {
     | "dine-out"
     | "total"
     | "pay"
-    | "queue"
     | "clear"
     | "size"
     | "largeSize"
@@ -19,7 +18,8 @@ type ButtonProps = {
     | "view-dlt"
     | "cancel"
     | "add"
-    | "view-qty";
+    | "view-qty"
+    | "universal";
   isActive?: boolean;
   icon?: string;
   className?: string;
@@ -65,7 +65,10 @@ const Button = ({
 
     case "clear":
       className +=
-        "relative w-[220px] h-[57px] text-lg font-medium transition-all duration-300 bg-colorRed rounded-[4px] text-tertiary";
+        "relative w-[220px] h-[57px] text-lg font-medium transition-all duration-300 rounded-[4px] " +
+        (props.disabled
+          ? "bg-[#b71c1c] text-tertiary cursor-not-allowed"
+          : "bg-colorRed text-tertiary");
       break;
     case "size":
       className +=
@@ -109,7 +112,9 @@ const Button = ({
       className +=
         " relative text-lg font-medium text-white transition-all duration-300 text-color2 bg-[#00A652] rounded-lg";
       break;
-
+    case "universal":
+      className += " font-semibold text-tertiary ";
+      break;
     default:
       className += " bg-gray-500 text-white";
   }

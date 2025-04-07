@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
 import SectionContainer from "@/components/SectionContainer";
 
 export default function LoginPage() {
@@ -12,16 +13,18 @@ export default function LoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Dummy auth logic — replace with your own
-    if (email === "heebrew@cafe.com" && password === "heebrew") {
-      router.push("/"); // Redirect to home or dashboard
+    if (email === "heebrew@cafe.employee" && password === "Employee01") {
+      localStorage.setItem("loggedIn", "true");
+      toast.success("Logged in successfully!");
+      router.push("/admin/shift");
     } else {
-      alert("Invalid credentials");
+      toast.error("Login Denied, Email & Password Incorrect!");
     }
   };
 
   return (
     <SectionContainer background="mt-1 w-full max-w-[1280px] h-[914px]">
+      <Toaster />
       <div className="flex h-screen">
         {/* Left container */}
         <div className="w-[462px] h-full bg-secondary flex items-center justify-center">
@@ -33,15 +36,12 @@ export default function LoginPage() {
         </div>
 
         {/* Right container */}
-        <div className="flex-1 flex flex-col items-center justify-start bg-[#E0E0E0] pt-12">
+        <div className="flex-1 relative bg-[#E0E0E0]">
           {/* Title at the top */}
-          <div className="text-primary text-[32px] text-center mb-12 font-semibold leading-loose tracking-widest">
-            <p>HEEBREW CAFE</p>
-            <p>POS SYSTEM</p>
+          <div className="pt-12 text-primary text-[32px] text-center font-semibold leading-loose tracking-widest">
+            <p>HEEBREW CAFE POS SYSTEM</p>
           </div>
-
-          {/* Login form */}
-          <div className="flex-1 flex flex-col items-center justify-center bg-[#E0E0E0]">
+          <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 flex justify-center">
             <form
               onSubmit={handleLogin}
               className="bg-primaryGray p-6 rounded-lg shadow-[0_4px_12px_2px_#131A15] w-full max-w-sm"
