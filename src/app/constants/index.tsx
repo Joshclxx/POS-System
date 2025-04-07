@@ -1,5 +1,15 @@
+// NAVBAR
 export const NAV_LINKS = [
-  { href: "/", key: "product", label: "Product" },
-  { href: "/", key: "spotcheck", label: "Spotcheck" },
-  { href: "/", key: "receipt", label: "Receipt" },
+  { href: "/", key: "order", label: "Order" },
+  { href: "/admin/products", key: "product", label: "Products" },
+  { href: "/admin/spotcheck", key: "Spotcheck", label: "Spotcheck" },
+];
+
+// MENU FEATURES
+export const MENU_FEATURE_LINKS = [
+  { href: "/admin/spotcheck", key: "Spotcheck", label: "Spotcheck" },
+  { href: "/admin/cashpick", key: "cashPick", label: "Cash Pick" },
+  { href: "/admin/products", key: "product", label: "Products" },
+  { href: "/admin/voidorder", key: "voidOrder", label: "Void Order" },
+  { href: "/admin/shift", key: "shift", label: "Shift" },
 ];
