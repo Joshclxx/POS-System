@@ -59,7 +59,7 @@ const OrderImageContainer: React.FC<OrderImageContainerProps> = ({
           alt={imageAlt}
           width={imageWidth}
           height={imageHeight}
-          className="object-contain hover-trans"
+          className="object-contain"
         />
       </div>
 

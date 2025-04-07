@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import OrdersMenu from "@/components/orders/OrdersMenu";
 import OrdersMenuNavBar from "@/components/orders/OrdersMenuNavBar";
 import OrdersQueue from "@/components/orders/OrdersQueue";
@@ -14,6 +15,16 @@ export default function Home() {
   const [isPaying, setIsPaying] = useState(false);
   const [amountType, setAmountType] = useState("");
   const [total, setTotal] = useState(0);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if user is "logged in"
+    const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+    if (!isLoggedIn) {
+      router.push("/login");
+    }
+  }, [router]);
 
   const handleConfirmPayment = () => {
     useOrderStore.getState().addOrderToQueue(Date.now());
