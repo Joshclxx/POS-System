@@ -94,3 +94,7 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
 };
 
 export default OrderMenuItems;
+
+// Make the transaction recorded in Orders history.
+// Make the shift transaction recorded and saved to determine the POS collected CASH. -> Connect it to spotcheck, void order, and close shift.
+// Create a DISCOUNT interface and function, and make it recorded. Fixed discount 20% for senior and pwd.
