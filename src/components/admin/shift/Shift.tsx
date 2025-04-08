@@ -25,7 +25,7 @@ const Shift = () => {
       setIsManagerVerified(true);
       localStorage.setItem("isManagerVerified", "true");
       // When the manager is verified, we assume the cashier functions become enabled.
-      setShiftActive(false);
+      setShiftActive(true);
       toast.success("Logged in successfully!");
     } else {
       toast.error("Login Denied, Email & Password Incorrect!");
@@ -63,7 +63,7 @@ const Shift = () => {
         setStartCash(parsedShift.startCash || "");
         setActualCash(parsedShift.actualCash || "");
         setShiftOpenedAt(parsedShift.shiftOpenedAt || "");
-      } else {
+      } else {  
         setIsOpenShift(true);
       }
 
@@ -104,7 +104,7 @@ const Shift = () => {
     const shiftOpenedAt = new Date().toISOString();
 
     // Save the shift details using a different key.
-    localStorage.setItem(
+    localStorage.setItem( 
       "shiftDetails",
       JSON.stringify({ open: true, startCash, actualCash, shiftOpenedAt })
     );
@@ -119,8 +119,13 @@ const Shift = () => {
     localStorage.removeItem("shiftDetails");
     localStorage.removeItem("isManagerVerified");
     timer.stop();
-    // When a shift is closed, re-enable navbar actions.
-    setShiftActive(true);
+
+    setShiftActive(false); // Re-enable navbar actions after closing the shift
+    setIsOpenShift(true); // Mark shift as closed in UI
+    
+    //
+    // // When a shift is closed, re-enable navbar actions.
+    // setShiftActive(true);
     router.push("/login");
   };
 

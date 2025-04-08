@@ -26,12 +26,13 @@ export default function Home() {
       const isLoggedIn = localStorage.getItem("loggedIn") === "true";
       console.log("Logged In Status: ", isLoggedIn);  // testing natin if working
 
-      if (!isLoggedIn) {
+      if (isLoggedIn === false) {
         router.push("/login");  // Redirect to the login page if not logged in
       } else {
         setLoading(false);
       }
     }
+    
   }, [router]);
 
   const handleConfirmPayment = () => {

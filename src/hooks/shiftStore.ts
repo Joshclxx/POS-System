@@ -1,3 +1,25 @@
+
+// import { create } from "zustand";
+
+// type ShiftState = {
+//   isShiftActive: boolean;
+//   setShiftActive: (active: boolean) => void;
+// };
+
+// const storedShiftActive =
+//   typeof window !== "undefined"
+//     ? JSON.parse(localStorage.getItem("isShiftActive") || "true")
+//     : true;
+
+// export const useShiftStore = create<ShiftState>((set) => ({
+//   isShiftActive: storedShiftActive,
+
+//   setShiftActive: (active: boolean) => {
+//     localStorage.setItem("isShiftActive", JSON.stringify(active));
+//     set({ isShiftActive: active });
+//   },
+// }));
+
 import { create } from "zustand";
 
 type ShiftState = {
@@ -5,16 +27,16 @@ type ShiftState = {
   setShiftActive: (active: boolean) => void;
 };
 
-const storedShiftActive =
-  typeof window !== "undefined"
-    ? JSON.parse(localStorage.getItem("isShiftActive") || "true")
-    : true;
+const storedShiftActive = 
+typeof window !== "undefined" 
+? JSON.parse(localStorage.getItem("isShiftActive") || "false") 
+: false; //false default 
 
 export const useShiftStore = create<ShiftState>((set) => ({
   isShiftActive: storedShiftActive,
 
   setShiftActive: (active: boolean) => {
-    localStorage.setItem("isShiftActive", JSON.stringify(active));
+    localStorage.setItem("isShiftActive", JSON.stringify(active)); 
     set({ isShiftActive: active });
   },
 }));
