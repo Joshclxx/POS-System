@@ -121,3 +121,12 @@ body {
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
+
+/* DRAWER TABLE */
+.table-header {
+  @apply px-6 py-3 text-left text-xs text-primary font-semibold uppercase tracking-wider border-b;
+}
+
+.table-cell {
+  @apply px-6 py-4 whitespace-nowrap border-b;
+}

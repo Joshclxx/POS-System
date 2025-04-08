@@ -1,3 +1,4 @@
+// src/hooks/useGlobal.ts
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
@@ -36,7 +37,7 @@ const useGlobal = create<GlobalConfigState>()(
   devtools(
     persist(
       (set) => ({
-        // New function to update a single menu item by id
+        // Update a single menu item by id
         updateMenuItem: (id: string, updatedItem: Partial<MenuItem>) =>
           set((state) => ({
             menuItems: state.menuItems.map((item) =>
@@ -45,18 +46,19 @@ const useGlobal = create<GlobalConfigState>()(
           })),
 
         showDrawer: false,
-        setShowDrawer: (val) => set({ showDrawer: val }),
+        setShowDrawer: (val: boolean) => set({ showDrawer: val }),
 
         selectedItem: null,
-        setSelectedItem: (item) => set({ selectedItem: item }),
+        setSelectedItem: (item: MenuItem | null) => set({ selectedItem: item }),
 
         menus: [],
-        addMenu: (menu) => set((state) => ({ menus: [...state.menus, menu] })),
-        removeMenu: (menu) =>
+        addMenu: (menu: string) =>
+          set((state) => ({ menus: [...state.menus, menu] })),
+        removeMenu: (menu: string) =>
           set((state) => ({
             menus: state.menus.filter((m) => m !== menu),
           })),
-        updateMenu: (oldMenu, newMenu) =>
+        updateMenu: (oldMenu: string, newMenu: string) =>
           set((state) => ({
             menus: state.menus.map((menu) =>
               menu === oldMenu ? newMenu : menu
@@ -64,7 +66,7 @@ const useGlobal = create<GlobalConfigState>()(
           })),
 
         menuItems: [],
-        addMenuItem: (item) =>
+        addMenuItem: (item: MenuItem) =>
           set((state) => ({ menuItems: [...state.menuItems, item] })),
         removeMenuItem: (id: string) =>
           set((state) => ({
@@ -74,7 +76,7 @@ const useGlobal = create<GlobalConfigState>()(
           set((state) => ({
             menuItems: state.menuItems.filter((item) => item.menu !== menuName),
           })),
-        updateMenuItemsByMenu: (oldMenu, newMenu) =>
+        updateMenuItemsByMenu: (oldMenu: string, newMenu: string) =>
           set((state) => ({
             menuItems: state.menuItems.map((item) =>
               item.menu === oldMenu ? { ...item, menu: newMenu } : item
@@ -82,7 +84,7 @@ const useGlobal = create<GlobalConfigState>()(
           })),
       }),
       {
-        name: "ZEN - Global config",
+        name: "ZEN-Global-Config",
       }
     )
   )

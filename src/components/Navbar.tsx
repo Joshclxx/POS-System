@@ -27,12 +27,10 @@ export default function Navbar() {
 
   // (Optional) Check localStorage on mount if needed
   useEffect(() => {
-    const storedShift = localStorage.getItem("shiftStatus");
+    const storedShift = localStorage.getItem("shiftDetails");
     if (storedShift) {
       const parsedShift = JSON.parse(storedShift);
-      // If a shift is already open, you may want to re-enable navbar actions.
-      // Otherwise, the navbar remains disabled.
-      // In this example, we leave the state as controlled by the store.
+      // You might decide to adjust navbar behavior based on the shift details if needed.
     }
   }, []);
 
@@ -44,7 +42,7 @@ export default function Navbar() {
   };
 
   return (
-    // The entire navbar is wrapped in a div that disables pointer events when isShiftActive is true.
+    // Wrap the navbar to disable pointer events when shift state requires it.
     <div className={`${isShiftActive ? "pointer-events-none opacity-50" : ""}`}>
       <nav className="bg-navbar w-full h-[48px] mt-4 flex items-center z-30 relative">
         <div className="w-full max-w-[1280px] mx-auto flex justify-between items-center px-4">
@@ -113,21 +111,53 @@ export default function Navbar() {
             className="fixed inset-0 bg-black bg-opacity-40 z-40"
             onClick={() => setOpenPos(false)}
           />
-          <div className="fixed top-2 right-2 h-3/4 w-1/2 bg-primary z-50 shadow-lg rounded-xl transition-transform duration-300 ease-in-out">
-            <div className="p-4 flex justify-between">
-              <h2 className="text-xl font-bold mb-4">BSIS 32A1 POS SYSTEM</h2>
+          <div className="fixed top-2 right-2 h-[55%] w-1/3 bg-primary z-50 border border-primaryGray shadow-lg transition-transform duration-300 ease-in-out flex flex-col">
+            {/* Header */}
+            <div className="p-4 flex justify-between items-center">
+              <h2 className="text-xl font-semibold underline">
+                BSIS 32A1 POS SYSTEM
+              </h2>
               <button
                 onClick={() => setOpenPos(false)}
-                className="text-primary underline"
+                className="text-tertiary text-xl font-bold bg-colorRed w-[32px] h-[32px] rounded-full"
+                aria-label="Close"
               >
-                <img
-                  src="/icon/exit.svg"
-                  alt="Exit"
-                  className="w-6 h-6 inline-block"
-                />
+                X
               </button>
             </div>
-            {/* POS Panel content */}
+
+            {/* Main content */}
+            <div className="px-4 mt-6 flex-grow">
+              <div className="flex justify-between items-center">
+                <p>version</p>
+                <p>1.0.1</p>
+              </div>
+              <hr className="border-primaryGray w-full mt-4 mb-4" />
+              <div className="flex justify-between items-start">
+                <p>developed by</p>
+                <div className="flex flex-col">
+                  <p>colobong</p>
+                  <p>soguilon</p>
+                  <p>manalo</p>
+                  <p>alaan</p>
+                  <p>bacudo</p>
+                  <p>manila</p>
+                  <p>dizon</p>
+                </div>
+              </div>
+              <hr className="border-primaryGray w-full mt-4 mb-4" />
+              <div className="flex justify-between items-center">
+                <p>created at</p>
+                <p>march 2025</p>
+              </div>
+            </div>
+
+            {/* Credits at the bottom */}
+            <div className="px-4 pb-4">
+              <p className="text-center text-[14px]">
+                © Hebrew Cafe. All Rights Reserved
+              </p>
+            </div>
           </div>
         </>
       )}
@@ -146,13 +176,9 @@ export default function Navbar() {
               </h2>
               <button
                 onClick={() => setOpenMenu(false)}
-                className="text-sm text-primaryGray underline"
+                className="text-tertiary text-xl font-bol container bg-colorRed w-[32px] h-[32px] rounded-full"
               >
-                <img
-                  src="icon/exit.svg" // Removed the leading slash here
-                  alt="Exit"
-                  className="w-6 h-6 inline-block"
-                />
+                X
               </button>
             </div>
 
