@@ -12,6 +12,9 @@ const Shift = () => {
   const timer = useTimer();
   const { setShiftActive } = useShiftStore();
 
+  // ✅ Add loading flag
+  const [isLoaded, setIsLoaded] = useState(false);
+
   // Manager login state
   const [isManagerVerified, setIsManagerVerified] = useState(false);
   const [email, setEmail] = useState("");
@@ -20,25 +23,22 @@ const Shift = () => {
   const handleManagerLogin = () => {
     if (email === "heebrew@cafe.manager" && password === "Manager01") {
       setIsManagerVerified(true);
-      // Keep navbar disabled until shift is fully open
-      setShiftActive(true);
+      localStorage.setItem("isManagerVerified", "true");
+      // When the manager is verified, we assume the cashier functions become enabled.
+      setShiftActive(false);
       toast.success("Logged in successfully!");
     } else {
       toast.error("Login Denied, Email & Password Incorrect!");
     }
   };
 
-  // When true, the shift has not yet been opened.
   const [isOpenShift, setIsOpenShift] = useState(true);
-
-  // Input fields
   const [startCash, setStartCash] = useState("");
   const [actualCash, setActualCash] = useState("");
 
-  // Calculate derived values
   const expectedCash = React.useMemo(() => {
     const start = parseFloat(startCash) || 0;
-    // inA, inB, out would be calculated from your business logic
+    // You can update inA, inB, and out when those values are available.
     const inA = 0;
     const inB = 0;
     const out = 0;
@@ -50,33 +50,51 @@ const Shift = () => {
     return actual - expectedCash;
   }, [actualCash, expectedCash]);
 
-  // On mount, check if there is an already open shift saved
+  const [shiftOpenedAt, setShiftOpenedAt] = useState("");
+
   useEffect(() => {
-    const storedShift = localStorage.getItem("shiftStatus");
+    // Use a dedicated key for shift details
+    const storedShift = localStorage.getItem("shiftDetails");
     if (storedShift) {
       const parsedShift = JSON.parse(storedShift);
       if (parsedShift.open) {
+        // When open is true, we’re in an active shift so the UI should show the close shift view.
         setIsOpenShift(false);
         setStartCash(parsedShift.startCash || "");
         setActualCash(parsedShift.actualCash || "");
         setShiftOpenedAt(parsedShift.shiftOpenedAt || "");
+      } else {
+        setIsOpenShift(true);
       }
+
+      // Update the state of the register (disabled/enabled) based on the stored object.
+      setShiftActive(!parsedShift.open);
+    } else {
+      setShiftActive(true);
+      setIsOpenShift(true);
     }
+
+    const verified = localStorage.getItem("isManagerVerified");
+    if (verified === "true") {
+      setIsManagerVerified(true);
+    }
+
+    // ✅ Set loaded after localStorage hydration
+    setIsLoaded(true);
   }, []);
 
-  // Update stored shift data when actualCash changes (if shift is open)
+  // Keep shift details updated if actual cash changes while shift is active.
   useEffect(() => {
     if (!isOpenShift) {
-      const storedShift = localStorage.getItem("shiftStatus");
+      const storedShift = localStorage.getItem("shiftDetails");
       if (storedShift) {
         const parsedShift = JSON.parse(storedShift);
         parsedShift.actualCash = actualCash;
-        localStorage.setItem("shiftStatus", JSON.stringify(parsedShift));
+        localStorage.setItem("shiftDetails", JSON.stringify(parsedShift));
       }
     }
   }, [actualCash, isOpenShift]);
 
-  // When opening a shift, persist the shift data and re-enable the navbar.
   const handleOpenShift = () => {
     if (!startCash) {
       toast.error("Please enter the Starting Cash first.");
@@ -85,30 +103,30 @@ const Shift = () => {
 
     const shiftOpenedAt = new Date().toISOString();
 
+    // Save the shift details using a different key.
     localStorage.setItem(
-      "shiftStatus",
-      JSON.stringify({ open: true, startCash, actualCash })
+      "shiftDetails",
+      JSON.stringify({ open: true, startCash, actualCash, shiftOpenedAt })
     );
     timer.start();
-    // Re-enable the navbar now that the shift is open.
+    // When a shift is opened, disable the navbar actions.
     setShiftActive(false);
-    // Redirect to your order menu page (ensure the route exists)
     router.push("/");
   };
 
-  // When closing the shift, clear the saved data and redirect as needed.
   const handleCloseShift = () => {
     toast.success("Shift closed!");
-    localStorage.removeItem("shiftStatus");
+    localStorage.removeItem("shiftDetails");
+    localStorage.removeItem("isManagerVerified");
     timer.stop();
-    // You may choose to disable the navbar again or leave it enabled.
+    // When a shift is closed, re-enable navbar actions.
     setShiftActive(true);
     router.push("/login");
   };
 
-  const [shiftOpenedAt, setShiftOpenedAt] = useState("");
+  // Don’t render until data is loaded from localStorage
+  if (!isLoaded) return null;
 
-  // Render Manager Login screen if not verified yet.
   if (!isManagerVerified) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
@@ -140,7 +158,6 @@ const Shift = () => {
     );
   }
 
-  // Main Shift screen: display either Open Shift or Close Shift view.
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
       <Toaster />
