@@ -15,6 +15,7 @@ export default function LoginPage() {
 
     if (email === "heebrew@cafe.employee" && password === "Employee01") {
       localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("userEmail", email);
       toast.success("Logged in successfully!");
       router.push("/admin/shift");
     } else {
