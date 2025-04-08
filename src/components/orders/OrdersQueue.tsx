@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import Button from "../Button";
 import SectionContainer from "../SectionContainer";
@@ -10,7 +10,7 @@ import { useTimer } from "@/hooks/useTimer";
 const OrdersQueue = () => {
   const ordersQueue = useOrderStore((state) => state.ordersQueue);
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
-  const { formatTimer, start, reset, stop } = useTimer();
+  const { formatTimer, start, /*reset*/ stop } = useTimer();
 
   const bumpSelectedOrder = () => {
     if (selectedOrder !== null) {
@@ -21,8 +21,11 @@ const OrdersQueue = () => {
     }
   };
 
-  //test
-  start();
+  useEffect(() => {
+    start(); // Start the timer when the component is mounted
+    return () => stop(); // Optionally stop the timer when the component unmounts
+  }, [start, stop]);
+
   return (
     <SectionContainer background="mt-1 w-[235px] h-[914px]">
       {/* ORDER QUEUE HEADER */}
