@@ -13,20 +13,32 @@ const Shift = () => {
   const router = useRouter();
   const timer = useTimer();
   const { setShiftActive } = useShiftStore();
-  const { isVerified } = useManagerAuth();
+  const { isVerified, email } = useManagerAuth();
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [isOpenShift, setIsOpenShift] = useState(true);
   const [startCash, setStartCash] = useState("");
   const [actualCash, setActualCash] = useState("");
   const [shiftOpenedAt, setShiftOpenedAt] = useState("");
-  const [managerName, setManagerName] = useState("Joshclxx"); // Assuming dynamic assignment
-  const [shiftManager, setShiftManager] = useState("JaylordFPH"); // Assuming dynamic assignment
 
-  // Compute expectedCash and difference (profit/loss)
-  const expectedCash = parseFloat(startCash) || 0;
-  const difference = expectedCash - (parseFloat(actualCash) || 0);
+  // Force re-render when verification status changes
+  const [verificationChecked, setVerificationChecked] = useState(false);
 
+  // Calculate expected cash and difference
+  const expectedCash = React.useMemo(() => {
+    const start = parseFloat(startCash) || 0;
+    const inA = 0;
+    const inB = 0;
+    const out = 0;
+    return start + inA + inB - out;
+  }, [startCash]);
+
+  const difference = React.useMemo(() => {
+    const actual = parseFloat(actualCash) || 0;
+    return actual - expectedCash;
+  }, [actualCash, expectedCash]);
+
+  // Load shift data and check verification status
   useEffect(() => {
     const storedShift = localStorage.getItem("shiftDetails");
     if (storedShift) {
@@ -36,19 +48,32 @@ const Shift = () => {
         setStartCash(parsedShift.startCash || "");
         setActualCash(parsedShift.actualCash || "");
         setShiftOpenedAt(parsedShift.shiftOpenedAt || "");
-      } else {
-        setIsOpenShift(true);
       }
       setShiftActive(!parsedShift.open);
     } else {
       setShiftActive(true);
-      setIsOpenShift(true);
     }
+
+    // Check verification status
+    const verified = localStorage.getItem("isManagerVerified") === "true";
+    setVerificationChecked(verified);
     setIsLoaded(true);
   }, []);
 
   useEffect(() => {
-    if (!isOpenShift) {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "isManagerVerified") {
+        setVerificationChecked(e.newValue === "true");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  // Sync actual cash changes to localStorage
+  useEffect(() => {
+    if (!isOpenShift && actualCash) {
       const storedShift = localStorage.getItem("shiftDetails");
       if (storedShift) {
         const parsedShift = JSON.parse(storedShift);
@@ -65,10 +90,15 @@ const Shift = () => {
     }
 
     const shiftOpenedAt = new Date().toISOString();
-
     localStorage.setItem(
       "shiftDetails",
-      JSON.stringify({ open: true, startCash, actualCash, shiftOpenedAt })
+      JSON.stringify({
+        open: true,
+        startCash,
+        actualCash,
+        shiftOpenedAt,
+        managerEmail: email,
+      })
     );
     timer.start();
     setShiftActive(false);
@@ -78,31 +108,31 @@ const Shift = () => {
   const handleCloseShift = () => {
     toast.success("Shift closed!");
     localStorage.removeItem("shiftDetails");
+    localStorage.removeItem("isManagerVerified");
     timer.stop();
-
-    setShiftActive(false);
-    setIsOpenShift(true);
+    setShiftActive(true);
     router.push("/login");
   };
 
-  useEffect(() => {
-    console.log("Manager Verification Status (isVerified):", isVerified);
-  }, [isVerified]);
-
-  if (!isLoaded) return null;
-
-  if (isVerified === undefined) {
-    return <div>Loading...</div>;
-  }
-
-  if (!isVerified) {
+  if (!isLoaded) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
-        <ManagerLogin />
+        <div className="flex justify-center items-center h-screen">
+          <p>Loading...</p>
+        </div>
       </SectionContainer>
     );
   }
 
+  if (!isVerified && !verificationChecked) {
+    return (
+      <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
+        <Toaster />
+        <ManagerLogin onLoginSuccess={() => setVerificationChecked(true)} />
+      </SectionContainer>
+    );
+  }
+  // SHIFT COMPONENT
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
       <Toaster />
@@ -141,15 +171,15 @@ const Shift = () => {
                   <div className="flex flex-col">
                     <div className="flex gap-2">
                       <p className="font-bold">Shift Opened:</p>
-                      <p>{shiftManager}</p>
+                      <p>JaylordFPH</p>
                     </div>
                     <div className="flex gap-2">
                       <p className="font-bold">Manager On Duty:</p>
-                      <p>{managerName}</p>
+                      <p>Joshclxx</p>
                     </div>
                   </div>
                   <div>
-                    <p>{shiftOpenedAt}</p>
+                    <p>Time & Date</p>
                   </div>
                 </div>
                 <div>
