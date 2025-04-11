@@ -6,59 +6,32 @@ import SectionContainer from "../../SectionContainer";
 import toast, { Toaster } from "react-hot-toast";
 import { useTimer } from "@/hooks/useTimer";
 import { useShiftStore } from "@/hooks/shiftStore";
+import ManagerLogin from "../ManagerLogin";
+import { useManagerAuth } from "@/hooks/useManagerAuth";
 
 const Shift = () => {
   const router = useRouter();
   const timer = useTimer();
   const { setShiftActive } = useShiftStore();
+  const { isVerified } = useManagerAuth();
 
-  // ✅ Add loading flag
   const [isLoaded, setIsLoaded] = useState(false);
-
-  // Manager login state
-  const [isManagerVerified, setIsManagerVerified] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleManagerLogin = () => {
-    if (email === "heebrew@cafe.manager" && password === "Manager01") {
-      setIsManagerVerified(true);
-      localStorage.setItem("isManagerVerified", "true");
-      // When the manager is verified, we assume the cashier functions become enabled.
-      setShiftActive(false);
-      toast.success("Logged in successfully!");
-    } else {
-      toast.error("Login Denied, Email & Password Incorrect!");
-    }
-  };
-
   const [isOpenShift, setIsOpenShift] = useState(true);
   const [startCash, setStartCash] = useState("");
   const [actualCash, setActualCash] = useState("");
-
-  const expectedCash = React.useMemo(() => {
-    const start = parseFloat(startCash) || 0;
-    // You can update inA, inB, and out when those values are available.
-    const inA = 0;
-    const inB = 0;
-    const out = 0;
-    return start + inA + inB - out;
-  }, [startCash]);
-
-  const difference = React.useMemo(() => {
-    const actual = parseFloat(actualCash) || 0;
-    return actual - expectedCash;
-  }, [actualCash, expectedCash]);
-
   const [shiftOpenedAt, setShiftOpenedAt] = useState("");
+  const [managerName, setManagerName] = useState("Joshclxx"); // Assuming dynamic assignment
+  const [shiftManager, setShiftManager] = useState("JaylordFPH"); // Assuming dynamic assignment
+
+  // Compute expectedCash and difference (profit/loss)
+  const expectedCash = parseFloat(startCash) || 0;
+  const difference = expectedCash - (parseFloat(actualCash) || 0);
 
   useEffect(() => {
-    // Use a dedicated key for shift details
     const storedShift = localStorage.getItem("shiftDetails");
     if (storedShift) {
       const parsedShift = JSON.parse(storedShift);
       if (parsedShift.open) {
-        // When open is true, we’re in an active shift so the UI should show the close shift view.
         setIsOpenShift(false);
         setStartCash(parsedShift.startCash || "");
         setActualCash(parsedShift.actualCash || "");
@@ -66,24 +39,14 @@ const Shift = () => {
       } else {
         setIsOpenShift(true);
       }
-
-      // Update the state of the register (disabled/enabled) based on the stored object.
       setShiftActive(!parsedShift.open);
     } else {
       setShiftActive(true);
       setIsOpenShift(true);
     }
-
-    const verified = localStorage.getItem("isManagerVerified");
-    if (verified === "true") {
-      setIsManagerVerified(true);
-    }
-
-    // ✅ Set loaded after localStorage hydration
     setIsLoaded(true);
   }, []);
 
-  // Keep shift details updated if actual cash changes while shift is active.
   useEffect(() => {
     if (!isOpenShift) {
       const storedShift = localStorage.getItem("shiftDetails");
@@ -103,13 +66,11 @@ const Shift = () => {
 
     const shiftOpenedAt = new Date().toISOString();
 
-    // Save the shift details using a different key.
     localStorage.setItem(
       "shiftDetails",
       JSON.stringify({ open: true, startCash, actualCash, shiftOpenedAt })
     );
     timer.start();
-    // When a shift is opened, disable the navbar actions.
     setShiftActive(false);
     router.push("/");
   };
@@ -117,43 +78,27 @@ const Shift = () => {
   const handleCloseShift = () => {
     toast.success("Shift closed!");
     localStorage.removeItem("shiftDetails");
-    localStorage.removeItem("isManagerVerified");
     timer.stop();
-    // When a shift is closed, re-enable navbar actions.
-    setShiftActive(true);
+
+    setShiftActive(false);
+    setIsOpenShift(true);
     router.push("/login");
   };
 
-  // Don’t render until data is loaded from localStorage
+  useEffect(() => {
+    console.log("Manager Verification Status (isVerified):", isVerified);
+  }, [isVerified]);
+
   if (!isLoaded) return null;
 
-  if (!isManagerVerified) {
+  if (isVerified === undefined) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isVerified) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
-        <Toaster />
-        <div className="flex flex-col justify-center items-center h-screen">
-          <h2 className="text-2xl font-bold text-primary mb-4">
-            Manager Login
-          </h2>
-          <input
-            type="email"
-            placeholder="Manager Email"
-            className="mb-2 px-4 py-2 border border-primary rounded w-[500px] text-primary placeholder:text-primary"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="mb-4 px-4 py-2 border border-primary rounded w-[500px] text-primary placeholder:text-primary"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button
-            className="bg-colorBlue text-white px-6 py-2 rounded hover:bg-colorBlueDark transition-all"
-            onClick={handleManagerLogin}
-          >
-            Verify Manager
-          </button>
-        </div>
+        <ManagerLogin />
       </SectionContainer>
     );
   }
@@ -196,15 +141,15 @@ const Shift = () => {
                   <div className="flex flex-col">
                     <div className="flex gap-2">
                       <p className="font-bold">Shift Opened:</p>
-                      <p>JaylordFPH</p>
+                      <p>{shiftManager}</p>
                     </div>
                     <div className="flex gap-2">
                       <p className="font-bold">Manager On Duty:</p>
-                      <p>Joshclxx</p>
+                      <p>{managerName}</p>
                     </div>
                   </div>
                   <div>
-                    <p>Time & Date</p>
+                    <p>{shiftOpenedAt}</p>
                   </div>
                 </div>
                 <div>

@@ -1,132 +1,141 @@
-@import "tailwindcss";
-/* @tailwind base;
-@tailwind components; */
-@tailwind utilities;
+  @import "tailwindcss";
+  /* @tailwind base;
+  @tailwind components; */
+  @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme {
-  --color-*: initial;
-  --color-bgWhite: #eeeeee;
-  --color-navbar: #bcbbbb;
-  --color-primary: #131a15;
-  --color-secondary: #032124;
-  --color-tertiary: #eeeeee;
-  --color-primaryGray: #a0a0a0;
-  --color-secondaryGray: #d3d3d3;
-  --color-colorRed: #d32f2f;
-  --color-colorOrange: #ff8800;
-  --color-colorDirtyWhite: #fff8e1;
-  --color-colorBlue: #4682b4;
-  --color-colorGreen: #6dbe45;
-}
-
-@media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+  @theme {
+    --color-*: initial;
+    --color-bgWhite: #eeeeee;
+    --color-navbar: #bcbbbb;
+    --color-primary: #131a15;
+    --color-secondary: #032124;
+    --color-tertiary: #eeeeee;
+    --color-primaryGray: #a0a0a0;
+    --color-secondaryGray: #d3d3d3;
+    --color-colorRed: #d32f2f;
+    --color-colorOrange: #ff8800;
+    --color-colorDirtyWhite: #fff8e1;
+    --color-colorBlue: #4682b4;
+    --color-colorGreen: #6dbe45;
+  }
 
-/* ORDER TITLE */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #0a0a0a;
+      --foreground: #ededed;
+    }
+  }
 
-.menu-title {
-  @apply text-[14px] font-bold text-primary h-auto w-full;
-}
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+  }
 
-.menu-total {
-  @apply font-semibold text-tertiary w-full;
-}
+  /* ORDER TITLE */
 
-.menu-size-title {
-  @apply flex items-center text-left font-semibold text-[12px] text-primary pl-1;
-}
+  .menu-title {
+    @apply text-[14px] font-bold text-primary h-auto w-full;
+  }
 
-/* PRODUCTS TEXT */
+  .menu-total {
+    @apply font-semibold text-tertiary w-full;
+  }
 
-.item-title {
-  @apply text-[14px] font-semibold text-colorDirtyWhite container bg-primary w-full h-[32px] rounded-[8px] text-center flex justify-center items-center;
-}
+  .menu-size-title {
+    @apply flex items-center text-left font-semibold text-[12px] text-primary pl-1;
+  }
 
-.item-price {
-  @apply text-[16px] font-semibold text-primary;
-}
+  /* PRODUCTS TEXT */
 
-/* PRIMARY TEXT */
+  .item-title {
+    @apply text-[14px] font-semibold text-colorDirtyWhite container bg-primary w-full h-[32px] rounded-[8px] text-center flex justify-center items-center;
+  }
 
-.primary-title {
-  @apply text-[18px] font-bold text-primary;
-}
+  .item-price {
+    @apply text-[16px] font-semibold text-primary;
+  }
 
-/* HOVER */
-.hover-trans {
-  @apply transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-2xl;
-}
+  /* PRIMARY TEXT */
 
-/* PRODUCT MENU & ITEM */
+  .primary-title {
+    @apply text-[18px] font-bold text-primary;
+  }
 
-.menu-title {
-  @apply text-[28px] font-semibold text-primary container text-center flex justify-center items-center;
-}
+  /* HOVER */
+  .hover-trans {
+    @apply transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-2xl;
+  }
 
-.product-menu {
-  @apply text-[24px] font-semibold text-primary container text-center flex justify-center items-center;
-}
-.product-name {
-  @apply text-[20px] text-primary font-semibold;
-}
-.product-price {
-  @apply text-[15px] font-semibold text-secondary container text-center flex justify-center items-center;
-}
+  /* PRODUCT MENU & ITEM */
 
-/* globals.css */
+  .menu-title {
+    @apply text-[28px] font-semibold text-primary container text-center flex justify-center items-center;
+  }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+  .product-menu {
+    @apply text-[24px] font-semibold text-primary container text-center flex justify-center items-center;
+  }
+  .product-name {
+    @apply text-[20px] text-primary font-semibold;
+  }
+  .product-price {
+    @apply text-[15px] font-semibold text-secondary container text-center flex justify-center items-center;
+  }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-.hide-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
+  /* VOID ORDER */
+  .order-queue-panel {
+    @apply text-primary border-b
+  }
 
-/* globals.css */
+  .order-history-panel{
+    @apply text-primary border-b
+  }
 
-.thin-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+  /* globals.css */ 
 
-.thin-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 
-.thin-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-}
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 
-.thin-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-}
+  /* globals.css */
 
-/* DRAWER TABLE */
-.table-header {
-  @apply px-6 py-3 text-left text-xs text-primary font-semibold uppercase tracking-wider border-b;
-}
+  .thin-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 
-.table-cell {
-  @apply px-6 py-4 whitespace-nowrap border-b;
-}
+  .thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+  }
+
+  .thin-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+
+  /* DRAWER TABLE */
+  .table-header {
+    @apply px-6 py-3 text-left text-xs text-primary font-semibold uppercase tracking-wider border-b;
+  }
+
+  .table-cell {
+    @apply px-6 py-4 whitespace-nowrap border-b;
+  }

@@ -15,15 +15,24 @@ export default function Home() {
   const [isPaying, setIsPaying] = useState(false);
   const [amountType, setAmountType] = useState("");
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const router = useRouter();
 
   useEffect(() => {
     // Check if user is "logged in"
-    const isLoggedIn = localStorage.getItem("loggedIn") === "true";
-    if (!isLoggedIn) {
-      router.push("/login");
+
+    if (typeof window !== "undefined") { //to make sure we are onmm client side
+      const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+      console.log("Logged In Status: ", isLoggedIn);  // testing natin if working
+
+      if (isLoggedIn === false) {
+        router.push("/login");  // Redirect to the login page if not logged in
+      } else {
+        setLoading(false);
+      }
     }
+    
   }, [router]);
 
   const handleConfirmPayment = () => {
@@ -32,6 +41,11 @@ export default function Home() {
     setIsPaying(false);
   };
 
+
+  if (loading) {
+    return <div>Loading...</div>; // Show when checking login
+  }
+  
   return (
     <SectionContainer background="w-full h-[914px] flex items-center">
       <div className="flex gap-4 w-full max-w-[1280px]">

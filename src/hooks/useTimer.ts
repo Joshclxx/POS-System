@@ -12,13 +12,16 @@ export const useTimer = create<Timer>((set, get) => {
   let intervalId: ReturnType<typeof setInterval> | null = null;
   let startTime = 0;
 
+
+  set({ duration: 0 });
+
   const start = () => {
     if (intervalId) return;
 
-    startTime = Date.now();
+    startTime = Date.now() - get().duration;
     intervalId = setInterval(() => {
       set({ duration: Date.now() - startTime });
-    }, 1000);
+    }, 100);
   };
 
   const reset = () => {
@@ -53,3 +56,4 @@ export const useTimer = create<Timer>((set, get) => {
     formatTimer,
   };
 });
+
