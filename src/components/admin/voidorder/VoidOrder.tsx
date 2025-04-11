@@ -11,11 +11,13 @@ const VoidOrder = () => {
           <div className="order-queue-panel flex flex-col w-[320] h-[914px]  text-center">
             <h3>ORDER QUEUE</h3>
             <div className="search-container">
-              <input type="text" placeholder="Order Id" className="border-black w-[320]"/>
+              <input
+                type="text"
+                placeholder="Order Id"
+                className="border-black w-[320]"
+              />
             </div>
-            <div className="order-queue-container">
-
-            </div>
+            <div className="order-queue-container"></div>
             <div>
               <button className="btn btn-primary">VOID</button>
             </div>
@@ -23,8 +25,8 @@ const VoidOrder = () => {
           <div className="order-history-panel flex flex-col w-[960px] h-[914px] border-black">
             <h3>ORDER HISTORY</h3>
             <div className="search-container flex flex-row max-w-[960px] ">
-             <input type="text" placeholder="Order Id" className="w-[85%]"/>
-             <button>PRINT RECEIPT</button>
+              <input type="text" placeholder="Order Id" className="w-[85%]" />
+              <button>PRINT RECEIPT</button>
             </div>
             <div className="table-container">
               <table>
@@ -37,13 +39,10 @@ const VoidOrder = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-
-                  </tr>
+                  <tr></tr>
                 </tbody>
               </table>
             </div>
-
           </div>
         </div>
       </div>
@@ -52,3 +51,11 @@ const VoidOrder = () => {
 };
 
 export default VoidOrder;
+
+// Ceate table for Order History containing (Order ID, Order Items, Qty, Price, Date & Time, Status (PAID or VOIDED))
+// Create Search on top for Order ID
+// Table row onClick -> TO VOID or PRINT RECEIPT
+// Void Order Button, table row onClick then click Void Button then show Drawer (its up to you) to show order details.
+// 	-> DRAWER CONTENT <-
+// 		-> Will show the Oder details then input for ORDER ID then Confirm Button. After that, the voided order will deduct on POS CASH and change the Order History Status to VOIDED
+// 		-> After void confirmation, use Router to push into Home Page e.g., router.push(“/“);
