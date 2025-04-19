@@ -89,10 +89,6 @@
   }
 
   /* VOID ORDER */
-  .order-queue-panel {
-    @apply text-primary border-b
-  }
-
   .order-history-panel{
     @apply text-primary border-b
   }
