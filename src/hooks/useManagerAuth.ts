@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -6,27 +8,34 @@ export function useManagerAuth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Initialize state from localStorage and set up sync
   useEffect(() => {
-    const verified = localStorage.getItem("isManagerVerified");
-    if (verified === "true") {
-      setIsVerified(true);
-    }
+    const storedValue = localStorage.getItem("isManagerVerified") === "true";
+    setIsVerified(storedValue);
+
+    const handleStorageChange = () => {
+      const newValue = localStorage.getItem("isManagerVerified") === "true";
+      setIsVerified(newValue);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const login = () => {
-    // Ideally, validate from a database or secure source
     if (email === "heebrew@cafe.manager" && password === "Manager01") {
-      setIsVerified(true);
       localStorage.setItem("isManagerVerified", "true");
+      setIsVerified(true);
       toast.success("Manager verified!");
-    } else {
-      toast.error("Invalid email or password.");
+      return true;
     }
+    toast.error("Invalid email or password.");
+    return false;
   };
 
   const logout = () => {
-    setIsVerified(false);
     localStorage.removeItem("isManagerVerified");
+    setIsVerified(false);
   };
 
   return {
