@@ -3,7 +3,7 @@ import { create } from "zustand";
 interface EspressoItem {
   imageSrc: string;
   imageAlt: string;
-  imageTitle: string;
+  imageTitle: string; //namesource
   price: { PT: number; RG: number; GR: number };
   size: "PT" | "RG" | "GR";
   quantity?: number;
