@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import SectionContainer from "@/components/SectionContainer";
-import useGlobal from "@/hooks/useGlobal";
 import AdminDrawer from "../AdminDrawer";
-import { useRouter } from "next/navigation";
+import useGlobal from "@/hooks/useGlobal";
+import { useShiftStore } from "@/hooks/shiftStore";
 
 const denominations = [1, 5, 10, 20, 50, 100, 200, 500, 1000];
-const posCash = 7943;
 
 type SpotcheckEntry = {
   id: number;
@@ -20,98 +20,96 @@ type SpotcheckEntry = {
 };
 
 const Spotcheck = () => {
-  const [counts, setCounts] = useState(Array(denominations.length).fill(""));
+  const { startingCash, totalSales, totalPicked } = useShiftStore();
+  const expectedCash = startingCash + totalSales - totalPicked;
+  const [counts, setCounts] = useState<string[]>(
+    Array(denominations.length).fill("")
+  );
   const [userEmail, setUserEmail] = useState("");
   const { showDrawer, setShowDrawer } = useGlobal();
   const [history, setHistory] = useState<SpotcheckEntry[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [inputError, setInputError] = useState(false);
-
-  // HIGHLIGHT SELECTED ROW IN THE TABLE
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
   const [selectedDifference, setSelectedDifference] = useState<number | null>(
     null
   );
+  const router = useRouter();
 
   useEffect(() => {
-    const email = localStorage.getItem("userEmail") || "Unknown";
-    setUserEmail(email);
+    setUserEmail(localStorage.getItem("userEmail") || "Unknown");
     const saved = localStorage.getItem("spotcheckHistory");
     if (saved) setHistory(JSON.parse(saved));
-
     setShowDrawer(false);
   }, [setShowDrawer]);
 
-  const handleInputChange = (value: string, index: number) => {
-    if (value === "" || /^[0-9\b]+$/.test(value)) {
-      const newCounts = [...counts];
-      newCounts[index] = value;
-      setCounts(newCounts);
-      setInputError(false);
-    }
-  };
-
-  const total = denominations.reduce(
-    (acc, val, idx) => acc + val * (parseInt(counts[idx]) || 0),
-    0
+  const total = useMemo(
+    () =>
+      denominations.reduce(
+        (acc, val, idx) => acc + val * (parseInt(counts[idx]) || 0),
+        0
+      ),
+    [counts]
   );
 
-  const handleReset = () => {
-    setCounts(Array(denominations.length).fill(""));
-    setInputError(false);
-  };
-
   const handleConfirm = () => {
-    // ALL INPUT FIELDS ARE REQUIRED
-    const hasBlankInput = counts.some((count) => count === "");
-    if (hasBlankInput) {
+    if (counts.some((c) => c === "")) {
       setInputError(true);
       setShowDrawer(false);
       return;
     }
-
-    // SPOTCHECK ID
     const id = 3000 + history.length;
-    const newEntry: SpotcheckEntry = {
+    const entry: SpotcheckEntry = {
       id,
       employee: userEmail,
       actual: total,
-      pos: posCash,
+      pos: expectedCash,
       timestamp: new Date().toLocaleString(),
-      difference: total - posCash,
+      difference: total - expectedCash,
     };
-    const updated = [...history, newEntry];
+    const updated = [...history, entry];
     setHistory(updated);
     localStorage.setItem("spotcheckHistory", JSON.stringify(updated));
-    setSelectedRowId(newEntry.id);
-    setSelectedDifference(newEntry.difference);
+    setSelectedRowId(id);
+    setSelectedDifference(entry.difference);
     setShowDrawer(true);
     setInputError(false);
   };
 
-  // SEARCH ID IN HISTORY
-  const filteredHistory = useMemo(() => {
-    if (!searchQuery) return history;
-    return history.filter((entry) => entry.id.toString().includes(searchQuery));
-  }, [history, searchQuery]);
-
-  // DEFAULT HOVER ON LATEST SPOTCHECK
+  const filteredHistory = useMemo(
+    () =>
+      !searchQuery
+        ? history
+        : history.filter((e) => e.id.toString().includes(searchQuery)),
+    [history, searchQuery]
+  );
   useEffect(() => {
-    if (filteredHistory.length > 0) {
-      const latestEntry = filteredHistory[filteredHistory.length - 1];
-      setSelectedRowId(latestEntry.id);
-      setSelectedDifference(latestEntry.difference);
+    if (filteredHistory.length) {
+      const latest = filteredHistory[filteredHistory.length - 1];
+      setSelectedRowId(latest.id);
+      setSelectedDifference(latest.difference);
     } else {
       setSelectedRowId(null);
       setSelectedDifference(null);
     }
   }, [filteredHistory]);
 
-  const router = useRouter();
+  function handleInputChange(value: string, index: number): void {
+    // Allow only numeric input
+    if (!/^\d*$/.test(value)) return;
+    const updatedCounts = [...counts];
+    updatedCounts[index] = value;
+    setCounts(updatedCounts);
+    // Clear error state if any field now has a value
+    if (inputError && value !== "") {
+      setInputError(false);
+    }
+  }
 
-  const handleDrawerConfirm = () => {
-    router.push("/");
-  };
+  function handleReset(): void {
+    setCounts(Array(denominations.length).fill(""));
+    setInputError(false);
+  }
 
   return (
     <>
@@ -288,7 +286,7 @@ const Spotcheck = () => {
               <div className="mt-12">
                 <Button
                   variant="universal"
-                  onClick={handleDrawerConfirm}
+                  onClick={handleConfirm}
                   className="w-[172px] h-[44px] bg-colorGreen text-tertiary rounded-3xl text-[24px] font-regular absolute right-4"
                 >
                   Confirm
@@ -303,6 +301,3 @@ const Spotcheck = () => {
 };
 
 export default Spotcheck;
-
-// -> TODO <-
-// Include the starting cash as POS Cash.

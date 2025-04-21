@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import SectionContainer from "../SectionContainer";
+import { useShiftStore } from "@/hooks/shiftStore";
 
 type PaymentProps = {
   amountType: string;
@@ -16,6 +17,11 @@ const Payment = ({
   itemAmount,
   onBackToOrders,
 }: PaymentProps) => {
+  const addSale = useShiftStore((s) => s.addSale);
+  const [finalAmount, setFinalAmount] = useState<number | null>(null);
+  const [change, setChange] = useState<number>(0);
+  const [okPressed, setOkPressed] = useState(false);
+
   const handleKeyClick = (key: string) => {
     if (key === "←") {
       setAmountType((prev) => prev.slice(0, -1));
@@ -28,9 +34,6 @@ const Payment = ({
     }
   };
 
-  const [finalAmount, setFinalAmount] = useState<number | null>(null);
-  const [change, setChange] = useState<number>(0);
-
   const handleConfirm = () => {
     const amount = parseFloat(amountType);
     if (!isNaN(amount)) {
@@ -38,6 +41,7 @@ const Payment = ({
       setChange(amount - itemAmount);
       setAmountType("0.00");
       setOkPressed(true);
+      addSale(amount);
     }
   };
 
@@ -55,8 +59,6 @@ const Payment = ({
         return "bg-primaryGray text-primary text-xl";
     }
   };
-
-  const [okPressed, setOkPressed] = useState(false);
 
   return (
     <SectionContainer background="mt-1 w-[900px] h-auto">
@@ -90,21 +92,19 @@ const Payment = ({
           </div>
         </div>
 
-        {/* AMOUNT AND DISCOUNT BUTTON*/}
+        {/* Amount & Discount */}
         <div className="flex gap-6">
           <div className="border-2 border-primary rounded-lg w-[560px] h-[84px] px-4 flex items-center justify-between">
             <p className="primary-title">Amount</p>
             <p className="primary-title">{amountType || "0.00"}</p>
           </div>
-
-          <button className="bg-secondary text-white rounded-lg w-[200px] h-[84px] font-semibold shadow hover:bg-primary-dark hover-trans">
+          <button className="bg-secondary text-white rounded-lg w-[200px] h-[84px] font-semibold shadow hover:bg-primary-dark">
             DISCOUNT
           </button>
         </div>
 
-        {/* KEYPAD AND BUTTON ALIGNMENT */}
+        {/* Keypad */}
         <div className="flex gap-6">
-          {/* KEYPAD */}
           <div className="border-2 border-primary rounded-lg w-[560px] h-[405px] p-4 grid grid-cols-4 gap-3">
             {[
               "1",
@@ -129,7 +129,7 @@ const Payment = ({
                 onClick={() =>
                   key === "OK" ? handleConfirm() : handleKeyClick(key)
                 }
-                className={`rounded-md font-bold shadow border hover:bg-opacity-80 hover-trans ${getButtonStyles(
+                className={`rounded-md font-bold shadow border hover:bg-opacity-80 ${getButtonStyles(
                   key
                 )}`}
               >
@@ -138,7 +138,6 @@ const Payment = ({
             ))}
           </div>
 
-          {/* OUTSIDE BUTTONS */}
           <div className="flex flex-col gap-4">
             {["BANK", "GCASH", "MAYA", "CONFIRM"].map((label) => (
               <button
@@ -148,11 +147,9 @@ const Payment = ({
                     if (!okPressed) return;
                     setOkPressed(false);
                     onBackToOrders();
-                  } else {
-                    handleKeyClick(label);
-                  }
+                  } else handleKeyClick(label);
                 }}
-                className={`rounded-lg w-[200px] h-[90px] font-semibold shadow hover:bg-primary-dark hover-trans ${
+                className={`rounded-lg w-[200px] h-[90px] font-semibold shadow ${
                   label === "CONFIRM"
                     ? okPressed
                       ? "bg-colorGreen text-white"

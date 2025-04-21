@@ -1,20 +1,79 @@
 "use client";
 
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
+import Button from "@/components/Button";
 import SectionContainer from "../../SectionContainer";
-import React from "react";
+import { useShiftStore } from "@/hooks/shiftStore";
 
 const Cashpick = () => {
+  const pickCash = useShiftStore((s) => s.pickCash);
+  const [amount, setAmount] = useState("");
+  const router = useRouter();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setAmount(e.target.value);
+  const handleConfirm = () => {
+    const num = parseFloat(amount.replace(/[^\d.]/g, "")) || 0;
+    pickCash(num);
+    setAmount("");
+    toast.success("Cash Picked");
+  };
+  const handleCancel = () => router.push("/");
+  const isConfirmDisabled = !amount.trim();
+  const formatted = amount
+    ? parseFloat(amount.replace(/[^\d.]/g, "")).toFixed(2)
+    : "0.00";
+
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
+      <Toaster />
       <div className="grid grid-cols-12 mt-4">
-        <div className="container bg-colorDirtyWhite w-[1280] h-[800px]">
-          {/* TITLE */}
-          <div className="relative flex items-center justify-between w-full max-w-[1280px] px-6 mt-[20px]">
-            <div className="absolute left-1/2 transform -translate-x-1/2">
-              <div className="flex items-center justify-center w-[414px] h-[52px] bg-secondary rounded-lg">
-                <p className="text-tertiary text-[24px] font-bold">SPOTCHECK</p>
+        <div className="col-span-12 bg-colorDirtyWhite w-full h-[800px]">
+          <div className="flex flex-col items-center px-6 mt-[20px]">
+            <div className="flex items-center justify-center w-[414px] h-[52px] bg-secondary rounded-lg">
+              <p className="text-tertiary text-[24px] font-bold">CASHPICK</p>
+            </div>
+            <div className="w-full max-w-[1280px] bg-secondary h-[439px] rounded-md mt-10">
+              <div className="text-center mt-12 font-semibold text-[24px]">
+                AMOUNT
+              </div>
+              <div className="flex items-center justify-center">
+                <input
+                  type="text"
+                  placeholder="₱ 0.00"
+                  value={amount}
+                  onChange={handleChange}
+                  className="bg-colorDirtyWhite/80 text-primary text-center h-[52px] w-[581px] rounded-lg border-2 border-primary"
+                />
               </div>
             </div>
+            <div className="bg-secondary w-full h-[52px] rounded-md mt-4 flex items-center justify-between px-4">
+              <span>TOTAL CASHPICK</span>
+              <span>₱ {formatted}</span>
+            </div>
+          </div>
+          <div className="mt-24 flex justify-end gap-4 pr-4">
+            <Button
+              variant="universal"
+              className="w-[172px] h-[44px] bg-colorRed text-tertiary rounded-3xl"
+              onClick={handleCancel}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="universal"
+              disabled={isConfirmDisabled}
+              className={`w-[172px] h-[44px] rounded-3xl ${
+                isConfirmDisabled
+                  ? "bg-colorGreen opacity-50 cursor-not-allowed"
+                  : "bg-colorGreen text-tertiary"
+              }`}
+              onClick={handleConfirm}
+            >
+              Confirm
+            </Button>
           </div>
         </div>
       </div>
