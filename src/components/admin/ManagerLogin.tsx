@@ -1,20 +1,18 @@
+// src/components/ManagerLogin.tsx
 "use client";
-import React from "react";
-import { useManagerAuth } from "@/hooks/useManagerAuth";
+import React, { useState } from "react";
 
-interface ManagerLoginProps {
-  onLoginSuccess: () => void;
+interface Props {
+  onLoginSuccess: (email: string, password: string) => void;
 }
 
-const ManagerLogin = ({ onLoginSuccess }: ManagerLoginProps) => {
-  const { email, setEmail, password, setPassword, login } = useManagerAuth();
+const ManagerLogin = ({ onLoginSuccess }: Props) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await login();
-    if (success) {
-      onLoginSuccess(); // Notify parent component of successful login
-    }
+    onLoginSuccess(email, password);
   };
 
   return (

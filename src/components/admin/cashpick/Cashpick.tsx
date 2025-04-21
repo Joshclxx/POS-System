@@ -19,8 +19,12 @@ const Cashpick = () => {
     pickCash(num);
     setAmount("");
     toast.success("Cash Picked");
+
+    setTimeout(() => {
+      router.push("/");
+    }, 2000);
   };
-  const handleCancel = () => router.push("/");
+  const handleReset = () => setAmount("");
   const isConfirmDisabled = !amount.trim();
   const formatted = amount
     ? parseFloat(amount.replace(/[^\d.]/g, "")).toFixed(2)
@@ -58,9 +62,9 @@ const Cashpick = () => {
             <Button
               variant="universal"
               className="w-[172px] h-[44px] bg-colorRed text-tertiary rounded-3xl"
-              onClick={handleCancel}
+              onClick={handleReset}
             >
-              Cancel
+              Reset
             </Button>
             <Button
               variant="universal"

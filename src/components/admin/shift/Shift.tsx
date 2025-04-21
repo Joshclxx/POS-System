@@ -12,7 +12,7 @@ import { useManagerAuth } from "@/hooks/useManagerAuth";
 const Shift = () => {
   const router = useRouter();
   const timer = useTimer();
-  const { isVerified } = useManagerAuth();
+  const { isVerified, login, logout } = useManagerAuth();
 
   const {
     isShiftActive,
@@ -22,6 +22,7 @@ const Shift = () => {
     openShift,
     closeShift,
   } = useShiftStore();
+
   const [startCashInput, setStartCashInput] = useState("");
   const [actualCash, setActualCash] = useState("");
 
@@ -38,9 +39,14 @@ const Shift = () => {
     [actualCash, expectedCash]
   );
 
+  const handleLoginSuccess = (email: string, password: string) => {
+    login(email, password);
+  };
+
   const handleOpenShift = () => {
-    if (!startCashInput)
+    if (!startCashInput) {
       return toast.error("Please enter the Starting Cash first.");
+    }
     openShift(parseFloat(startCashInput));
     timer.start();
     router.push("/");
@@ -50,6 +56,7 @@ const Shift = () => {
     toast.success("Shift closed!");
     closeShift();
     timer.stop();
+    logout();
     router.push("/login");
   };
 
@@ -57,7 +64,7 @@ const Shift = () => {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
         <Toaster />
-        <ManagerLogin onLoginSuccess={() => {}} />
+        <ManagerLogin onLoginSuccess={handleLoginSuccess} />
       </SectionContainer>
     );
   }
@@ -123,18 +130,40 @@ const Shift = () => {
                     value={totalPicked}
                   />
                 </div>
+
                 <hr className="my-4" />
+
                 <div>
                   <label className="block mb-1 font-semibold">
                     POS Expected Cash Amount
+                    {difference > 0 && (
+                      <span className="ml-2 text-green-600">
+                        (Over ₱{difference.toFixed(2)})
+                      </span>
+                    )}
+                    {difference < 0 && (
+                      <span className="ml-2 text-red-600">
+                        (Short ₱{Math.abs(difference).toFixed(2)})
+                      </span>
+                    )}
                   </label>
                   <input
                     type="number"
                     readOnly
-                    className="w-full px-4 py-2 border border-gray-300 rounded text-gray-900"
                     value={expectedCash}
+                    className={`
+                      w-full px-4 py-2 rounded text-gray-900 border
+                      ${
+                        difference > 0
+                          ? "border-green-500"
+                          : difference < 0
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }
+                    `}
                   />
                 </div>
+
                 <div>
                   <label className="block mb-1">POS Actual Cash on Hand</label>
                   <input
@@ -145,16 +174,7 @@ const Shift = () => {
                     onChange={(e) => setActualCash(e.target.value)}
                   />
                 </div>
-                <div className="mt-4">
-                  <p className="font-semibold">
-                    Shift Status:{" "}
-                    {difference === 0
-                      ? "No Profit/Loss"
-                      : difference > 0
-                      ? `Profit ₱${difference.toFixed(2)}`
-                      : `Loss ₱${Math.abs(difference).toFixed(2)}`}
-                  </p>
-                </div>
+
                 <button
                   type="button"
                   className="w-full bg-colorBlue text-tertiary py-2 rounded hover:bg-colorBlueDark transition-all duration-300 mt-4"

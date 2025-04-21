@@ -30,9 +30,9 @@ export default function LoginPage() {
         {/* Left container */}
         <div className="w-[462px] h-full bg-secondary flex items-center justify-center">
           <img
-            src="/image/heebrew-logo.svg"
+            src="/image/heebrew.svg"
             alt="Heebrew Logo"
-            className="w-[400px] h-auto"
+            className="w-[600px] h-auto"
           />
         </div>
 
