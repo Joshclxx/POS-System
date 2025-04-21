@@ -19,6 +19,7 @@ const Shift = () => {
     startingCash,
     totalSales,
     totalPicked,
+    voidRefund, // <-- pull the refund amount from your store
     openShift,
     closeShift,
   } = useShiftStore();
@@ -30,10 +31,13 @@ const Shift = () => {
     () => totalSales - totalPicked,
     [totalSales, totalPicked]
   );
+
+  // subtract voidRefund when calculating expected drawer cash
   const expectedCash = useMemo(
-    () => startingCash + posCashTotal,
-    [startingCash, posCashTotal]
+    () => startingCash + posCashTotal - voidRefund,
+    [startingCash, posCashTotal, voidRefund]
   );
+
   const difference = useMemo(
     () => (parseFloat(actualCash) || 0) - expectedCash,
     [actualCash, expectedCash]
@@ -119,6 +123,15 @@ const Shift = () => {
                     readOnly
                     className="w-full px-4 py-2 border border-gray-300 rounded text-gray-900"
                     value={posCashTotal}
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Void Order (Refund)</label>
+                  <input
+                    type="number"
+                    readOnly
+                    className="w-full px-4 py-2 border border-gray-300 rounded text-gray-900"
+                    value={voidRefund} // <-- now dynamic
                   />
                 </div>
                 <div>
