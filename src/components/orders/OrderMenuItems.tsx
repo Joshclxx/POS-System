@@ -26,7 +26,6 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
     item: MenuItem
   ): void => {
     setSelectedSizes((prev) => ({ ...prev, [id]: size }));
-    const displayedPrice = item.prices[size];
 
     useOrderStore.getState().addProduct({
       ...item,
@@ -49,7 +48,6 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
           ) : (
             filteredItems.map((item, idx) => {
               const selectedSize = selectedSizes[item.id] || "";
-              const displayedPrice = item.prices[selectedSize];
               return (
                 <div
                   key={item.id}
