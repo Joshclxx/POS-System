@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import SectionContainer from "@/components/SectionContainer";
 import AdminDrawer from "../AdminDrawer";
@@ -26,7 +25,7 @@ const Spotcheck = () => {
     Array(denominations.length).fill("")
   );
   const [userEmail, setUserEmail] = useState("");
-  const { showDrawer, setShowDrawer } = useGlobal();
+  const { setShowDrawer } = useGlobal();
   const [history, setHistory] = useState<SpotcheckEntry[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [inputError, setInputError] = useState(false);
@@ -34,7 +33,6 @@ const Spotcheck = () => {
   const [selectedDifference, setSelectedDifference] = useState<number | null>(
     null
   );
-  const router = useRouter();
 
   useEffect(() => {
     setUserEmail(localStorage.getItem("userEmail") || "Unknown");

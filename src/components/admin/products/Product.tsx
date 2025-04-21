@@ -10,8 +10,19 @@ import { motion, AnimatePresence } from "motion/react";
 import useGlobal from "@/hooks/useGlobal";
 import toast, { Toaster } from "react-hot-toast";
 
-const Product = () => {
-  // Drawer state and additional states for add/delete/edit functionality only
+// Explicit type for menu items
+interface MenuItem {
+  id: string;
+  name: string;
+  menu: string;
+  prices: {
+    PT: number;
+    RG: number;
+    GR: number;
+  };
+}
+
+const Product: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [drawerMode, setDrawerMode] = useState<
     | "menu"
@@ -22,17 +33,21 @@ const Product = () => {
     | null
   >(null);
 
-  // Selected item states for delete/edit operations
   const [selectedMenu, setSelectedMenu] = useState<string | null>(null);
-  const [selectedMenuItem, setSelectedMenuItem] = useState<any>(null);
+  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(
+    null
+  );
 
-  // Form states for add/edit operations
-  const [newMenuName, setNewMenuName] = useState("");
-  const [itemName, setItemName] = useState("");
-  const [itemMenu, setItemMenu] = useState("");
-  const [itemPrices, setItemPrices] = useState({ PT: "", RG: "", GR: "" });
+  const [newMenuName, setNewMenuName] = useState<string>("");
+  const [itemName, setItemName] = useState<string>("");
+  const [itemMenu, setItemMenu] = useState<string>("");
+  const [itemPrices, setItemPrices] = useState<{
+    PT: string;
+    RG: string;
+    GR: string;
+  }>({ PT: "", RG: "", GR: "" });
 
-  // Global state functions
+  // Global state
   const removeMenu = useGlobal((state) => state.removeMenu);
   const removeMenuItemsByMenu = useGlobal(
     (state) => state.removeMenuItemsByMenu
@@ -40,10 +55,10 @@ const Product = () => {
   const addMenu = useGlobal((state) => state.addMenu);
   const removeMenuItem = useGlobal((state) => state.removeMenuItem);
   const addMenuItem = useGlobal((state) => state.addMenuItem);
-  const menu = useGlobal((state) => state.menus);
-  const menuItem = useGlobal((state) => state.menuItems);
+  const menus = useGlobal((state) => state.menus);
+  const menuItems = useGlobal((state) => state.menuItems);
 
-  // Cancel action and reset states
+  // Reset form and drawer state
   const handleCancel = () => {
     setOpenDrawer(false);
     setDrawerMode(null);
@@ -55,10 +70,10 @@ const Product = () => {
     setSelectedMenuItem(null);
   };
 
-  // Submit handler for add, edit or delete actions
+  // Submit logic for various drawer modes
   const handleSubmit = () => {
     if (drawerMode === "menu") {
-      if (newMenuName.trim() !== "") {
+      if (newMenuName.trim()) {
         addMenu(newMenuName.trim());
         toast.success("Menu added successfully!");
       } else {
@@ -86,9 +101,8 @@ const Product = () => {
       } else {
         toast.error("All fields are required.");
       }
-    } else if (drawerMode === "editMenuItem") {
+    } else if (drawerMode === "editMenuItem" && selectedMenuItem) {
       if (
-        selectedMenuItem &&
         itemName.trim() &&
         itemMenu &&
         itemPrices.PT &&
@@ -108,60 +122,21 @@ const Product = () => {
         });
         toast.success("Menu item updated successfully!");
       }
-    } else if (drawerMode === "deleteMenu") {
-      if (selectedMenu) {
-        removeMenu(selectedMenu);
-        removeMenuItemsByMenu(selectedMenu);
-        toast.success(`Menu "${selectedMenu}" deleted.`);
-      }
-    } else if (drawerMode === "deleteMenuItem") {
-      if (selectedMenuItem) {
-        removeMenuItem(selectedMenuItem.id);
-        toast.success(`"${selectedMenuItem.name}" deleted.`);
-      }
+    } else if (drawerMode === "deleteMenu" && selectedMenu) {
+      removeMenu(selectedMenu);
+      removeMenuItemsByMenu(selectedMenu);
+      toast.success(`Menu "${selectedMenu}" deleted.`);
+    } else if (drawerMode === "deleteMenuItem" && selectedMenuItem) {
+      removeMenuItem(selectedMenuItem.id);
+      toast.success(`"${selectedMenuItem.name}" deleted.`);
     }
 
     handleCancel();
   };
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // Component for rendering each menu item card (delete only)
-  const MenuItemCard = ({ item }: { item: any }) => {
-    return (
-      <div className="bg-secondaryGray text-primary flex flex-col p-2 rounded-lg">
-        <div className="w-full bg-primaryGray flex justify-between items-center p-1 rounded-md mb-2">
-          <p className="product-menu text-center">{item.menu}</p>
-          <button
-            onClick={() => {
-              setSelectedMenuItem(item);
-              setDrawerMode("deleteMenuItem");
-              setOpenDrawer(true);
-            }}
-          >
-            <Image src="/icon/delete.png" alt="delete" width={24} height={24} />
-          </button>
-        </div>
-        <Image
-          src="/image/default.svg"
-          alt="Product"
-          width={105}
-          height={105}
-          className="mx-auto mb-2"
-        />
-        <p className="product-name text-center mb-2">{item.name}</p>
-        <div className="bg-primaryGray w-full h-[32px] flex items-center justify-center px-4 rounded-md">
-          <div className="text-center flex justify-between w-full items-center product-price gap-4">
-            <p>₱{item.prices.PT.toFixed(2)}</p>
-            <p>₱{item.prices.RG.toFixed(2)}</p>
-            <p>₱{item.prices.GR.toFixed(2)}</p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Determine the button text based on the drawer mode
+  // Determine button text
   const buttonText =
     drawerMode === "menu"
       ? "Add Menu"
@@ -205,12 +180,12 @@ const Product = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto mt-4 space-y-2 px-2 hide-scrollbar">
-              {menu.length === 0 ? (
+              {menus.length === 0 ? (
                 <p className="text-primary font-semibold italic text-center">
                   No menu added yet.
                 </p>
               ) : (
-                menu.map((menuName, idx) => (
+                menus.map((menuName, idx) => (
                   <motion.div
                     key={idx}
                     initial={{ opacity: 0, scale: 0 }}
@@ -283,7 +258,7 @@ const Product = () => {
               </div>
             </div>
             <div className="flex-1 overflow-y-auto mt-4 px-2 hide-scrollbar">
-              {menuItem.length === 0 ? (
+              {menuItems.length === 0 ? (
                 <p className="text-primary text-center font-semibold italic">
                   No menu products added yet.
                 </p>
@@ -301,7 +276,7 @@ const Product = () => {
                   </thead>
                   <tbody>
                     <AnimatePresence>
-                      {menuItem
+                      {menuItems
                         .filter((item) =>
                           item.name
                             .toLowerCase()
@@ -429,7 +404,7 @@ const Product = () => {
                         onClick={(e) => e.stopPropagation()}
                       >
                         <option value="">Select Menu</option>
-                        {menu.map((menuName, idx) => (
+                        {menus.map((menuName, idx) => (
                           <option key={idx} value={menuName}>
                             {menuName}
                           </option>
@@ -475,14 +450,14 @@ const Product = () => {
                   <div className="text-center">
                     {drawerMode === "deleteMenu" && selectedMenu && (
                       <p>
-                        Are you sure you want to delete the menu "{selectedMenu}
-                        " and all its items?
+                        Are you sure you want to delete the menu {selectedMenu}
+                        and all its items?
                       </p>
                     )}
                     {drawerMode === "deleteMenuItem" && selectedMenuItem && (
                       <p>
-                        Are you sure you want to delete the product "
-                        {selectedMenuItem.name}"?
+                        Are you sure you want to delete the product
+                        {selectedMenuItem.name}?
                       </p>
                     )}
                   </div>

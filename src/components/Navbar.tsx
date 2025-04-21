@@ -17,7 +17,7 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
   return chunks;
 }
 
-export default function Navbar() {  
+export default function Navbar() {
   const [isOpenMenu, setOpenMenu] = useState(false);
   const [isOpenPos, setOpenPos] = useState(false);
   const router = useRouter();
@@ -25,12 +25,10 @@ export default function Navbar() {
 
   const chunkedMenu = chunkArray(MENU_FEATURE_LINKS, 2);
 
-
   // (Optional) Check localStorage on mount if needed
   useEffect(() => {
     const storedShift = localStorage.getItem("shiftDetails");
     if (storedShift) {
-      const parsedShift = JSON.parse(storedShift);
       // You might decide to adjust navbar behavior based on the shift details if needed.
     }
   }, []);

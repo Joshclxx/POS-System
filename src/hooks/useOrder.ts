@@ -4,53 +4,49 @@ interface EspressoItem {
   imageSrc: string;
   imageAlt: string;
   imageTitle: string;
-  price: {
-    PT: number;
-    RG: number;
-    GR: number;
-  };
+  price: { PT: number; RG: number; GR: number };
   size: "PT" | "RG" | "GR";
   quantity?: number;
 }
 
+interface OrderQueueItem {
+  id: number;
+  items: string[];
+  confirmedAt: number;
+}
+
 interface OrderStore {
-  [x: string]: any;
   selectedProducts: EspressoItem[];
   addProduct: (item: EspressoItem) => void;
   clearProducts: () => void;
   removeProduct: (index: number) => void;
-
-  // OREDER QUEUE MANAGEMENT
-  ordersQueue: { id: number; items: string[]; confirmedAt: number }[];
+  ordersQueue: OrderQueueItem[];
   nextOrderNumber: number;
-  addOrderToQueue: (confirmedAt: number) => void; // ACCEPT TIME STAMP
+  addOrderToQueue: (confirmedAt: number) => void;
   bumpOrder: () => void;
 }
 
 export const useOrderStore = create<OrderStore>((set, get) => ({
   selectedProducts: [],
   addProduct: (item) => {
-    const currentItems = get().selectedProducts;
-    const index = currentItems.findIndex(
+    const items = get().selectedProducts;
+    const idx = items.findIndex(
       (i) => i.imageTitle === item.imageTitle && i.size === item.size
     );
 
-    if (index !== -1) {
-      const updatedItems = [...currentItems];
-      const existingItem = updatedItems[index];
-      updatedItems[index] = {
-        ...existingItem,
-        quantity: (existingItem.quantity || 1) + 1,
+    if (idx >= 0) {
+      const updated = [...items];
+      const existing = updated[idx];
+      updated[idx] = {
+        ...existing,
+        quantity: (existing.quantity || 1) + 1,
       };
-      set({ selectedProducts: updatedItems });
+      set({ selectedProducts: updated });
     } else {
-      set({
-        selectedProducts: [...currentItems, { ...item, quantity: 1 }],
-      });
+      set({ selectedProducts: [...items, { ...item, quantity: 1 }] });
     }
   },
   clearProducts: () => set({ selectedProducts: [] }),
-
   removeProduct: (index) =>
     set((state) => ({
       selectedProducts: state.selectedProducts.filter((_, i) => i !== index),
@@ -59,12 +55,8 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   ordersQueue: [],
   nextOrderNumber: 30000,
   addOrderToQueue: (confirmedAt) => {
-    console.log("confirmedAt:", confirmedAt);
-    const currentOrder = get().selectedProducts;
-    const items = currentOrder.map(
-      (item) => `${item.imageTitle} (${item.size})`
-    );
-
+    const current = get().selectedProducts;
+    const items = current.map((it) => `${it.imageTitle} (${it.size})`);
     const next = get().nextOrderNumber + 1;
     set((state) => ({
       ordersQueue: [...state.ordersQueue, { id: next, items, confirmedAt }],

@@ -151,8 +151,8 @@ const Shift = () => {
                     {difference === 0
                       ? "No Profit/Loss"
                       : difference > 0
-                      ? `Profit ₱${difference.toFixed(2)}`
-                      : `Loss ₱${Math.abs(difference).toFixed(2)}`}
+                      ? `Profit ₱${difference.toFixed(2)}`
+                      : `Loss ₱${Math.abs(difference).toFixed(2)}`}
                   </p>
                 </div>
                 <button
