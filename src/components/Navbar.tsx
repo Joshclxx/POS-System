@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { NAV_LINKS, MENU_FEATURE_LINKS } from "@/app/constants";
 import Button from "./Button";
-import { useShiftStore } from "@/hooks/shiftStore";
+import { useManagerAuth } from "@/hooks/useManagerAuth";
 
 // Function to split an array into chunks of a given size
 function chunkArray<T>(arr: T[], size: number): T[][] {
@@ -21,35 +21,26 @@ export default function Navbar() {
   const [isOpenMenu, setOpenMenu] = useState(false);
   const [isOpenPos, setOpenPos] = useState(false);
   const router = useRouter();
-  const { isShiftActive } = useShiftStore();
+  const { isVerified } = useManagerAuth(); // <-- only use auth now
 
   const chunkedMenu = chunkArray(MENU_FEATURE_LINKS, 2);
 
-  // (Optional) Check localStorage on mount if needed
-  useEffect(() => {
-    const storedShift = localStorage.getItem("shiftDetails");
-    if (storedShift) {
-      // You might decide to adjust navbar behavior based on the shift details if needed.
-    }
-  }, []);
-
-  // Centralize navigation so that it doesn't run when the navbar is disabled.
+  // only navigate when manager has verified
   const handleNavigation = (href: string) => {
-    if (!isShiftActive) {
+    if (isVerified) {
       router.push(href);
     }
   };
 
   return (
-    // Wrap the navbar to disable pointer events when shift state requires it.
-    <div className={`${isShiftActive ? "pointer-events-none opacity-50" : ""}`}>
+    <div className={`${!isVerified ? "pointer-events-none opacity-50" : ""}`}>
       <nav className="bg-navbar w-full h-[48px] mt-4 flex items-center z-30 relative">
         <div className="w-full max-w-[1280px] mx-auto flex justify-between items-center px-4">
           {/* LEFT SECTION: Menu + Nav */}
           <div className="flex items-center gap-4 flex-1">
             <button
               onClick={() => {
-                if (!isShiftActive) setOpenMenu(true);
+                if (isVerified) setOpenMenu(true);
               }}
             >
               <Image src="/icon/menu.svg" alt="Menu" width={32} height={32} />
@@ -58,11 +49,11 @@ export default function Navbar() {
             <ul className="flex gap-2">
               {NAV_LINKS.map((link) => (
                 <li key={link.key}>
-                  <Link href={isShiftActive ? "#" : link.href}>
+                  <Link href={isVerified ? link.href : "#"}>
                     <Button
                       variant="navbar"
                       onClick={() => {
-                        if (!isShiftActive) handleNavigation(link.href);
+                        handleNavigation(link.href);
                       }}
                     >
                       {link.label}
@@ -78,7 +69,7 @@ export default function Navbar() {
             <span
               className="text-primary font-bold text-[24px] cursor-pointer"
               onClick={() => {
-                if (!isShiftActive) setOpenPos(true);
+                if (isVerified) setOpenPos(true);
               }}
             >
               HEEBREW CAFE
@@ -89,7 +80,7 @@ export default function Navbar() {
           <div className="flex justify-end items-center flex-1">
             <button
               onClick={() => {
-                if (!isShiftActive) setOpenPos(true);
+                if (isVerified) setOpenPos(true);
               }}
             >
               <Image
@@ -175,7 +166,7 @@ export default function Navbar() {
               </h2>
               <button
                 onClick={() => setOpenMenu(false)}
-                className="text-tertiary text-xl font-bol container bg-colorRed w-[32px] h-[32px] rounded-full"
+                className="text-tertiary text-xl font-bold bg-colorRed w-[32px] h-[32px] rounded-full"
               >
                 X
               </button>
@@ -187,7 +178,7 @@ export default function Navbar() {
                   <button
                     className="text-base text-left transition-colors w-full py-2"
                     onClick={() => {
-                      if (!isShiftActive) {
+                      if (isVerified) {
                         setOpenMenu(false);
                         handleNavigation(link.href);
                       }
