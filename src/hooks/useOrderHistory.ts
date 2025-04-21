@@ -1,8 +1,9 @@
 import {create} from 'zustand';
 
-interface OrderData {
+
+export interface OrderData {
   OrderId: number;
-  ProductName: string;
+  items: string;
   Price: number;
   Qty: number;
   Total: number;
@@ -17,16 +18,26 @@ interface HistoryStore {
 }
 
 export const useHistoryStore = create<HistoryStore>((set) => ({
+    //example
     orderHistory: [
         {
             OrderId: 1,
-            ProductName: "test",
+            items: "test",
             Price: 123,
             Qty: 12,
             Total: 123 * 12,
             Date: new Date(),
             Status: "Queued"
-        },
+        },   
+        {
+            OrderId: 2,
+            items: "test",
+            Price: 123,
+            Qty: 12,
+            Total: 123 * 12,
+            Date: new Date(),
+            Status: "Queued"
+        },   
     ],
     updateOrderStatus: (orderId, status) => {
         set((state) => ({

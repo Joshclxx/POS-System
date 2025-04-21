@@ -1,137 +1,182 @@
-  @import "tailwindcss";
-  /* @tailwind base;
-  @tailwind components; */
-  @tailwind utilities;
+@import "tailwindcss";
+/* @tailwind base;
+/* @tailwind components; */
+@tailwind utilities;
 
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* Custom theme colors */
+@theme {
+  --color-*: initial;
+  --color-bgWhite: #eeeeee;
+  --color-navbar: #bcbbbb;
+  --color-primary: #131a15;
+  --color-secondary: #032124;
+  --color-tertiary: #eeeeee;
+  --color-primaryGray: #a0a0a0;
+  --color-secondaryGray: #d3d3d3;
+  --color-colorRed: #d32f2f;
+  --color-colorOrange: #ff8800;
+  --color-colorDirtyWhite: #fff8e1;
+  --color-colorBlue: #4682b4;
+  --color-colorGreen: #6dbe45;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
   :root {
-    --background: #ffffff;
-    --foreground: #171717;
+    --background: #0a0a0a;
+    --foreground: #ededed;
   }
+}
 
-  @theme {
-    --color-*: initial;
-    --color-bgWhite: #eeeeee;
-    --color-navbar: #bcbbbb;
-    --color-primary: #131a15;
-    --color-secondary: #032124;
-    --color-tertiary: #eeeeee;
-    --color-primaryGray: #a0a0a0;
-    --color-secondaryGray: #d3d3d3;
-    --color-colorRed: #d32f2f;
-    --color-colorOrange: #ff8800;
-    --color-colorDirtyWhite: #fff8e1;
-    --color-colorBlue: #4682b4;
-    --color-colorGreen: #6dbe45;
-  }
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: #0a0a0a;
-      --foreground: #ededed;
-    }
-  }
+/* ORDER TITLE */
 
-  body {
-    background: var(--background);
-    color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
-  }
+.menu-title {
+  @apply text-[14px] font-bold text-primary h-auto w-full;
+}
 
-  /* ORDER TITLE */
+.menu-total {
+  @apply font-semibold text-tertiary w-full;
+}
 
-  .menu-title {
-    @apply text-[14px] font-bold text-primary h-auto w-full;
-  }
+.menu-size-title {
+  @apply flex items-center text-left font-semibold text-[12px] text-primary pl-1;
+}
 
-  .menu-total {
-    @apply font-semibold text-tertiary w-full;
-  }
+/* PRODUCTS TEXT */
 
-  .menu-size-title {
-    @apply flex items-center text-left font-semibold text-[12px] text-primary pl-1;
-  }
+.item-title {
+  @apply text-[14px] font-semibold text-colorDirtyWhite container bg-primary w-full h-[32px] rounded-[8px] text-center flex justify-center items-center;
+}
 
-  /* PRODUCTS TEXT */
+.item-price {
+  @apply text-[16px] font-semibold text-primary;
+}
 
-  .item-title {
-    @apply text-[14px] font-semibold text-colorDirtyWhite container bg-primary w-full h-[32px] rounded-[8px] text-center flex justify-center items-center;
-  }
+/* PRIMARY TEXT */
 
-  .item-price {
-    @apply text-[16px] font-semibold text-primary;
-  }
+.primary-title {
+  @apply text-[18px] font-bold text-primary;
+}
 
-  /* PRIMARY TEXT */
+/* HOVER */
+.hover-trans {
+  @apply transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-2xl;
+}
 
-  .primary-title {
-    @apply text-[18px] font-bold text-primary;
-  }
+/* PRODUCT MENU & ITEM */
 
-  /* HOVER */
-  .hover-trans {
-    @apply transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-2xl;
-  }
+.menu-title {
+  @apply text-[28px] font-semibold text-primary container text-center flex justify-center items-center;
+}
 
-  /* PRODUCT MENU & ITEM */
+.product-menu {
+  @apply text-[24px] font-semibold text-primary container text-center flex justify-center items-center;
+}
+.product-name {
+  @apply text-[20px] text-primary font-semibold;
+}
+.product-price {
+  @apply text-[15px] font-semibold text-secondary container text-center flex justify-center items-center;
+}
 
-  .menu-title {
-    @apply text-[28px] font-semibold text-primary container text-center flex justify-center items-center;
-  }
+/* VOID ORDER */
+.order-history-panel {
+  @apply text-primary border-b;
+}
 
-  .product-menu {
-    @apply text-[24px] font-semibold text-primary container text-center flex justify-center items-center;
-  }
-  .product-name {
-    @apply text-[20px] text-primary font-semibold;
-  }
-  .product-price {
-    @apply text-[15px] font-semibold text-secondary container text-center flex justify-center items-center;
-  }
+/* Primary Button (default color) */
+button.bg-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
 
-  /* VOID ORDER */
-  .order-history-panel{
-    @apply text-primary border-b
-  }
+button.bg-primary:hover {
+  background-color: var(--color-secondary);
+  transform: scale(1.05);
+}
 
-  /* globals.css */ 
+/* Secondary Button */
+button.bg-secondary {
+  background-color: var(--color-secondary);
+  color: white;
+}
 
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+button.bg-secondary:hover {
+  background-color: var(--color-primary);
+  transform: scale(1.05);
+}
 
-  /* Hide scrollbar for IE, Edge and Firefox */
-  .hide-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
+/* Red Button (for void actions) */
+button.bg-red-600 {
+  background-color: var(--color-colorRed);
+  color: white;
+}
 
-  /* globals.css */
+button.bg-red-600:hover {
+  background-color: var(--color-colorRed);
+  transform: scale(1.05);
+}
 
-  .thin-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
+/* Green Button (for restore actions) */
+button.bg-green-600 {
+  background-color: var(--color-colorGreen);
+  color: white;
+}
 
-  .thin-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
+button.bg-green-600:hover {
+  background-color: var(--color-colorGreen);
+  transform: scale(1.05);
+}
 
-  .thin-scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 2px;
-  }
+/* globals.css */
 
-  .thin-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-  }
+/* Hide scrollbar for Chrome, Safari, and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
-  /* DRAWER TABLE */
-  .table-header {
-    @apply px-6 py-3 text-left text-xs text-primary font-semibold uppercase tracking-wider border-b;
-  }
+/* Hide scrollbar for IE, Edge, and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
 
-  .table-cell {
-    @apply px-6 py-4 whitespace-nowrap border-b;
-  }
+/* Thin scrollbar styling for modern browsers */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* DRAWER TABLE */
+.table-header {
+  @apply px-6 py-3 text-left text-xs text-primary font-semibold uppercase tracking-wider border-b;
+}
+
+.table-cell {
+  @apply px-6 py-4 whitespace-nowrap border-b;
+}
