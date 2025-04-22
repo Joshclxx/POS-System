@@ -1,5 +1,7 @@
 import { create } from "zustand";
+import { useHistoryStore
 
+ } from "./useOrderHistory";
 interface EspressoItem {
   imageSrc: string;
   imageAlt: string;
@@ -10,8 +12,11 @@ interface EspressoItem {
 }
 
 interface OrderQueueItem {
+  // id: number;
+  // items: string[];
+  // confirmedAt: number;
   id: number;
-  items: string[];
+  items: { title: string; price: number; quantity: number; }[];  // Updated structure for items
   confirmedAt: number;
 }
 
@@ -22,7 +27,7 @@ interface OrderStore {
   removeProduct: (index: number) => void;
   ordersQueue: OrderQueueItem[];
   nextOrderNumber: number;
-  addOrderToQueue: (confirmedAt: number) => void;
+  addOrderToQueue: (confirmedAt: number) => number;
   bumpOrder: () => void;
 }
 
@@ -54,17 +59,111 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
 
   ordersQueue: [],
   nextOrderNumber: 30000,
-  addOrderToQueue: (confirmedAt) => {
+  // addOrderToQueue: (confirmedAt) => {
+  //   const current = get().selectedProducts;
+  //   const items = current.map((it) => `${it.imageTitle} (${it.size})`);
+  //   const next = get().nextOrderNumber + 1;
+  //   set((state) => ({
+  //     ordersQueue: [...state.ordersQueue, { id: next, items, confirmedAt }],
+  //     nextOrderNumber: next,
+  //   }));
+  // },
+addOrderToQueue: (confirmedAt) => {
     const current = get().selectedProducts;
-    const items = current.map((it) => `${it.imageTitle} (${it.size})`);
-    const next = get().nextOrderNumber + 1;
-    set((state) => ({
-      ordersQueue: [...state.ordersQueue, { id: next, items, confirmedAt }],
-      nextOrderNumber: next,
+    const items = current.map((it) => ({
+      title: it.imageTitle,
+      price: it.price[it.size],
+      quantity: it.quantity || 1,
     }));
-  },
-  bumpOrder: () =>
+
+    const orderId = get().nextOrderNumber; // use current value
+
     set((state) => ({
-      ordersQueue: state.ordersQueue.slice(1),
-    })),
+      ordersQueue: [
+        ...state.ordersQueue,
+        { id: orderId, items, confirmedAt },
+      ],
+      nextOrderNumber: orderId + 1,
+    }));
+
+    // Add to the order history as well
+    useHistoryStore.getState().addOrder({
+      OrderId: orderId,
+      Status: "Queued",
+      items,
+      Total: items.reduce((acc, item) => acc + item.price * item.quantity, 0), // Assuming Total calculation
+      Date: new Date(),
+    });
+
+    return orderId; // ✅ return the id used
+  },
+
+  bumpOrder: () => {
+    set((state) => {
+      const orderToBump = state.ordersQueue[0]; // Get the first order in the queue
+      if (orderToBump) {
+        // Move the order to VoidOrder with "Completed" status
+        useHistoryStore.getState().updateOrderStatus(orderToBump.id, 'Completed');
+
+        // Save the order to orderHistory
+        useHistoryStore.getState().addOrder({
+          OrderId: orderToBump.id,
+          Status: 'Completed',
+          items: orderToBump.items,
+          Total: orderToBump.items.reduce((acc, item) => acc + item.price * item.quantity, 0), // Assuming Total calculation
+          Date: new Date(),
+        });
+
+        // Remove the order from ordersQueue
+        return {
+          ordersQueue: state.ordersQueue.slice(1),
+        };
+      }
+
+      return state;
+    });
+  },
+
+  revertOrder: () => {
+    set((state) => {
+      const orderToRevert = useHistoryStore
+        .getState()
+        .orderHistory.find((order) => order.Status === "Completed");
+
+      if (orderToRevert) {
+        // Avoid reversion of voided orders
+        if (orderToRevert.Status === "Voided") {
+          console.error("This order has already been voided.");
+          return state;
+        }
+
+        // Convert the items to the correct object format
+        const items = orderToRevert.items.map((i) => ({
+          title: i.title,
+          price: i.price,
+          quantity: i.quantity,
+        }));
+
+        // Add it back to ordersQueue
+        const newOrderQueue = [
+          ...state.ordersQueue,
+          {
+            id: orderToRevert.OrderId,
+            items,
+            confirmedAt: Date.now(),
+          },
+        ];
+
+        // Update the order status to "Queued"
+        useHistoryStore.getState().updateOrderStatus(orderToRevert.OrderId, "Queued");
+
+        return {
+          ordersQueue: newOrderQueue,
+        };
+      }
+
+      return state; // Return unchanged state if no order is found
+    });
+  },
 }));
+

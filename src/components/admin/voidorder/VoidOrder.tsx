@@ -2,12 +2,13 @@
 
 import SectionContainer from "../../SectionContainer";
 import { OrderData, useHistoryStore } from "@/hooks/useOrderHistory";
+import { useOrderStore } from "@/hooks/useOrder";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 // Confirmation notif
-const ConfirmationModal = ({onConfirm, onCancel, orderId,}: {onConfirm: () => void; onCancel: () => void; orderId: number;}) => {
+const ConfirmationModal = ({ onConfirm, onCancel, orderId }: { onConfirm: () => void; onCancel: () => void; orderId: number; }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-secondaryGray p-6 rounded-lg shadow-lg w-[400px]">
@@ -37,55 +38,97 @@ const VoidOrder = () => {
   const [searchId, setSearchId] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
-  const [previousStatus, setPreviousStatus] = useState<Record<number,'Queued' | 'Completed' | 'Voided' | null>>({});
-  // Track previous status
-
+  const [previousStatus, setPreviousStatus] = useState<Record<number, 'Queued' | 'Completed' | 'Voided' | null>>({});
+  
+  // Ensure that orderHistory is updated correctly
+  useEffect(() => {
+  // Track and log whenever orderHistory changes
+  console.log("Order History updated:", orderHistory);
+  }, [orderHistory]);  // Trigger on orderHistory changes
+  
+  //To void order
   const voidOrder = (orderId: number) => {
     const orderToVoid = orderHistory.find((order) => order.OrderId === orderId);
     if (orderToVoid) {
-      // Save tee previous status 
-      setPreviousStatus((prevStatus) => ({
-        ...prevStatus,
-        [orderId]: orderToVoid.Status
-      }));
-      
-      // Update the order status to "Voided"
-      const updatedOrder: OrderData = { 
-        ...orderToVoid, 
-        Status: "Voided" // Explicitly setting Status to a valid value
-      };
+    // Save previous status before voiding the order
+    setPreviousStatus((prev) => ({
+      ...prev,
+      [orderId]: orderToVoid.Status,
+    }));
 
-      updateOrderStatus(orderId, updatedOrder.Status);
+    updateOrderStatus(orderId, 'Voided');
+    useOrderStore.setState((state) => ({
+      ordersQueue: state.ordersQueue.filter((order) => order.id !== orderId),
+    }));
 
-      setSelectedOrder(null); // Close the order detail modal
-      setIsConfirmationVisible(false); // Close confirmation modal
-      toast.success(`Order #${orderId} has been voided successfully.`); // Toast success
-    }
+    setSelectedOrder(null);
+    setIsConfirmationVisible(false);
+    toast.success(`Order #${orderId} has been voided successfully.`);
+  }
   };
 
   const revertOrder = (orderId: number) => {
-    const prevStatus = previousStatus[orderId];
-    if (!prevStatus) return; // If no previous then return to stop this shit
+  console.log("Attempting to revert order:", orderId); 
 
-    // Revert to the previous status
-    updateOrderStatus(orderId, prevStatus);
+  const prevStatus = previousStatus[orderId];
+  if (!prevStatus) {
+    console.error(`No previous status found for order #${orderId}`);
+    return;
+  }
 
-    setPreviousStatus((prev) => {
-      const newStatus = {...prev};
-      delete newStatus[orderId]
-      return newStatus;
-    })
-    setSelectedOrder(null); // Close the order detail modal
-    toast.success(`Order #${orderId} has been restored.`);
-  };
+  const originalOrder = orderHistory.find((order) => order.OrderId === orderId);
+  if (!originalOrder) {
+    console.error(`No order found with ID ${orderId}`);
+    return;
+  }
+
+  console.log("Previous Status:", prevStatus);
+  console.log("Original Order:", originalOrder);
+
+  // 🔄 Step 1: Revert to the previous status
+  updateOrderStatus(orderId, prevStatus);
+
+  // 🕒 Step 2: Add back to the orders queue if needed
+  if (prevStatus === "Queued") {
+    useOrderStore.setState((state) => ({
+      ordersQueue: [
+        ...state.ordersQueue,
+        {
+          id: orderId,
+          items: originalOrder.items,
+          confirmedAt: Date.now(),
+        },
+      ],
+    }));
+    console.log("Order added back to queue");
+  }
+
+  // 🧹 Step 3: Clean up previous status tracking
+  setPreviousStatus((prev) => {
+    const newStatus = { ...prev };
+    delete newStatus[orderId];
+    return newStatus;
+  });
+  console.log("Updated previousStatus:", previousStatus);
+
+  // 🔁 Step 4: Refresh selectedOrder from latest orderHistory
+  const updatedOrder = useHistoryStore.getState().orderHistory.find(
+    (order) => order.OrderId === orderId
+  );
+  console.log("Updated order from history:", updatedOrder);
+
+  setSelectedOrder(updatedOrder || null); // Ensure we set the correct order
+
+  // ✅ Step 5: Notify user
+  toast.success(`Order #${orderId} has been restored.`);
+};
 
   const filteredOrders = orderHistory.filter((order) =>
     order.OrderId.toString().includes(searchId)
   );
 
-  //useless but needed
   const handleVoidClick = () => {
-    if (!selectedOrder) return; 
+    if (!selectedOrder) return;
 
     if (selectedOrder.Status === "Voided") {
       toast.error(`Order #${selectedOrder.OrderId} is already voided.`);
@@ -93,6 +136,16 @@ const VoidOrder = () => {
     }
 
     setIsConfirmationVisible(true);
+  };
+
+  // Limit item names for display in the table
+  const truncateItemName = (itemName: string = "No Item", maxLength: number = 20) => {
+    return itemName.length > maxLength ? `${itemName.substring(0, maxLength)}...` : itemName;
+  };  
+
+  // Calculate the total price for the order based on item prices and quantities
+  const calculateTotalPrice = (items: { title: string; price: number; quantity: number }[]) => {
+    return items.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   return (
@@ -125,9 +178,7 @@ const VoidOrder = () => {
                 <thead className="bg-secondaryGray text-primary text-left sticky top-0 z-20 pr-[10px]">
                   <tr>
                     <th className="px-[12px] py-[15px]">Order ID</th>
-                    <th className="px-[12px] py-[15px]">Items</th>
-                    <th className="px-[12px] py-[15px]">Price</th>
-                    <th className="px-[12px] py-[15px]">Qty</th>
+                    <th className="px-[12px] py-[15px]">Item</th>
                     <th className="px-[12px] py-[15px]">Total</th>
                     <th className="px-[12px] py-[15px]">Date & Time</th>
                     <th className="px-[12px] py-[15px]">Status</th>
@@ -142,10 +193,11 @@ const VoidOrder = () => {
                       className="border-b hover:bg-secondaryGray/50 cursor-pointer"
                     >
                       <td className="px-[12px] py-[12px]">{order.OrderId}</td>
-                      <td className="px-[12px] py-[12px]">{order.items}</td>
-                      <td className="px-[12px] py-[12px]">{order.Price}</td>
-                      <td className="px-[12px] py-[12px]">{order.Qty}</td>
-                      <td className="px-[12px] py-[12px]">{order.Total}</td>
+                      <td className="px-[12px] py-[12px]">
+                        {/* Show only the first item, truncated if necessary */}
+                        {truncateItemName(`${order.items[0]?.title}...` || "No Items")}
+                      </td>
+                      <td className="px-[12px] py-[12px]">{calculateTotalPrice(order.items)}</td>
                       <td className="px-[12px] py-[12px]">
                         {format(order.Date, "yyyy-MM-dd HH:mm:ss")}
                       </td>
@@ -162,11 +214,17 @@ const VoidOrder = () => {
                 <div className="bg-secondaryGray p-6 rounded-lg shadow-lg w-[400px]">
                   <h2 className="text-xl font-bold mb-4 text-primary">Order Details</h2>
                   <p><strong>Order ID:</strong> {selectedOrder.OrderId}</p>
-                  <p><strong>Product:</strong> {selectedOrder.items}</p>
-                  <p><strong>Price:</strong> {selectedOrder.Price}</p>
-                  <p><strong>Qty:</strong> {selectedOrder.Qty}</p>
-                  <p><strong>Total:</strong> {selectedOrder.Total}</p>
-                  <p><strong>Date & Time:</strong> {format(selectedOrder.Date, "yyyy-MM-dd HH:mm:ss")}</p>
+                  <div>
+                    <strong>Items:</strong>
+                    <ul>
+                      {selectedOrder.items.map((item, index) => (
+                        <li key={index}>
+                          {item.title} - {item.price} x {item.quantity}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <p><strong>Total Price:</strong> {calculateTotalPrice(selectedOrder.items)}</p>
                   <p><strong>Status:</strong> {selectedOrder.Status}</p>
 
                   <div className="flex justify-end gap-2 mt-6">
@@ -196,23 +254,20 @@ const VoidOrder = () => {
                 </div>
               </div>
             )}
-
-            {/* Confirmation Modal */}
-            {isConfirmationVisible && selectedOrder && (
-              <ConfirmationModal
-                orderId={selectedOrder.OrderId}
-                onConfirm={() => {
-                  voidOrder(selectedOrder.OrderId);
-                  setIsConfirmationVisible(false); // Hide confirmation modal after voiding
-                }}
-                onCancel={() => setIsConfirmationVisible(false)} // Hide confirmation modal if canceled
-              />
-            )}
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {isConfirmationVisible && selectedOrder && (
+        <ConfirmationModal
+          orderId={selectedOrder.OrderId}
+          onConfirm={() => voidOrder(selectedOrder.OrderId)}
+          onCancel={() => setIsConfirmationVisible(false)}
+        />
+      )}
     </SectionContainer>
   );
 };
-
+//hello
 export default VoidOrder;
