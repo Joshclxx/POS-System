@@ -10,10 +10,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
+
+//Users related model---------------------------------------------------------------
 model User {
   id String @id @default(uuid())
   firstname String
@@ -27,11 +29,17 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+enum Role {
+  CASHIER
+  MANAGER
+  ADMIN
+}
+
+//Products related model------------------------------------------------------------
 model Product {
   id Int @id @default(autoincrement())
-  name String
-  size String
-  price Decimal
+  name String @unique
+  variants ProductVariant[] //1 Product has many Variants (One to Many)
   categoryId Int //Foreign Key (Many to One relation with Category)
   category Category @relation(fields: [categoryId], references: [id])
   imageTitle String
@@ -39,6 +47,13 @@ model Product {
   imageAlt String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ProductVariant {
+  id Int @id @default(autoincrement())
+  price Decimal
+  productId Int //Foreign Key (Many to One relation with Product)
+  product Product @relation(fields: [productId], references: [id])
 }
 
 model Category {
@@ -49,9 +64,5 @@ model Category {
   updatedAt DateTime @updatedAt
 }
 
-enum Role {
-  CASHIER
-  MANAGER
-  ADMIN
-}
+
 
