@@ -22,7 +22,7 @@ interface MenuItem {
   };
 }
 
-const Product: React.FC = () => {gi
+const Product: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [drawerMode, setDrawerMode] = useState<
     | "menu"
