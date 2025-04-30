@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "types": ["node"],  // Only include backend-relevant types
+        "sourceMap": true,
+        "outDir": "dist",
+        "strict": true,
+        "lib": ["esnext"],
+        "esModuleInterop": true
+    },
+    "exclude": [
+        "node_modules",
+        "../tailwind.config.ts",
+        "../src",  
+        "../next", 
+        "../public"
+    ]
+}
