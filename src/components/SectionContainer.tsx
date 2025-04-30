@@ -11,7 +11,7 @@ const SectionContainer = ({ background, children, container }: Props) => {
   return (
     <section
       className={classNames(
-        "flex flex-col items-center justify-start min-h-screen",
+        "flex flex-col items-center justify-start",
         background
       )}
       style={{ marginTop: "12px" }}
