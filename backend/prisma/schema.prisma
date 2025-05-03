@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  // output   = "../generated/prisma"
+  //   output   = "../generated/prisma"
 }
 
 datasource db {
@@ -17,18 +17,35 @@ datasource db {
 //testing
 //Users related model---------------------------------------------------------------
 model User {
-  id String @id @default(uuid())
-  firstname String
+  id         String   @id @default(uuid())
+  firstname  String
   middlename String
-  lastname String
-  age Int
-  email String @unique
-  passwod String 
-  role Role @default(CASHIER)
+  lastname   String
+  age        Int
+  email      String   @unique
+  password    String
+  role       Role     @default(CASHIER)
+  shift      Shift[]
+  orders Order[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Shift {
+  id        Int      @id @default(autoincrement())
+  shiftType shiftType  @default(OPENING)
+  shiftIn   DateTime
+  shiftOut  DateTime
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+enum shiftType {
+  OPENING
+  CLOSING
+}
 enum Role {
   CASHIER
   MANAGER
@@ -37,32 +54,67 @@ enum Role {
 
 //Products related model------------------------------------------------------------
 model Product {
-  id Int @id @default(autoincrement())
-  name String @unique
-  variants ProductVariant[] //1 Product has many Variants (One to Many)
+  id         Int              @id @default(autoincrement())
+  name       String           @unique
+  variants   ProductVariant[] //1 Product has many Variants (One to Many)
   categoryId Int //Foreign Key (Many to One relation with Category)
-  category Category @relation(fields: [categoryId], references: [id])
+  category   Category         @relation(fields: [categoryId], references: [id])
   imageTitle String
-  imageSrc String
-  imageAlt String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  imageSrc   String
+  imageAlt   String
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
 }
 
 model ProductVariant {
-  id Int @id @default(autoincrement())
-  price Decimal
+  id        Int      @id @default(autoincrement())
+  size String 
+  price     Float
   productId Int //Foreign Key (Many to One relation with Product)
-  product Product @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  orders OrderItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([productId, size])
 }
 
 model Category {
-  id Int @id @default(autoincrement())
-  name String @unique
-  products Product[] //1 category has many Products (One to many)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  products  Product[] //1 category has many Products (One to many)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
+// Order related models
+model Order {
+  id         Int          @id @default(autoincrement())
+  items      OrderItem[]
+  total      Float
+  status     STATUS       @default(QUEUE)
+  orderDate       DateTime
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model OrderItem {
+  id              Int             @id @default(autoincrement())
+  orderId         Int
+  order           Order           @relation(fields: [orderId], references: [id])
+  productVariantId Int
+  productVariant  ProductVariant  @relation(fields: [productVariantId], references: [id])
+  quantity        Int
+  subtotal        Float
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+enum STATUS {
+  QUEUE
+  COMPLETED
+  VOIDED
+}
 
 
