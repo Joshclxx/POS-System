@@ -53,9 +53,7 @@ const OrdersQueue = () => {
       {/* Order List */}
       <div className="bg-colorDirtyWhite w-full h-[674px] mt-[4px] p-2 overflow-y-auto">
         <div className="flex flex-col gap-3 text-center">
-          <div className="container bg-primaryGray w-full h-[32px] flex items-center text-center justify-center">
-            {/* Optional Timer can be included here */}
-          </div>
+
           {ordersQueue.map((order) => (
             <div
               key={order.id}
