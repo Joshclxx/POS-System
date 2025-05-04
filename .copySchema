@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//testing
+//Users related model---------------------------------------------------------------
+model User {
+  id String @id @default(uuid())
+  firstname String
+  middlename String
+  lastname String
+  age Int
+  email String @unique
+  passwod String 
+  role Role @default(CASHIER)
+  shift Shift[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+ model Shift {
+  id Int @id @default(autoincrement())
+  name String //Open And Close
+  shiftIn DateTime
+  shiftOut DateTime
+  userId String 
+  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}  
+
+enum Role {
+  CASHIER
+  MANAGER
+  ADMIN
+}
+
+//Products related model------------------------------------------------------------
+model Product {
+  id Int @id @default(autoincrement())
+  name String @unique
+  variants ProductVariant[] //1 Product has many Variants (One to Many)
+  categoryId Int //Foreign Key (Many to One relation with Category)
+  category Category @relation(fields: [categoryId], references: [id])
+  imageTitle String
+  imageSrc String
+  imageAlt String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductVariant {
+  id Int @id @default(autoincrement())
+  price Float
+  productId Int //Foreign Key (Many to One relation with Product)
+  product Product @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  name String @unique
+  products Product[] //1 category has many Products (One to many)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+  productId Int
+  productName String
+  productPrice Float
+  total Float 
+  status STATUS @default(QUEUE)
+  date DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum STATUS {
+  QUEUE   
+  COMPLETED
+  VOIDED
+}
