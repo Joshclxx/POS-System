@@ -10,10 +10,15 @@
     "tailwind:init": "node_modules/.bin/tailwindcss init -p"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.8",
+    "@prisma/client": "^6.7.0",
     "@radix-ui/react-checkbox": "^1.1.4",
     "@tailwindcss/postcss": "^4.0.15",
+    "apollo-server-micro": "^3.13.0",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
+    "graphql": "^16.11.0",
+    "graphql-tag": "^2.12.6",
     "motion": "^12.6.0",
     "next": "15.2.1",
     "react": "18",
@@ -25,7 +30,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@types/node": "^20",
+    "@types/node": "^22.15.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/tailwindcss": "^3.1.0",
@@ -33,7 +38,9 @@
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
     "postcss": "^8.5.3",
+    "prisma": "^6.7.0",
     "tailwindcss": "^4.1.4",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }
