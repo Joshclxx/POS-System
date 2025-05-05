@@ -1,4 +1,4 @@
-import { gql } from "apollo-server-micro";
+import { gql } from "@apollo/client";
 
 export const typeDefs = gql`
 
@@ -29,7 +29,7 @@ type User {
     password: String!
     role: Role!
     orders: [Order!]!
-    shift: [shift!]!
+    shift: [Shift!]!
     createdAt: String!
     updatedAt: String!
 }
@@ -38,7 +38,7 @@ type Shift {
     id: ID!
     shiftType: ShiftType!
     shiftIn: String!
-    shiftOut: String!
+    shiftOut: String
     user: User!
     createdAt: String!
     updatedAt: String!
@@ -93,30 +93,46 @@ type OrderItem {
 }
 
 type Query {
-    users: [User!]!
-    user(id: String!) : User
-    products: [Product!]!
-    product(id: Int!) : Product
-    productVariants: [ProductVariant!]!
-    categories: [Category!]!
-    orders: [Order!]!
-    shifts: [Shift!]!
-    orderItems: [OrderItem!]!
+    getAllUsers: [User!]!
+    getUser(id: String!) : User
+    getAllProducts: [Product!]!
+    getProduct(id: Int!) : Product
+    getAllOrders: [Order!]!
+    getOrder(id: Int!): Order
 }
 
 type Mutation {
-    createUser(
-        firstname: String!
-        middlename: String!
-        lastname: String!
-        age: Int!
-        email: String!
-        password: String!
-        role: Role!
-    ): User
+    createUser(data: CreateUserInput!): User
+    createCategory(data: CreateCategoryInput!): Category
+    createProduct(data: CreateProductInput!): Product
 
     deleteUser(id: String!): User
     deleteProduct(id: Int!): Product
     deleteCategory(id: Int!): Category
+}
+
+input CreateUserInput {
+    firstname: String!
+    middlename: String!
+    lastname: String!
+    age: Int!
+    email: String!
+    password: String!
+    role: Role!
+}
+
+input CreateCategoryInput {
+    name: String!
+}
+
+input CreateProductInput {
+    name: String!
+    variants: [CreateProductVariantInput!]!
+    categoryId: Int!
+}
+
+input CreateProductVariantInput {
+    size: String!
+    price: Float!
 }
 `;
