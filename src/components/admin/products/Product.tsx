@@ -9,6 +9,8 @@ import Button from "@/components/Button";
 import { motion, AnimatePresence } from "motion/react";
 import useGlobal from "@/hooks/useGlobal";
 import toast, { Toaster } from "react-hot-toast";
+import { CREATE_MUTATION } from "@/app/graphql/mutations";
+import { useMutation } from "@apollo/client";
 
 // Explicit type for menu items
 interface MenuItem {
