@@ -36,12 +36,10 @@ model User {
 model Shift {
   id        Int      @id @default(autoincrement())
   shiftType shiftType  @default(OPENING)
-  shiftIn   DateTime
-  shiftOut  DateTime
+  shiftIn   DateTime @default(now())
+  shiftOut  DateTime? 
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 enum shiftType {

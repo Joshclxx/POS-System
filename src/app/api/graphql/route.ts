@@ -1,17 +1,27 @@
-import { ApolloServer } from "apollo-server-micro";
-import { typeDefs } from "@/app/graphql/schema";  // Import the GraphQL schema
-import { query } from "@/app/graphql/resolvers/query";  // Import the resolvers
-import { context } from "@/app/lib/context";  // Import the context from context.ts
+
+import { ApolloServer } from '@apollo/server';
+import { startServerAndCreateNextHandler } from '@as-integrations/next';
+import { typeDefs } from '@/app/graphql/schema';
+import { query } from '@/app/graphql/resolvers/query';
+import { mutationResolvers } from '@/app/graphql/resolvers/mutations';
+import { context } from '@/app/lib/context';
 
 const resolvers = {
-    ...query,
-}
+  Query: {
+    ...query.Query,  // Make sure you use the Query object inside query resolver
+  },
+  Mutation: {
+    ...mutationResolvers.Mutation,  // Similarly, use Mutation from mutationResolvers
+  },
+};
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context,  // This injects the context with Prisma client into the server
 });
 
-export default server.createHandler({
-  path: "/api/graphql",  // Set the path for the GraphQL endpoint
+const handler = startServerAndCreateNextHandler(server, {
+  context: async () => context,
 });
+
+export { handler as GET, handler as POST };
