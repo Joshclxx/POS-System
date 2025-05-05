@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import NavbarWrapper from "@/components/NavbarWrapper";
+import { ApolloProvider } from '@apollo/client';
+import client from "./lib/apolloClient"; 
 
 export const metadata: Metadata = {
   title: "POS SYSTEM",
@@ -18,8 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="!bg-bgWhite min-h-screen w-full mx-auto max-w-[1280px]">
-        <NavbarWrapper />
-        <main className="relative overflow-hidden">{children}</main>
+        <ApolloProvider client={client}>
+          <NavbarWrapper />
+          <main className="relative overflow-hidden">{children}</main>
+        </ApolloProvider>
       </body>
     </html>
   );
