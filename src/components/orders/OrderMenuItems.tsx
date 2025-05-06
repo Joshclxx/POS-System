@@ -43,7 +43,7 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
         <div className="grid grid-cols-3 gap-4 max-h-[710px] overflow-y-auto w-[585px] mx-auto hide-scrollbar">
           {filteredItems.length === 0 ? (
             <p className="col-span-3 primary-title flex justify-center items-center text-center w-full h-[710px]">
-              No {activeMenu} items available
+              No items available
             </p>
           ) : (
             filteredItems.map((item, idx) => {
