@@ -20,20 +20,15 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user is "logged in"
-
-    if (typeof window !== "undefined") { //to make sure we are onmm client side
+    if (typeof window !== "undefined") {
       const isLoggedIn = localStorage.getItem("loggedIn") === "true";
-      console.log("Logged In Status: ", isLoggedIn);  // testing natin if working
-
-      if (isLoggedIn === false) {
-        router.push("/login");  // Redirect to the login page if not logged in
+      if (!isLoggedIn) {
+        router.replace("/login?redirect=/");
       } else {
         setLoading(false);
       }
     }
-    
-  }, [router]);
+  }, []);
 
   const handleConfirmPayment = () => {
     useOrderStore.getState().addOrderToQueue(Date.now());
@@ -41,11 +36,10 @@ export default function Home() {
     setIsPaying(false);
   };
 
-
   if (loading) {
     return <div>Loading...</div>; // Show when checking login
   }
-  
+
   return (
     <SectionContainer background="w-full h-[914px] flex items-center">
       <div className="flex gap-4 w-full max-w-[1280px]">
