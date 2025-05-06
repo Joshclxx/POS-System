@@ -19,6 +19,12 @@ enum STATUS {
     VOIDED
 }
 
+enum Size {
+  PT
+  RG
+  GR
+}
+
 type User {
     id: ID!,
     firstname: String!
@@ -48,15 +54,15 @@ type Product {
     id: ID!
     name: String!
     variants: [ProductVariant!]!
-    category: Category!
+    categoryId: Int!
     createdAt: String!
     updatedAt: String!
 }
 
 type ProductVariant {
     id: ID!
-    size: String!
-    price: Float!
+    size: Size!
+    price: Float
     product: Product!
     orders: [OrderItem!]!
     createdAt: String!
@@ -96,9 +102,10 @@ type Query {
     getAllUsers: [User!]!
     getUser(id: String!) : User
     getAllProducts: [Product!]!
-    getProduct(id: Int!) : Product
+    getProduct(name: String) : Product
     getAllOrders: [Order!]!
     getOrder(id: Int!): Order
+    getCategory(name: String!): Category
 }
 
 type Mutation {
@@ -107,8 +114,20 @@ type Mutation {
     createProduct(data: CreateProductInput!): Product
 
     deleteUser(id: String!): User
-    deleteProduct(id: Int!): Product
-    deleteCategory(id: Int!): Category
+    deleteProduct(id: ID!): Product
+    deleteCategory(id: ID!): Category
+
+    updateProduct(id: Int!, edits: EditProductInput!): Product
+}
+
+input CreateProductVariantInput {
+    size: Size!
+    price: Float!
+}
+
+input EditProductInput {
+    name: String
+    variants: [CreateProductVariantInput!]
 }
 
 input CreateUserInput {
@@ -131,8 +150,5 @@ input CreateProductInput {
     categoryId: Int!
 }
 
-input CreateProductVariantInput {
-    size: String!
-    price: Float!
-}
+
 `;
