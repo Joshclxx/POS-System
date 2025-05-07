@@ -65,10 +65,10 @@ model Product {
 
 model ProductVariant {
   id        Int      @id @default(autoincrement())
-  size String 
-  price     Float
+  size Size 
+  price     Float?
   productId Int //Foreign Key (Many to One relation with Product)
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   orders OrderItem[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -81,6 +81,12 @@ model Category {
   products  Product[] //1 category has many Products (One to many)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+}
+
+enum Size {
+  PT
+  RG
+  GR
 }
 
 // Order related models-------------------------------------------------------------
