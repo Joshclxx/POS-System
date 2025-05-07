@@ -114,7 +114,7 @@ type Mutation {
     createProduct(data: CreateProductInput!): Product
 
     deleteUser(id: String!): User
-    deleteProduct(id: ID!): Product
+    deleteProduct(id: Int!): Product
     deleteCategory(id: ID!): Category
 
     updateProduct(id: Int!, edits: EditProductInput!): Product
