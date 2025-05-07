@@ -139,6 +139,33 @@ export const query = {
       }
     },
 
+    getAllCategories: async (_: unknown, __: unknown, context: GraphQLContext) => {
+      try {
+        return await context.prisma.category.findMany();
+
+      } catch (error: unknown) {
+        if(error instanceof Error) {
+          
+          if(error.message.includes("database")) {
+            try {
+              await context.prisma.$connect();
+              return await context.prisma.category.findMany();
+
+            } catch (reconnectError: unknown) {
+              if(reconnectError instanceof Error) {
+                throw new Error(`Failed to connect database: ${reconnectError.message}`);
+              }
+              throw new Error("Database is unreachable");
+            }
+          }
+          throw new Error(`Failed to fetch categories: ${error.message}`);
+
+        }
+        throw new Error("An unknown error occured while fetching the categories.");
+      }
+    },
+    
+
     getCategory: async (_: unknown, {name} : {name: string}, context: GraphQLContext) => {
       try {
         return await context.prisma.category.findUnique({where: {name}})
