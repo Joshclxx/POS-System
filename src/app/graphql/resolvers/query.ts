@@ -139,6 +139,32 @@ export const query = {
       }
     },
 
+    getCategory: async (_: unknown, {name} : {name: string}, context: GraphQLContext) => {
+      try {
+        return await context.prisma.category.findUnique({where: {name}})
+
+      } catch (error: unknown) {
+        if(error instanceof Error) {
+          
+          if(error.message.includes("database")) {
+            try {
+              await context.prisma.$connect();
+              return await context.prisma.category.findUnique({where: {name}})
+
+            } catch (reconnectError: unknown) {
+              if(reconnectError instanceof Error) {
+                throw new Error(`Failed to connect database: ${reconnectError.message}`);
+              }
+              throw new Error("Database is unreachable");
+            }
+          }
+          throw new Error(`Failed to fetch category: ${error.message}`);
+
+        }
+        throw new Error("An unknown error occured while fetching the category.");
+      }
+    },
+    
     //ORDERS---------------------------------------------------------------------------------------------
     //ALL ORDERS
     getAllOrders: async (_: unknown, __: unknown, context: GraphQLContext) => {
