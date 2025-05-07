@@ -65,7 +65,7 @@ export const mutationResolvers = {
             }
         },
 
-        createProduct: async (_: unknown, args: {data: {name: string, variants: {size: string, price: number}[], categoryId: number}}, context: GraphQLContext) => {
+        createProduct: async (_: unknown, args: {data: {name: string, variants: {size: "PT" | "RG" | "GR", price: number}[], categoryId: number}}, context: GraphQLContext) => {
             const {name, variants, categoryId} = args.data;
 
             const productData = {
@@ -135,7 +135,7 @@ export const mutationResolvers = {
             }
         }, 
         
-        updateProduct: async (_: unknown, args: {id: number; edits: {name?: string, variants?: {size: string, price: number}[]}}, context: GraphQLContext) => {
+        updateProduct: async (_: unknown, args: {id: number; edits: {name?: string, variants?: {size: "PT" | "RG" | "GR", price: number}[]}}, context: GraphQLContext) => {
             const fetchUpdatedProduct = () => {
                 return context.prisma.product.findUnique({where: {id: args.id}, include: {variants: {select: {size: true, price: true} } } });
             }
