@@ -76,9 +76,7 @@ export const mutationResolvers = {
                         skipDuplicates: true,
                     },
                 },
-                category: {
-                    connect: {id: categoryId}
-                }
+                categoryId: categoryId
             } 
 
             const includeData = {
@@ -110,7 +108,103 @@ export const mutationResolvers = {
                 throw new Error("An unknown error occured while creating product.");
             }
         },
+
+        deleteProduct: async (_: unknown, {id}: {id: number}, context: GraphQLContext) => {
+            try {
+                return await context.prisma.product.delete({where: {id}})
+
+            } catch (error: unknown) {
+                if(error instanceof Error) {
+                    
+                    if(error.message.includes("database")) {
+                        try {
+                            await context.prisma.$connect();
+                            return await context.prisma.product.delete({where: {id}})
+
+                        } catch (reconnectError: unknown) {
+                            if(reconnectError instanceof Error) {
+                                throw new Error(`Failed to connect database: ${reconnectError.message}`);
+                            }
+                            throw new Error("Database is unreachable.");
+                        }
+                    }
+                    throw new Error(`Failed to create product: ${error.message}`);
+
+                }
+                throw new Error("An unknown error occured while creating product.");
+            }
+        }, 
         
+        updateProduct: async (_: unknown, args: {id: number; edits: {name?: string, variants?: {size: string, price: number}[]}}, context: GraphQLContext) => {
+            const fetchUpdatedProduct = () => {
+                return context.prisma.product.findUnique({where: {id: args.id}, include: {variants: {select: {size: true, price: true} } } });
+            }
+
+            const UpdateLogic = async () => {
+                const product = await fetchUpdatedProduct();
+
+                if(args.edits.name && args.edits.name !== product?.name){
+                    const nameExists = await context.prisma.product.findFirst({
+                        where: {
+                            name: args.edits.name,
+                            NOT: { id: args.id } 
+                        }
+                    });
+                
+                    if (nameExists) {
+                        throw new Error(`Product name '${args.edits.name}' is already in use.`);
+                    }
+                
+                    await context.prisma.product.update({
+                        where: { id: args.id },
+                        data: {
+                            name: args.edits.name
+                        }
+                    });
+                }
+
+                if(args.edits.variants) {
+                    await Promise.all(
+                        args.edits.variants.map(variant => 
+                            context.prisma.productVariant.updateMany({
+                                where: {
+                                    productId: args.id,
+                                    size: variant.size
+                                },
+                                data: {price: variant.price}
+                            })
+                        )    
+                        
+                    )
+                }
+                return fetchUpdatedProduct();
+            }
+
+            try {
+                return await UpdateLogic();
+
+            } catch (error: unknown) {
+                if(error instanceof Error) {
+                    
+                    if(error.message.includes("database")){
+                        try {
+                            await context.prisma.$connect();
+                            return await UpdateLogic()
+                        } catch (reconnectError: unknown) {
+                            if(reconnectError instanceof Error) {
+                                throw new Error(`Failed to connect database: ${reconnectError.message}`);
+                            }
+                            throw new Error("Database is unreachable.");
+                        }
+                        
+                    }
+                    throw new Error(`Failed to update product: ${error.message}`);
+                }
+                throw new Error("An unknown error occured while updating product.")
+            }
+
+           
+        } 
 
     }
 }
