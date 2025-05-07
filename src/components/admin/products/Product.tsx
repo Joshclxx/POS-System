@@ -9,8 +9,8 @@ import Button from "@/components/Button";
 import { motion, AnimatePresence } from "motion/react";
 import useGlobal from "@/hooks/useGlobal";
 import toast, { Toaster } from "react-hot-toast";
-import { CREATE_MUTATION } from "@/app/graphql/mutations";
-import { useMutation } from "@apollo/client";
+import { CREATE_CATEGORY, CREATE_PRODUCT, GET_CATEGORY } from "@/app/graphql/mutations";
+import { useLazyQuery, useMutation } from "@apollo/client";
 
 // Explicit type for menu items
 interface MenuItem {
@@ -72,12 +72,29 @@ const Product: React.FC = () => {
     setSelectedMenuItem(null);
   };
 
+  //mutations / query
+  const [createProduct] = useMutation(CREATE_PRODUCT);
+  const [createCategory] = useMutation(CREATE_CATEGORY);
+  const [getCategory] = useLazyQuery(GET_CATEGORY);
+
+
   // Submit logic for various drawer modes
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (drawerMode === "menu") {
       if (newMenuName.trim()) {
-        addMenu(newMenuName.trim());
-        toast.success("Menu added successfully!");
+        try {
+            await createCategory({
+            variables: {
+              data: {name: newMenuName.trim()},
+            }
+          })
+
+          addMenu(newMenuName.trim());
+          toast.success("Menu added successfully!");
+        } catch (error) {
+          console.error(error);
+        }
+
       } else {
         toast.error("Please enter a menu name.");
       }
@@ -89,17 +106,39 @@ const Product: React.FC = () => {
         itemPrices.RG &&
         itemPrices.GR
       ) {
-        addMenuItem({
-          id: crypto.randomUUID(),
-          name: itemName.trim(),
-          menu: itemMenu,
-          prices: {
-            PT: Number(itemPrices.PT),
-            RG: Number(itemPrices.RG),
-            GR: Number(itemPrices.GR),
-          },
-        });
-        toast.success("Menu item added successfully!");
+        try {
+          const {data} = await getCategory({variables: {name: itemMenu}});
+          const categoryId = data?.getCategory?.id 
+          await createProduct({
+            variables: {
+              data: {
+                name: itemName,
+                variants: [
+                  {size: "PT", price: parseFloat(itemPrices.PT)},
+                  {size: "RG", price: parseFloat(itemPrices.RG)},
+                  {size: "GR", price: parseFloat(itemPrices.GR)},
+                ],
+                categoryId: parseInt(categoryId)
+              }
+            }
+          });
+
+          addMenuItem({
+            id: crypto.randomUUID(),
+            name: itemName.trim(),
+            menu: itemMenu,
+            prices: {
+              PT: Number(itemPrices.PT),
+              RG: Number(itemPrices.RG),
+              GR: Number(itemPrices.GR),
+            },
+          });
+          toast.success("Menu item added successfully!");
+
+        } catch (error){
+          console.error(error)
+        }
+
       } else {
         toast.error("All fields are required.");
       }
