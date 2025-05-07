@@ -1,7 +1,11 @@
 import React from "react";
 
 const UserRegister = () => {
-  return <div></div>;
+  return (
+    <div>
+      <p>USER REGISTRATION</p>
+    </div>
+  );
 };
 
 export default UserRegister;
