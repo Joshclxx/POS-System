@@ -21,18 +21,21 @@
     }
   `
 
-  export const GET_CATEGORY = gql`
-    query getCategory($name: String!) {
-      getCategory(name: $name){
-        id
+  export const DELETE_CATEGORY = gql`
+    mutation deleteCategory($name: String!) {
+      deleteCategory(name: $name){
         name
       }
     }
   `
 
+
+
   export const DELETE_PRODUCT = gql`
     mutation deleteProduct($id: Int!) {
-      deleteProduct(id: $id)
+      deleteProduct(id: $id) {
+        id
+      }
     } 
   `
 
@@ -49,16 +52,5 @@
     }
   `
 
-  export const GET_ALL_PRODUCTS = gql`
-    query getAllProducts{
-      name
-      variants {
-        size
-        price
-      }
-      category {
-        name
-      }
-    }
-  `
+
 
