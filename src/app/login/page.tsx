@@ -24,15 +24,15 @@ export default function LoginPage() {
   };
 
   return (
-    <SectionContainer background="mt-1 w-full max-w-[1280px] h-[914px]">
+    <SectionContainer background="mt-1 w-full max-w-[1280px] h-auto">
       <Toaster />
       <div className="flex h-screen">
         {/* Left container */}
         <div className="w-[462px] h-full bg-secondary flex items-center justify-center">
           <img
-            src="/image/heebrew.svg"
+            src="/image/heebrew-logo.svg"
             alt="Heebrew Logo"
-            className="w-[600px] h-auto"
+            className="w-[400px] h-auto"
           />
         </div>
 
@@ -45,7 +45,7 @@ export default function LoginPage() {
           <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 flex justify-center">
             <form
               onSubmit={handleLogin}
-              className="bg-primaryGray p-6 rounded-lg shadow-[0_4px_12px_2px_#131A15] w-full max-w-sm"
+              className="bg-secondaryGray/75 p-6 rounded-lg shadow-[0_4px_12px_2px_#131A15] w-full max-w-sm"
             >
               <h1 className="text-2xl font-bold mb-4 text-primary text-center">
                 Login
