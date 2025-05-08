@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import SectionContainer from "../SectionContainer";
-import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
 
 interface Props {
@@ -21,6 +21,7 @@ const ManagerPasswordOnlyLogin: React.FC<Props> = ({ onSuccess }) => {
 
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
+      <Toaster />
       <div className="flex flex-col items-center justify-center min-h-screen px-4">
         <h2 className="text-2xl font-bold text-primary mb-8">
           Manager Password Required

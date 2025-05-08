@@ -6,6 +6,7 @@ import Button from "../Button";
 import SectionContainer from "../SectionContainer";
 import { useOrderStore } from "@/hooks/useOrder";
 import { useHistoryStore } from "@/hooks/useOrderHistory";
+import toast, { Toaster } from "react-hot-toast";
 
 const OrdersQueue = () => {
   const ordersQueue = useOrderStore((state) => state.ordersQueue);
@@ -15,11 +16,11 @@ const OrdersQueue = () => {
 
   const bumpSelectedOrder = () => {
     if (selectedOrder !== null) {
-
       updateOrderStatus(selectedOrder, "Completed");
 
-
-      const orderToBump = ordersQueue.find((order) => order.id === selectedOrder);
+      const orderToBump = ordersQueue.find(
+        (order) => order.id === selectedOrder
+      );
       if (orderToBump) {
         addOrderToHistory({
           OrderId: orderToBump.id,
@@ -33,18 +34,19 @@ const OrdersQueue = () => {
         });
       }
 
-
       useOrderStore.setState((state) => ({
         ordersQueue: state.ordersQueue.filter((o) => o.id !== selectedOrder),
       }));
 
-
       setSelectedOrder(null);
     }
+
+    toast.success(`Oder #${selectedOrder} Served!`);
   };
 
   return (
     <SectionContainer background="mt-1 w-[235px] h-[914px]">
+      <Toaster position="top-center" />
       {/* ORDER QUEUE HEADER */}
       <div className="bg-primary w- h-[60px] flex items-center justify-center menu-total text-[18px]">
         ORDER QUEUE
@@ -53,13 +55,16 @@ const OrdersQueue = () => {
       {/* Order List */}
       <div className="bg-colorDirtyWhite w-full h-[674px] mt-[4px] p-2 overflow-y-auto">
         <div className="flex flex-col gap-3 text-center">
-
           {ordersQueue.map((order) => (
             <div
               key={order.id}
-              className={`py-1 px-2 rounded cursor-pointer ${selectedOrder === order.id ? "bg-[#ceb395]" : ""}`}
+              className={`py-1 px-2 rounded cursor-pointer ${
+                selectedOrder === order.id ? "bg-[#ceb395]" : ""
+              }`}
               onClick={() =>
-                setSelectedOrder((prev) => (prev === order.id ? null : order.id))
+                setSelectedOrder((prev) =>
+                  prev === order.id ? null : order.id
+                )
               }
             >
               <p className="primary-title">{order.id}</p>
