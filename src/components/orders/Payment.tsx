@@ -5,6 +5,7 @@ import SectionContainer from "../SectionContainer";
 import { useShiftStore } from "@/hooks/shiftStore";
 import { useOrderStore } from "@/hooks/useOrder";
 import { useHistoryStore } from "@/hooks/useOrderHistory";
+import toast, { Toaster } from "react-hot-toast";
 type PaymentProps = {
   amountType: string;
   setAmountType: React.Dispatch<React.SetStateAction<string>>;
@@ -23,11 +24,7 @@ const Payment = ({
   const [change, setChange] = useState<number>(0);
   const [okPressed, setOkPressed] = useState(false);
   const { addOrder } = useHistoryStore();
-  const {
-    selectedProducts,
-    clearProducts,
-    nextOrderNumber,
-  } = useOrderStore();
+  const { selectedProducts, clearProducts, nextOrderNumber } = useOrderStore();
 
   const handleKeyClick = (key: string) => {
     if (key === "←") {
@@ -52,8 +49,6 @@ const Payment = ({
     }
   };
 
-
-
   const getButtonStyles = (key: string) => {
     switch (key) {
       case "Exact Amount":
@@ -71,6 +66,7 @@ const Payment = ({
 
   return (
     <SectionContainer background="mt-1 w-[900px] h-auto">
+      <Toaster position="top-center" />
       <div className="flex flex-col w-full bg-colorDirtyWhite p-4 gap-6">
         {/* Details Container */}
         <div className="bg-colorDirtyWhite border border-primary w-full rounded-lg p-4">
@@ -153,14 +149,14 @@ const Payment = ({
                 key={label}
                 onClick={() => {
                   if (label === "CONFIRM") {
-                    if (!okPressed) return;               
+                    if (!okPressed) return;
                     const orderId = nextOrderNumber;
                     const items = selectedProducts.map((item) => ({
                       title: `${item.imageTitle} (${item.size})`,
                       price: item.price[item.size],
                       quantity: item.quantity ?? 1,
                     }));
-                  
+
                     const newOrder = {
                       OrderId: orderId,
                       items,
@@ -168,10 +164,13 @@ const Payment = ({
                       Date: new Date(),
                       Status: "Queued" as const,
                     };
-                  
+
                     addOrder(newOrder);
                     clearProducts();
                     setOkPressed(false); // Reset after confirmation
+
+                    toast.success(`Order #${orderId} Payment Confirmed.`);
+
                     onBackToOrders();
                   } else {
                     handleKeyClick(label);
