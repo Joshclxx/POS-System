@@ -4,6 +4,7 @@ import OrderImageContainer from "./OrderImageContainer";
 import { useOrderStore } from "@/hooks/useOrder";
 import useGlobal, { MenuItem } from "@/hooks/useGlobal";
 import { motion } from "motion/react";
+import toast, { Toaster } from "react-hot-toast";
 
 interface OrderMenuItemsProps {
   activeMenu: string;
@@ -35,10 +36,12 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
       imageSrc: "",
       imageAlt: "",
     });
+    toast.success(`${item.name} (${size}) added to order`);
   };
 
   return (
     <SectionContainer background="mt-[4px] w-[585px] h-[850px]">
+      <Toaster position="top-center" />
       <div className="bg-colorDirtyWhite w-[585px] h-[710px] flex items-start justify-center text-[14px]">
         <div className="grid grid-cols-3 gap-4 max-h-[710px] overflow-y-auto w-[585px] mx-auto hide-scrollbar">
           {filteredItems.length === 0 ? (
@@ -76,7 +79,7 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
                         imageHeight={140}
                         selectedSize={selectedSize}
                         onSizeChange={(size: "PT" | "RG" | "GR") =>
-                          handleSizeSelection(item.id, size, item)
+                          handleSizeSelection(item.id.toString(), size, item)
                         }
                       />
                     </div>

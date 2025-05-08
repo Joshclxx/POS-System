@@ -7,6 +7,8 @@ import Image from "next/image";
 import { useOrderStore } from "@/hooks/useOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { Size } from "@prisma/client";
 
 interface OrdersViewProps {
   isPaying: boolean;
@@ -71,6 +73,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({
 
   return (
     <SectionContainer background="mt-1 w-full max-w-[428px] h-[914px]">
+      <Toaster position="top-center" />
       <AnimatePresence mode="wait">
         <motion.div
           key="dlt"
@@ -86,12 +89,24 @@ const OrdersView: React.FC<OrdersViewProps> = ({
                 className="flex-1 w-full"
                 onClick={() => {
                   if (selectedIndexes.length > 0) {
+                    const deletedItems = selectedIndexes
+                      .map((i) => selectedProducts[i]?.imageTitle)
+                      .filter(Boolean);
+
                     useOrderStore.setState((state) => {
                       const updated = state.selectedProducts.filter(
                         (_, idx) => !selectedIndexes.includes(idx)
                       );
                       return { selectedProducts: updated };
                     });
+
+                    // Show toast per deleted item or all together
+                    toast.success(
+                      deletedItems.length === 1
+                        ? `Removed ${deletedItems[0]}`
+                        : `Removed ${deletedItems.length} items`
+                    );
+
                     setSelectedIndexes([]);
                     setIsEditingQty(false);
                     setTempQty(null);
