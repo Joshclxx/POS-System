@@ -1,14 +1,16 @@
-// src/hooks/useManagerAuth.ts
 "use client";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 export function useManagerAuth() {
   const [isVerified, setIsVerified] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem("isManagerVerified") === "true";
+    console.log("Loaded from localStorage:", stored);
     setIsVerified(stored);
+    setLoading(false);
   }, []);
 
   const login = (email: string, password: string) => {
@@ -27,5 +29,5 @@ export function useManagerAuth() {
     setIsVerified(false);
   };
 
-  return { isVerified, login, logout };
+  return { isVerified, loading, login, logout };
 }
