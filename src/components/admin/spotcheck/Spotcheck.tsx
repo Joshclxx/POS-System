@@ -6,6 +6,10 @@ import SectionContainer from "@/components/SectionContainer";
 import AdminDrawer from "../AdminDrawer";
 import useGlobal from "@/hooks/useGlobal";
 import { useShiftStore } from "@/hooks/shiftStore";
+import ManagerPasswordOnlyLogin from "../ManagerPasswordOnlyLogin";
+import { useManagerAuth } from "@/hooks/useManagerAuth";
+import { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const denominations = [1, 5, 10, 20, 50, 100, 200, 500, 1000];
 
@@ -33,6 +37,11 @@ const Spotcheck = () => {
   const [selectedDifference, setSelectedDifference] = useState<number | null>(
     null
   );
+
+  const { isVerified, loading, login, logout } = useManagerAuth();
+  console.log("Auth state ->", { isVerified, loading });
+
+  const router = useRouter();
 
   useEffect(() => {
     setUserEmail(localStorage.getItem("userEmail") || "Unknown");
@@ -107,6 +116,21 @@ const Spotcheck = () => {
   function handleReset(): void {
     setCounts(Array(denominations.length).fill(""));
     setInputError(false);
+  }
+
+  const handleLoginSuccess = (email: string, password: string) => {
+    login(email, password);
+  };
+
+  if (loading) return null;
+
+  if (!isVerified) {
+    return (
+      <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
+        <Toaster />
+        <ManagerPasswordOnlyLogin onSuccess={() => router.refresh()} />
+      </SectionContainer>
+    );
   }
 
   return (
@@ -281,10 +305,16 @@ const Spotcheck = () => {
                   </p>
                 </div>
               </div>
+
+              {/* AUTO LOGOUT */}
               <div className="mt-12">
                 <Button
                   variant="universal"
-                  onClick={handleConfirm}
+                  onClick={() => {
+                    logout();
+                    window.location.reload();
+                    router.push("/");
+                  }}
                   className="w-[172px] h-[44px] bg-colorGreen text-tertiary rounded-3xl text-[24px] font-regular absolute right-4"
                 >
                   Confirm

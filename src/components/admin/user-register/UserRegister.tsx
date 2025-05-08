@@ -252,7 +252,7 @@ const UserRegister = () => {
             <h2 className="text-lg font-bold text-primary mb-4">
               Registered Users
             </h2>
-            <table className="min-w-full table-auto border border-primary text-primary rounded-md overflow-hidden">
+            <table className="min-w-full table-auto text-primary rounded-md overflow-hidden">
               <thead className="bg-primaryGray">
                 <tr>
                   {[
