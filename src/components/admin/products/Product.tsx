@@ -9,12 +9,13 @@ import Button from "@/components/Button";
 import { motion, AnimatePresence } from "motion/react";
 import useGlobal from "@/hooks/useGlobal";
 import toast, { Toaster } from "react-hot-toast";
-import { CREATE_CATEGORY, CREATE_PRODUCT, GET_CATEGORY } from "@/app/graphql/mutations";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { CREATE_CATEGORY, CREATE_PRODUCT, DELETE_CATEGORY, DELETE_PRODUCT, UPDATE_PRODUCT } from "@/app/graphql/mutations";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { GET_ALL_CATEGORIES, GET_ALL_PRODUCTS, GET_CATEGORY} from "@/app/graphql/query";
 
 // Explicit type for menu items
 interface MenuItem {
-  id: string;
+  id: number;
   name: string;
   menu: string;
   prices: {
@@ -50,13 +51,13 @@ const Product: React.FC = () => {
   }>({ PT: "", RG: "", GR: "" });
 
   // Global state
-  const removeMenu = useGlobal((state) => state.removeMenu);
-  const removeMenuItemsByMenu = useGlobal(
-    (state) => state.removeMenuItemsByMenu
-  );
-  const addMenu = useGlobal((state) => state.addMenu);
-  const removeMenuItem = useGlobal((state) => state.removeMenuItem);
-  const addMenuItem = useGlobal((state) => state.addMenuItem);
+  // const removeMenu = useGlobal((state) => state.removeMenu);
+  // const removeMenuItemsByMenu = useGlobal(
+  //   (state) => state.removeMenuItemsByMenu
+  // );
+  // const addMenu = useGlobal((state) => state.addMenu);
+  // const removeMenuItem = useGlobal((state) => state.removeMenuItem);
+  // const addMenuItem = useGlobal((state) => state.addMenuItem);
   const menus = useGlobal((state) => state.menus);
   const menuItems = useGlobal((state) => state.menuItems);
 
@@ -75,8 +76,12 @@ const Product: React.FC = () => {
   //mutations / query
   const [createProduct] = useMutation(CREATE_PRODUCT);
   const [createCategory] = useMutation(CREATE_CATEGORY);
+  const [updateProduct] = useMutation(UPDATE_PRODUCT);
+  const [deleteCategory] = useMutation(DELETE_CATEGORY);
+  const [deleteProduct] = useMutation(DELETE_PRODUCT);
   const [getCategory] = useLazyQuery(GET_CATEGORY);
-
+  const {refetch: refetchProducts} = useQuery(GET_ALL_PRODUCTS);
+  const {refetch: refetchCategories} = useQuery(GET_ALL_CATEGORIES);
 
   // Submit logic for various drawer modes
   const handleSubmit = async () => {
@@ -88,8 +93,8 @@ const Product: React.FC = () => {
               data: {name: newMenuName.trim()},
             }
           })
-
-          addMenu(newMenuName.trim());
+          // addMenu(newMenuName.trim());
+          await refetchCategories();
           toast.success("Menu added successfully!");
         } catch (error) {
           console.error(error);
@@ -122,17 +127,17 @@ const Product: React.FC = () => {
               }
             }
           });
-
-          addMenuItem({
-            id: crypto.randomUUID(),
-            name: itemName.trim(),
-            menu: itemMenu,
-            prices: {
-              PT: Number(itemPrices.PT),
-              RG: Number(itemPrices.RG),
-              GR: Number(itemPrices.GR),
-            },
-          });
+          // addMenuItem({
+          //   id: crypto.randomUUID(),
+          //   name: itemName.trim(),
+          //   menu: itemMenu,
+          //   prices: {
+          //     PT: Number(itemPrices.PT),
+          //     RG: Number(itemPrices.RG),
+          //     GR: Number(itemPrices.GR),
+          //   },
+          // });
+          await refetchProducts();
           toast.success("Menu item added successfully!");
 
         } catch (error){
@@ -150,26 +155,61 @@ const Product: React.FC = () => {
         itemPrices.RG &&
         itemPrices.GR
       ) {
-        removeMenuItem(selectedMenuItem.id);
-        addMenuItem({
-          id: selectedMenuItem.id,
-          name: itemName.trim(),
-          menu: itemMenu,
-          prices: {
-            PT: Number(itemPrices.PT),
-            RG: Number(itemPrices.RG),
-            GR: Number(itemPrices.GR),
-          },
-        });
-        toast.success("Menu item updated successfully!");
+        try {
+          await updateProduct({
+            variables: {
+              id: selectedMenuItem.id,
+              edits: {
+                name: itemName.trim(),
+                variants: [
+                  {size: "PT", price: parseFloat(itemPrices.PT)},
+                  {size: "RG", price: parseFloat(itemPrices.RG)},
+                  {size: "GR", price: parseFloat(itemPrices.GR)},
+                ],
+              }
+            }
+          })
+          await refetchProducts();
+          toast.success("Menu item updated successfully!");
+        } catch (error) {
+          console.log(error)
+        }
+        // removeMenuItem(selectedMenuItem.id);
+        // addMenuItem({
+        //   id: selectedMenuItem.id,
+        //   name: itemName.trim(),
+        //   menu: itemMenu,
+        //   prices: {
+        //     PT: Number(itemPrices.PT),
+        //     RG: Number(itemPrices.RG),
+        //     GR: Number(itemPrices.GR),
+        //   },
+        // });
       }
+
     } else if (drawerMode === "deleteMenu" && selectedMenu) {
-      removeMenu(selectedMenu);
-      removeMenuItemsByMenu(selectedMenu);
-      toast.success(`Menu "${selectedMenu}" deleted.`);
+      try {
+        await deleteCategory({variables: {name: selectedMenu}});
+        await refetchCategories();
+        toast.success(`Menu "${selectedMenu}" deleted.`);
+
+      } catch (error) {
+        console.error(error);
+      }
+      // removeMenu(selectedMenu);
+      // removeMenuItemsByMenu(selectedMenu);
     } else if (drawerMode === "deleteMenuItem" && selectedMenuItem) {
-      removeMenuItem(selectedMenuItem.id);
-      toast.success(`"${selectedMenuItem.name}" deleted.`);
+      try {
+        await deleteProduct({variables: {id: selectedMenuItem.id}})
+        await refetchProducts();
+        toast.success(`"${selectedMenuItem.name}" deleted.`);
+
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        console.error(error)
+      }
+      // removeMenuItem(selectedMenuItem.id);
+
     }
 
     handleCancel();

@@ -39,6 +39,31 @@ export const mutationResolvers = {
                 throw new Error("An unkown error occured while creating user.")
             }
         },
+        deleteCategory: async (_: unknown, {name} : {name: string}, context: GraphQLContext) => {
+            try {
+                return await context.prisma.category.delete({where: {name}});
+
+            } catch (error: unknown) {
+                if(error instanceof Error) {
+                    
+                    if(error.message.includes("database")) {
+                        try {
+                            await context.prisma.$connect();
+                            return await context.prisma.category.delete({where: {name}});
+
+                        } catch (reconnectError: unknown) {
+                            if(reconnectError instanceof Error) {
+                                throw new Error(`Failed to connect database: ${reconnectError.message}`);
+                            }
+                            throw new Error("Database is unreachable.");
+                        }
+                    }
+                    throw new Error(`Failed to delete category: ${error.message}`);
+
+                }
+                throw new Error("An unknown error occured while deleting category.");
+            }
+        },
 
         createCategory: async (_: unknown, args: {data:{name: string}}, context: GraphQLContext) => {
             try {
@@ -64,6 +89,8 @@ export const mutationResolvers = {
                 throw new Error("An unknown error occured while creating category.");
             }
         },
+
+        
 
         createProduct: async (_: unknown, args: {data: {name: string, variants: {size: "PT" | "RG" | "GR", price: number}[], categoryId: number}}, context: GraphQLContext) => {
             const {name, variants, categoryId} = args.data;
@@ -111,6 +138,14 @@ export const mutationResolvers = {
 
         deleteProduct: async (_: unknown, {id}: {id: number}, context: GraphQLContext) => {
             try {
+                const product = await context.prisma.product.findUnique({
+                    where: { id }
+                });
+        
+                if (!product) {
+                    throw new Error("Product not found");
+                }
+                
                 return await context.prisma.product.delete({where: {id}})
 
             } catch (error: unknown) {
