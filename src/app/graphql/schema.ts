@@ -51,16 +51,17 @@ type Shift {
 }
 
 type Product {
-    id: ID!
+    id: Int!
     name: String!
     variants: [ProductVariant!]!
-    categoryId: Int!
+    categoryId: Int
+    category: Category!
     createdAt: String!
     updatedAt: String!
 }
 
 type ProductVariant {
-    id: ID!
+    id: Int!
     size: Size!
     price: Float
     product: Product!
@@ -70,7 +71,7 @@ type ProductVariant {
 }
 
 type Category {
-    id: ID!
+    id: Int!
     name: String!
     products: [Product!]!
     createdAt: String!
@@ -106,6 +107,7 @@ type Query {
     getAllOrders: [Order!]!
     getOrder(id: Int!): Order
     getCategory(name: String!): Category
+    getAllCategories: [Category!]!
 }
 
 type Mutation {
@@ -115,7 +117,7 @@ type Mutation {
 
     deleteUser(id: String!): User
     deleteProduct(id: Int!): Product
-    deleteCategory(id: ID!): Category
+    deleteCategory(name: String!): Category
 
     updateProduct(id: Int!, edits: EditProductInput!): Product
 }

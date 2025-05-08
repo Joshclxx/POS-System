@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
 export type MenuItem = {
-  id: string;
+  id: number;
   name: string;
   menu: string;
   prices: {
@@ -14,7 +14,7 @@ export type MenuItem = {
 };
 
 export type GlobalConfigState = {
-  updateMenuItem: (id: string, updatedItem: Partial<MenuItem>) => void;
+  updateMenuItem: (id: number, updatedItem: Partial<MenuItem>) => void;
   showDrawer: boolean;
   setShowDrawer: (val: boolean) => void;
 
@@ -22,13 +22,15 @@ export type GlobalConfigState = {
   setSelectedItem: (item: MenuItem | null) => void;
 
   menus: string[];
+  setMenus: (menus: string[]) => void;
   addMenu: (menu: string) => void;
   removeMenu: (menu: string) => void;
   updateMenu: (oldMenu: string, newMenu: string) => void;
 
   menuItems: MenuItem[];
+  setMenuItems: (items: MenuItem[]) => void; 
   addMenuItem: (item: MenuItem) => void;
-  removeMenuItem: (id: string) => void;
+  removeMenuItem: (id: number) => void;
   removeMenuItemsByMenu: (menuName: string) => void;
   updateMenuItemsByMenu: (oldMenu: string, newMenu: string) => void;
 };
@@ -38,7 +40,7 @@ const useGlobal = create<GlobalConfigState>()(
     persist(
       (set) => ({
         // Update a single menu item by id
-        updateMenuItem: (id: string, updatedItem: Partial<MenuItem>) =>
+        updateMenuItem: (id: number, updatedItem: Partial<MenuItem>) =>
           set((state) => ({
             menuItems: state.menuItems.map((item) =>
               item.id === id ? { ...item, ...updatedItem } : item
@@ -52,6 +54,7 @@ const useGlobal = create<GlobalConfigState>()(
         setSelectedItem: (item: MenuItem | null) => set({ selectedItem: item }),
 
         menus: [],
+        setMenus: (menus: string[]) => set({menus}),
         addMenu: (menu: string) =>
           set((state) => ({ menus: [...state.menus, menu] })),
         removeMenu: (menu: string) =>
@@ -66,9 +69,10 @@ const useGlobal = create<GlobalConfigState>()(
           })),
 
         menuItems: [],
+        setMenuItems: (items: MenuItem[]) => {set({menuItems: items})},
         addMenuItem: (item: MenuItem) =>
           set((state) => ({ menuItems: [...state.menuItems, item] })),
-        removeMenuItem: (id: string) =>
+        removeMenuItem: (id: number) =>
           set((state) => ({
             menuItems: state.menuItems.filter((item) => item.id !== id),
           })),
