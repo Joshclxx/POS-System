@@ -159,7 +159,7 @@ const VoidOrder = () => {
 
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
-      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+      <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
 
       <div className="grid grid-cols-12 mt-4">
         <div className="container bg-colorDirtyWhite w-[1280px] flex flex-row p-[10px]">

@@ -9,9 +9,19 @@ import Button from "@/components/Button";
 import { motion, AnimatePresence } from "motion/react";
 import useGlobal from "@/hooks/useGlobal";
 import toast, { Toaster } from "react-hot-toast";
-import { CREATE_CATEGORY, CREATE_PRODUCT, DELETE_CATEGORY, DELETE_PRODUCT, UPDATE_PRODUCT } from "@/app/graphql/mutations";
+import {
+  CREATE_CATEGORY,
+  CREATE_PRODUCT,
+  DELETE_CATEGORY,
+  DELETE_PRODUCT,
+  UPDATE_PRODUCT,
+} from "@/app/graphql/mutations";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { GET_ALL_CATEGORIES, GET_ALL_PRODUCTS, GET_CATEGORY} from "@/app/graphql/query";
+import {
+  GET_ALL_CATEGORIES,
+  GET_ALL_PRODUCTS,
+  GET_CATEGORY,
+} from "@/app/graphql/query";
 
 // Explicit type for menu items
 interface MenuItem {
@@ -80,26 +90,25 @@ const Product: React.FC = () => {
   const [deleteCategory] = useMutation(DELETE_CATEGORY);
   const [deleteProduct] = useMutation(DELETE_PRODUCT);
   const [getCategory] = useLazyQuery(GET_CATEGORY);
-  const {refetch: refetchProducts} = useQuery(GET_ALL_PRODUCTS);
-  const {refetch: refetchCategories} = useQuery(GET_ALL_CATEGORIES);
+  const { refetch: refetchProducts } = useQuery(GET_ALL_PRODUCTS);
+  const { refetch: refetchCategories } = useQuery(GET_ALL_CATEGORIES);
 
   // Submit logic for various drawer modes
   const handleSubmit = async () => {
     if (drawerMode === "menu") {
       if (newMenuName.trim()) {
         try {
-            await createCategory({
+          await createCategory({
             variables: {
-              data: {name: newMenuName.trim()},
-            }
-          })
+              data: { name: newMenuName.trim() },
+            },
+          });
           // addMenu(newMenuName.trim());
           await refetchCategories();
-          toast.success("Menu added successfully!");
+          toast.success(`${newMenuName} added successfully!`);
         } catch (error) {
           console.error(error);
         }
-
       } else {
         toast.error("Please enter a menu name.");
       }
@@ -112,20 +121,20 @@ const Product: React.FC = () => {
         itemPrices.GR
       ) {
         try {
-          const {data} = await getCategory({variables: {name: itemMenu}});
-          const categoryId = data?.getCategory?.id 
+          const { data } = await getCategory({ variables: { name: itemMenu } });
+          const categoryId = data?.getCategory?.id;
           await createProduct({
             variables: {
               data: {
                 name: itemName,
                 variants: [
-                  {size: "PT", price: parseFloat(itemPrices.PT)},
-                  {size: "RG", price: parseFloat(itemPrices.RG)},
-                  {size: "GR", price: parseFloat(itemPrices.GR)},
+                  { size: "PT", price: parseFloat(itemPrices.PT) },
+                  { size: "RG", price: parseFloat(itemPrices.RG) },
+                  { size: "GR", price: parseFloat(itemPrices.GR) },
                 ],
-                categoryId: parseInt(categoryId)
-              }
-            }
+                categoryId: parseInt(categoryId),
+              },
+            },
           });
           // addMenuItem({
           //   id: crypto.randomUUID(),
@@ -138,14 +147,12 @@ const Product: React.FC = () => {
           //   },
           // });
           await refetchProducts();
-          toast.success("Menu item added successfully!");
-
-        } catch (error){
-          console.error(error)
+          toast.success(`${itemName} added successfully!`);
+        } catch (error) {
+          console.error(error);
         }
-
       } else {
-        toast.error("All fields are required.");
+        toast.error("All fields are required to fill out.");
       }
     } else if (drawerMode === "editMenuItem" && selectedMenuItem) {
       if (
@@ -162,17 +169,17 @@ const Product: React.FC = () => {
               edits: {
                 name: itemName.trim(),
                 variants: [
-                  {size: "PT", price: parseFloat(itemPrices.PT)},
-                  {size: "RG", price: parseFloat(itemPrices.RG)},
-                  {size: "GR", price: parseFloat(itemPrices.GR)},
+                  { size: "PT", price: parseFloat(itemPrices.PT) },
+                  { size: "RG", price: parseFloat(itemPrices.RG) },
+                  { size: "GR", price: parseFloat(itemPrices.GR) },
                 ],
-              }
-            }
-          })
+              },
+            },
+          });
           await refetchProducts();
-          toast.success("Menu item updated successfully!");
+          toast.success(`${itemName} updated successfully!`);
         } catch (error) {
-          console.log(error)
+          console.log(error);
         }
         // removeMenuItem(selectedMenuItem.id);
         // addMenuItem({
@@ -186,13 +193,11 @@ const Product: React.FC = () => {
         //   },
         // });
       }
-
     } else if (drawerMode === "deleteMenu" && selectedMenu) {
       try {
-        await deleteCategory({variables: {name: selectedMenu}});
+        await deleteCategory({ variables: { name: selectedMenu } });
         await refetchCategories();
         toast.success(`Menu "${selectedMenu}" deleted.`);
-
       } catch (error) {
         console.error(error);
       }
@@ -200,16 +205,14 @@ const Product: React.FC = () => {
       // removeMenuItemsByMenu(selectedMenu);
     } else if (drawerMode === "deleteMenuItem" && selectedMenuItem) {
       try {
-        await deleteProduct({variables: {id: selectedMenuItem.id}})
+        await deleteProduct({ variables: { id: selectedMenuItem.id } });
         await refetchProducts();
         toast.success(`"${selectedMenuItem.name}" deleted.`);
-
       } catch (error) {
-        console.error('Error deleting product:', error);
-        console.error(error)
+        console.error("Error deleting product:", error);
+        console.error(error);
       }
       // removeMenuItem(selectedMenuItem.id);
-
     }
 
     handleCancel();
@@ -232,7 +235,7 @@ const Product: React.FC = () => {
   return (
     <>
       {/* Toast container */}
-      <Toaster position="top-right" />
+      <Toaster position="top-center" />
 
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
         <div className="grid grid-cols-12 gap-5 mt-4">
@@ -282,6 +285,7 @@ const Product: React.FC = () => {
                       <span className="menu-title font-bold text-lg">
                         {menuName}
                       </span>
+
                       <button
                         onClick={() => {
                           setSelectedMenu(menuName);
