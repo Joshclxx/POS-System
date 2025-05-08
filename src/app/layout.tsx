@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import NavbarWrapper from "@/components/NavbarWrapper";
 import ApolloWrapper from "./ApolloWrapper";
+import DataLoader from "@/components/admin/products/LoadAllData";
 
 export const metadata: Metadata = {
   title: "POS SYSTEM",
@@ -22,6 +23,7 @@ export default function RootLayout({
         <ApolloWrapper>
           <NavbarWrapper />
           <main className="relative overflow-hidden">{children}</main>
+          <DataLoader/>
         </ApolloWrapper>
       </body>
     </html>
