@@ -100,22 +100,22 @@ export const query = {
 
     //1 PRODUCT
     getProduct: async (_: unknown, {name} : {name: string}, context: GraphQLContext) => {
-      const includeData = {
-        variants: {
-          select: {
-            size: true,
-            price: true
-          }
-        },
-        category: {
-          select: {
-            name: true,
-          }
-        }
-      }
+      // const includeData = {
+      //   variants: {
+      //     select: {
+      //       size: true,
+      //       price: true
+      //     }
+      //   },
+      //   category: {
+      //     select: {
+      //       name: true,
+      //     }
+      //   }
+      // }
 
       try {
-        return await context.prisma.product.findUnique({where: {name}, include: includeData});
+        return await context.prisma.product.findUnique({where: {name}});
 
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -123,7 +123,7 @@ export const query = {
           if (error.message.includes("connect")) {
             try {
               await context.prisma.$connect();
-              return await context.prisma.product.findUnique({where: {name}, include: includeData});
+              return await context.prisma.product.findUnique({where: {name}});
 
             } catch (reconnectError: unknown) {
               if (reconnectError instanceof Error) {
@@ -189,6 +189,46 @@ export const query = {
 
         }
         throw new Error("An unknown error occured while fetching the category.");
+      }
+    },
+
+    getProductVariant: async (_: unknown, args : {data: {productId: number, size: "PT" | "RG" | "GR"}}, context: GraphQLContext) => {
+      try {
+        return await context.prisma.productVariant.findUnique({
+          where: {
+            productId_size: {
+              productId: args.data.productId,
+              size: args.data.size
+            }
+          }
+        });
+        
+      } catch (error: unknown) {
+        if(error instanceof Error) {
+
+          if(error.message.includes("database")) {
+            try {
+              await context.prisma.$connect();
+              return await context.prisma.productVariant.findUnique({
+                where: {
+                  productId_size: {
+                    productId: args.data.productId,
+                    size: args.data.size
+                  }
+                }
+              });
+
+            } catch(reconnectError: unknown) {
+              if(reconnectError instanceof Error) {
+                throw new Error(`Failed to connect database: ${reconnectError.message}`);
+              }
+              throw new Error("Database is unreachable.");
+            }
+          }
+          throw new Error(`Failed to get product variants.`);
+
+        }
+        throw new Error("An unknown error occured while fetching product variants.");
       }
     },
     
