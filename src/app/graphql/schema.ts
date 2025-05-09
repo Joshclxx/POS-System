@@ -64,6 +64,7 @@ type ProductVariant {
     id: Int!
     size: Size!
     price: Float
+    productId: Int!
     product: Product!
     orders: [OrderItem!]!
     createdAt: String!
@@ -79,21 +80,23 @@ type Category {
 }
 
 type Order {
-    id: ID!
+    id: Int!
     items: [OrderItem!]!
     total: Float!
     status: STATUS!
     orderDate: String!
+    userId: String!
     user: User!
     createdAt: String!
     updatedAt: String!
 }
 
 type OrderItem {
-    id: ID!
+    id: Int!
     quantity: Int!
     subtotal: Float!
     order: Order!
+    productVariantId: Int!
     productVariant: ProductVariant!
     createdAt: String!
     updatedAt: String!
@@ -108,38 +111,37 @@ type Query {
     getOrder(id: Int!): Order
     getCategory(name: String!): Category
     getAllCategories: [Category!]!
+    getProductVariant(data: SearchProductVariantInput!): ProductVariant
+
 }
 
 type Mutation {
     createUser(data: CreateUserInput!): User
     createCategory(data: CreateCategoryInput!): Category
     createProduct(data: CreateProductInput!): Product
+    createOrder(data: CreateOrderInput!): Order
 
     deleteUser(id: String!): User
     deleteProduct(id: Int!): Product
     deleteCategory(name: String!): Category
 
-    updateProduct(id: Int!, edits: EditProductInput!): Product
+    updateProduct(name: String!): Product
 }
 
+#Products related mutations ------------------------------------------------------------------
 input CreateProductVariantInput {
     size: Size!
     price: Float!
 }
 
 input EditProductInput {
-    name: String
-    variants: [CreateProductVariantInput!]
+    name: String #Optional vice versa to variants
+    variants: [CreateProductVariantInput!] #Optional if we only want to update the name
 }
 
-input CreateUserInput {
-    firstname: String!
-    middlename: String!
-    lastname: String!
-    age: Int!
-    email: String!
-    password: String!
-    role: Role!
+input SearchProductVariantInput {
+    productId: Int!
+    size: Size!
 }
 
 input CreateCategoryInput {
@@ -152,5 +154,28 @@ input CreateProductInput {
     categoryId: Int!
 }
 
+#ORDERS RELATED MUTATIONS -------------------------------------------------------------------
+input CreateOrderInput{ 
+    items: [CreateOrderItemInput!]!
+    total: Float!
+    status: STATUS!
+    userId: String!
+}
+input CreateOrderItemInput { 
+    productVariantId: Int!
+    quantity: Int!
+    subtotal: Float!
+}
+
+#Users related mutations ---------------------------------------------------------------------
+input CreateUserInput {
+    firstname: String!
+    middlename: String!
+    lastname: String!
+    age: Int!
+    email: String!
+    password: String!
+    role: Role!
+}
 
 `;

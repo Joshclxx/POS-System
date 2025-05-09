@@ -1,5 +1,6 @@
 import { GraphQLContext } from "@/app/lib/context";
 
+
 export const mutationResolvers = {
   
     Mutation: {
@@ -90,8 +91,6 @@ export const mutationResolvers = {
             }
         },
 
-        
-
         createProduct: async (_: unknown, args: {data: {name: string, variants: {size: "PT" | "RG" | "GR", price: number}[], categoryId: number}}, context: GraphQLContext) => {
             const {name, variants, categoryId} = args.data;
 
@@ -170,7 +169,7 @@ export const mutationResolvers = {
             }
         }, 
         
-        updateProduct: async (_: unknown, args: {id: number; edits: {name?: string, variants?: {size: "PT" | "RG" | "GR", price: number}[]}}, context: GraphQLContext) => {
+        updateProduct: async (_: unknown, args: {id: number; edits: {name: string, variants: {size: "PT" | "RG" | "GR", price: number}[]}}, context: GraphQLContext) => {
             const fetchUpdatedProduct = () => {
                 return context.prisma.product.findUnique({where: {id: args.id}, include: {variants: {select: {size: true, price: true} } } });
             }
@@ -239,7 +238,50 @@ export const mutationResolvers = {
             }
 
            
-        } 
+        },
+
+        createOrder: async (_: unknown, args: {
+            data: {
+                items: {
+                    productVariantId: number,
+                    quantity: number, 
+                    subtotal: number
+                }[],
+                total: number, 
+                status: "QUEUE" | "COMPLETED" | "VOIDED"
+                userId: string
+            }}, 
+            context: GraphQLContext) => {
+
+                const { items, total, status, userId} = args.data;
+                try {
+                    return await context.prisma.order.create({
+                        data: {
+                            items: {
+                                create: items.map((item) => ({
+                                    productVariantId: item.productVariantId,
+                                    quantity: item.quantity,
+                                    subtotal: item.subtotal
+                                }))
+                            },
+                            total,
+                            status,
+                            orderDate: new Date(),
+                            userId,
+                        },
+                        include: {
+                            items: {
+                                include: {
+                                    productVariant: true
+                                }
+                            }
+                        }
+                    })
+                } catch (error) {
+                    console.error(error)
+                }
+
+        },
 
     }
 }
