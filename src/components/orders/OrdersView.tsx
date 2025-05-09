@@ -8,7 +8,6 @@ import { useOrderStore } from "@/hooks/useOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { Size } from "@prisma/client";
 
 interface OrdersViewProps {
   isPaying: boolean;

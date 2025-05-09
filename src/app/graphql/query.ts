@@ -34,18 +34,19 @@ query getAllProducts{
 `
 
 export const GET_PRODUCT = gql`
-query getProduct($id: Int!){
-    getProduct(id: $id){
-        id
-        name
-        variants {
-            size
-            price
-        }   
-        category {
-            name
-        } 
-    }
+query getProduct($name: String!){
+  getProduct(name: $name){
+    id
+    name
+  }
+}
+`
+
+export const GET_PRODUCT_VARIANT = gql`
+query getProductVariant($data: SearchProductVariantInput!){
+  getProductVariant(data: $data){
+    id
+  }
 }
 `
 

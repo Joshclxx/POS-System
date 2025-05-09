@@ -4,8 +4,12 @@ import React, { useState } from "react";
 import SectionContainer from "../SectionContainer";
 import { useShiftStore } from "@/hooks/shiftStore";
 import { useOrderStore } from "@/hooks/useOrder";
-import { useHistoryStore } from "@/hooks/useOrderHistory";
+// import { useHistoryStore } from "@/hooks/useOrderHistory";
 import toast, { Toaster } from "react-hot-toast";
+import { CREATE_ORDER } from "@/app/graphql/mutations";
+import { GET_PRODUCT, GET_PRODUCT_VARIANT } from "@/app/graphql/query";
+import {useLazyQuery, useMutation} from "@apollo/client"
+
 type PaymentProps = {
   amountType: string;
   setAmountType: React.Dispatch<React.SetStateAction<string>>;
@@ -23,7 +27,7 @@ const Payment = ({
   const [finalAmount, setFinalAmount] = useState<number | null>(null);
   const [change, setChange] = useState<number>(0);
   const [okPressed, setOkPressed] = useState(false);
-  const { addOrder } = useHistoryStore();
+  // const { addOrder } = useHistoryStore();
   const { selectedProducts, clearProducts, nextOrderNumber } = useOrderStore();
 
   const handleKeyClick = (key: string) => {
@@ -63,6 +67,11 @@ const Payment = ({
         return "bg-primaryGray text-primary text-xl";
     }
   };
+
+  //mutatation
+  const [createOrder] = useMutation(CREATE_ORDER);
+  const [getProduct] = useLazyQuery(GET_PRODUCT);
+  const [getProductVariant] = useLazyQuery(GET_PRODUCT_VARIANT)
 
   return (
     <SectionContainer background="mt-1 w-[900px] h-auto">
@@ -147,31 +156,77 @@ const Payment = ({
             {["BANK", "GCASH", "MAYA", "CONFIRM"].map((label) => (
               <button
                 key={label}
-                onClick={() => {
+                onClick={async () => {
                   if (label === "CONFIRM") {
+        
                     if (!okPressed) return;
-                    const orderId = nextOrderNumber;
-                    const items = selectedProducts.map((item) => ({
-                      title: `${item.imageTitle} (${item.size})`,
-                      price: item.price[item.size],
-                      quantity: item.quantity ?? 1,
-                    }));
 
-                    const newOrder = {
-                      OrderId: orderId,
-                      items,
-                      Total: itemAmount,
-                      Date: new Date(),
-                      Status: "Queued" as const,
-                    };
+                    const itemInputs = await Promise.all(
+                      selectedProducts.map(async (item) => {
 
-                    addOrder(newOrder);
-                    clearProducts();
-                    setOkPressed(false); // Reset after confirmation
+                        const {data: productData} = await getProduct({variables: {name: item.imageTitle}});
+                        const productId = productData?.getProduct?.id
 
-                    toast.success(`Order #${orderId} Payment Confirmed.`);
+                        const {data: variantData} = await getProductVariant({
+                          variables: {
+                            data: {
+                              productId: productId,
+                              size: item.size
+                            }
+                          }
+                        });
+                        const variantId = variantData?.getProductVariant?.id
 
-                    onBackToOrders();
+                        const price = item.price[item.size];
+                        const quantity = item.quantity?? 1;
+                        const subtotal = price * quantity;
+
+                        return {
+                          productVariantId: variantId,
+                          quantity,
+                          subtotal
+                        }
+                      })
+                    );
+                    
+                    const totalAmount = itemInputs.reduce((acc, item) => acc + item.subtotal, 0)
+                    try {
+                      const orderId = nextOrderNumber;
+                      await createOrder({
+                        variables: {
+                          data: {
+                            items: itemInputs,
+                            total: totalAmount,
+                            status: "QUEUE",
+                            userId: "733a5559-b2b8-49c5-92ce-66ebb3af13d8" //for testing only
+                          }
+                        }
+                      });
+
+                      clearProducts();
+                      setOkPressed(false); // Reset after confirmation
+                      toast.success(`Order #${orderId} Payment Confirmed.`);
+                      onBackToOrders();
+                    } catch (error) {
+                      console.error(error) //simple error for now
+                    }
+                    //NOT NEEDED for now
+                    // const orderId = nextOrderNumber;
+                    // const items = selectedProducts.map((item) => ({
+                    //   title: `${item.imageTitle} (${item.size})`,
+                    //   price: item.price[item.size],
+                    //   quantity: item.quantity ?? 1,
+                    // }));
+
+                    // const newOrder = {
+                    //   OrderId: orderId,
+                    //   items,
+                    //   Total: itemAmount,
+                    //   Date: new Date(),
+                    //   Status: "Queued" as const,
+                    // };
+
+                    // addOrder(newOrder);
                   } else {
                     handleKeyClick(label);
                   }

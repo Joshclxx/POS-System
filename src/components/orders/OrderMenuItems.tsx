@@ -22,7 +22,7 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
   >({});
 
   const handleSizeSelection = (
-    id: string,
+    id: number,
     size: "PT" | "RG" | "GR",
     item: MenuItem
   ): void => {
@@ -79,7 +79,7 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
                         imageHeight={140}
                         selectedSize={selectedSize}
                         onSizeChange={(size: "PT" | "RG" | "GR") =>
-                          handleSizeSelection(item.id.toString(), size, item)
+                          handleSizeSelection(item.id, size, item)
                         }
                       />
                     </div>
