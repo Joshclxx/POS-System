@@ -52,5 +52,24 @@
     }
   `
 
+  export const CREATE_ORDER = gql`
+    mutation createOrder($data: CreateOrderInput!){
+      createOrder(data: $data) {
+        items {
+          productVariant {
+            id
+            size
+            price
+          }
+          quantity
+          subtotal
+        }
+        total
+        status
+        userId
+      }
+    }
+  `
+
 
 
