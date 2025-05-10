@@ -314,7 +314,6 @@ export const mutationResolvers = {
             },
             total,
             status,
-            orderDate: new Date(),
             userId,
           },
           include: {
@@ -332,16 +331,16 @@ export const mutationResolvers = {
 
     updateOrderStatus: async (
       _: unknown,
-      args: { id: number; newStatus: "QUEUE" | "COMPLETED" | "VOIDED" },
+      args: { data: {id: number; status: "QUEUE" | "COMPLETED" | "VOIDED" }},
       context: GraphQLContext
     ) => {
       try {
         return await context.prisma.order.update({
           where: {
-            id: args.id,
+            id: args.data.id,
           },
           data: {
-            status: args.newStatus,
+            status: args.data.status,
           },
         });
       } catch (error) {
