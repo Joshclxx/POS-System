@@ -71,5 +71,11 @@
     }
   `
 
-
-
+export const UPDATE_ORDER_STATUS = gql`
+  mutation updateOrderStatus($data: UpdateOrderStatusInput!){
+    updateOrderStatus(data: $data){
+      id
+      status
+    }
+  }
+`

@@ -4,86 +4,117 @@ import { useState, useEffect } from "react";
 import React from "react";
 import Button from "../Button";
 import SectionContainer from "../SectionContainer";
-import { useOrderStore } from "@/hooks/useOrder";
-import { useHistoryStore } from "@/hooks/useOrderHistory";
+// import { useOrderStore } from "@/hooks/useOrder";
+// import { useHistoryStore } from "@/hooks/useOrderHistory";
 import toast, { Toaster } from "react-hot-toast";
 import { GET_ALL_ORDERS } from "@/app/graphql/query";
-import { useQuery } from "@apollo/client";
-import { Order, Size } from "@prisma/client";
+import { UPDATE_ORDER_STATUS } from "@/app/graphql/mutations";
+import { useMutation, useQuery } from "@apollo/client";
 
 type OrderRawData = {
   id: number;
   items: {
     productVariant: {
-      size: "PT" | "RG" | "GR";
       price: number;
       product: {
         name: string;
       };
     };
     quantity: number;
-    subtotal: number;
   }[];
+  status: "QUEUE" | "COMPLETED" | "VOIDED"
 };
+
+type OrderQueuesItem = {
+  id: number,
+  items: {
+    title: string
+    price: number
+    quantity: number
+  }[]
+}
+
+
 
 const OrdersQueue = () => {
   // const ordersQueue = useOrderStore((state) => state.ordersQueue);
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
-  const updateOrderStatus = useHistoryStore((state) => state.updateOrderStatus);
-  const addOrderToHistory = useHistoryStore((state) => state.addOrder); // Added to handle adding orders to history
+  // const updateOrderStatus = useHistoryStore((state) => state.updateOrderStatus);
+  // const addOrderToHistory = useHistoryStore((state) => state.addOrder); // Added to handle adding orders to history
 
-  let [ordersQueue, setOrdersQueue] = useState<any[]>([]);
-  const { data: orderdata } = useQuery(GET_ALL_ORDERS);
+  const [ordersQueue, setOrdersQueue] = useState<OrderQueuesItem[]>([]);
+  const { data: orderdata, refetch } = useQuery(GET_ALL_ORDERS);
+  const [ updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
 
+  // LOAD ALL ORDERS WITH STATUS QUEUE
   useEffect(() => {
     if (orderdata?.getAllOrders) {
-      const orderQueueFormat = orderdata.getAllOrders.map(
-        (order: OrderRawData) => {
-          const items = order.items.map((item) => ({
-            title: item.productVariant.product.name,
-            price: item.productVariant.price,
-            quantity: item.quantity,
-          }));
+      const orderQueueFormat = orderdata.getAllOrders
+      .filter((order: OrderRawData) => order.status === "QUEUE") //only show the order wth qeue
+      .map((order: OrderRawData) => {
 
-          return {
-            id: order.id,
-            items,
-          };
-        }
-      );
+        const items = order.items.map((item) => ({
+          title: item.productVariant.product.name,
+          price: item.productVariant.price,
+          quantity: item.quantity,
+        }));
+
+        return {
+          id: order.id,
+          items,
+        };
+
+      })
 
       setOrdersQueue(orderQueueFormat);
     }
   }, [orderdata]);
 
-  const bumpSelectedOrder = () => {
-    if (selectedOrder !== null) {
-      updateOrderStatus(selectedOrder, "Completed");
+  const bumpSelectedOrder = async () => {
+    const orderToBump = ordersQueue.find(
+      (order) => order.id === selectedOrder
+    );
 
-      const orderToBump = ordersQueue.find(
-        (order) => order.id === selectedOrder
-      );
-      if (orderToBump) {
-        addOrderToHistory({
-          OrderId: orderToBump.id,
-          Status: "Completed",
-          items: orderToBump.items,
-          Total: orderToBump.items.reduce(
-            (acc, item) => acc + item.price * item.quantity,
-            0
-          ),
-          Date: new Date(),
+    if (selectedOrder !== null) {
+      try {
+        await updateOrderStatus({
+          variables: {
+            data: {
+              id: orderToBump?.id,
+              status: "COMPLETED"
+            }
+          }
         });
+        refetch();
+        toast.success(`Oder #${selectedOrder} Served!`);
+      } catch(error) {
+        console.error(error) // simpl error for now
       }
 
-      useOrderStore.setState((state) => ({
-        ordersQueue: state.ordersQueue.filter((o) => o.id !== selectedOrder),
-      }));
+      // updateOrderStatus(selectedOrder, "Completed");
+
+      // const orderToBump = ordersQueue.find(
+      //   (order) => order.id === selectedOrder
+      // );
+      // if (orderToBump) {
+      //   addOrderToHistory({
+      //     OrderId: orderToBump.id,
+      //     Status: "Completed",
+      //     items: orderToBump.items,
+      //     Total: orderToBump.items.reduce(
+      //       (acc, item) => acc + item.price * item.quantity,
+      //       0
+      //     ),
+      //     Date: new Date(),
+      //   });
+      // }
+
+      // useOrderStore.setState((state) => ({
+      //   ordersQueue: state.ordersQueue.filter((o) => o.id !== selectedOrder),
+      // }));
 
       setSelectedOrder(null);
     }
-
-    toast.success(`Oder #${selectedOrder} Served!`);
   };
 
   return (
