@@ -84,7 +84,6 @@ type Order {
     items: [OrderItem!]!
     total: Float!
     status: STATUS!
-    orderDate: String!
     userId: String!
     user: User!
     createdAt: String!
@@ -126,6 +125,7 @@ type Mutation {
     deleteCategory(name: String!): Category
 
     updateProduct(name: String!): Product
+    updateOrderStatus(data: UpdateOrderStatusInput!): Order
 }
 
 #Products related mutations ------------------------------------------------------------------
@@ -165,6 +165,10 @@ input CreateOrderItemInput {
     productVariantId: Int!
     quantity: Int!
     subtotal: Float!
+}
+input UpdateOrderStatusInput {
+    id: Int!
+    status: STATUS!
 }
 
 #Users related mutations ---------------------------------------------------------------------

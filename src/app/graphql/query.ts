@@ -65,6 +65,7 @@ export const GET_ALL_ORDERS = gql`
         quantity
         subtotal
       }
+      createdAt
       total
       status
       userId
