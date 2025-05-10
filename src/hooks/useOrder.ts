@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { useHistoryStore} from "./useOrderHistory";
+import { useHistoryStore } from "./useOrderHistory";
 interface EspressoItem {
   imageSrc: string;
   imageAlt: string;
@@ -14,7 +14,7 @@ interface OrderQueueItem {
   // items: string[];
   // confirmedAt: number;
   id: number;
-  items: { title: string; price: number; quantity: number; }[];  // Updated structure for items
+  items: { title: string; price: number; quantity: number }[]; // Updated structure for items
   confirmedAt: number;
 }
 
@@ -66,7 +66,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   //     nextOrderNumber: next,
   //   }));
   // },
-addOrderToQueue: (confirmedAt) => {
+  addOrderToQueue: (confirmedAt) => {
     const current = get().selectedProducts;
     const items = current.map((it) => ({
       title: it.imageTitle,
@@ -77,10 +77,7 @@ addOrderToQueue: (confirmedAt) => {
     const orderId = get().nextOrderNumber; // use current value
 
     set((state) => ({
-      ordersQueue: [
-        ...state.ordersQueue,
-        { id: orderId, items, confirmedAt },
-      ],
+      ordersQueue: [...state.ordersQueue, { id: orderId, items, confirmedAt }],
       nextOrderNumber: orderId + 1,
     }));
 
@@ -101,14 +98,19 @@ addOrderToQueue: (confirmedAt) => {
       const orderToBump = state.ordersQueue[0]; // Get the first order in the queue
       if (orderToBump) {
         // Move the order to VoidOrder with "Completed" status
-        useHistoryStore.getState().updateOrderStatus(orderToBump.id, 'Completed');
+        useHistoryStore
+          .getState()
+          .updateOrderStatus(orderToBump.id, "Completed");
 
         // Save the order to orderHistory
         useHistoryStore.getState().addOrder({
           OrderId: orderToBump.id,
-          Status: 'Completed',
+          Status: "Completed",
           items: orderToBump.items,
-          Total: orderToBump.items.reduce((acc, item) => acc + item.price * item.quantity, 0), // Assuming Total calculation
+          Total: orderToBump.items.reduce(
+            (acc, item) => acc + item.price * item.quantity,
+            0
+          ), // Assuming Total calculation
           Date: new Date(),
         });
 
@@ -153,7 +155,9 @@ addOrderToQueue: (confirmedAt) => {
         ];
 
         // Update the order status to "Queued"
-        useHistoryStore.getState().updateOrderStatus(orderToRevert.OrderId, "Queued");
+        useHistoryStore
+          .getState()
+          .updateOrderStatus(orderToRevert.OrderId, "Queued");
 
         return {
           ordersQueue: newOrderQueue,
@@ -164,4 +168,3 @@ addOrderToQueue: (confirmedAt) => {
     });
   },
 }));
-

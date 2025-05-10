@@ -8,7 +8,7 @@ import { useOrderStore } from "@/hooks/useOrder";
 import toast, { Toaster } from "react-hot-toast";
 import { CREATE_ORDER } from "@/app/graphql/mutations";
 import { GET_PRODUCT, GET_PRODUCT_VARIANT } from "@/app/graphql/query";
-import {useLazyQuery, useMutation} from "@apollo/client"
+import { useLazyQuery, useMutation } from "@apollo/client";
 
 type PaymentProps = {
   amountType: string;
@@ -71,7 +71,7 @@ const Payment = ({
   //mutatation
   const [createOrder] = useMutation(CREATE_ORDER);
   const [getProduct] = useLazyQuery(GET_PRODUCT);
-  const [getProductVariant] = useLazyQuery(GET_PRODUCT_VARIANT)
+  const [getProductVariant] = useLazyQuery(GET_PRODUCT_VARIANT);
 
   return (
     <SectionContainer background="mt-1 w-[900px] h-auto">
@@ -158,38 +158,41 @@ const Payment = ({
                 key={label}
                 onClick={async () => {
                   if (label === "CONFIRM") {
-        
                     if (!okPressed) return;
 
                     const itemInputs = await Promise.all(
                       selectedProducts.map(async (item) => {
-
-                        const {data: productData} = await getProduct({variables: {name: item.imageTitle}});
-                        const productId = productData?.getProduct?.id
-
-                        const {data: variantData} = await getProductVariant({
+                        const { data: productData } = await getProduct({
+                          variables: { name: item.imageTitle },
+                        });
+                        const productId = productData?.getProduct?.id;
+                        const { data: variantData } = await getProductVariant({
                           variables: {
                             data: {
                               productId: productId,
-                              size: item.size
-                            }
-                          }
+                              size: item.size,
+                            },
+                          },
                         });
-                        const variantId = variantData?.getProductVariant?.id
-
+                        const variantId = variantData?.getProductVariant?.id;
                         const price = item.price[item.size];
-                        const quantity = item.quantity?? 1;
+                        const quantity = item.quantity ?? 1;
                         const subtotal = price * quantity;
 
                         return {
                           productVariantId: variantId,
                           quantity,
-                          subtotal
-                        }
+                          subtotal,
+                        };
                       })
                     );
-                    
-                    const totalAmount = itemInputs.reduce((acc, item) => acc + item.subtotal, 0)
+
+                    console.log(itemInputs);
+
+                    const totalAmount = itemInputs.reduce(
+                      (acc, item) => acc + item.subtotal,
+                      0
+                    );
                     try {
                       const orderId = nextOrderNumber;
                       await createOrder({
@@ -198,9 +201,9 @@ const Payment = ({
                             items: itemInputs,
                             total: totalAmount,
                             status: "QUEUE",
-                            userId: "733a5559-b2b8-49c5-92ce-66ebb3af13d8" //for testing only
-                          }
-                        }
+                            userId: "cd260fa5-a3f4-4b4c-855a-7918d2a0d51d", //for testing only
+                          },
+                        },
                       });
 
                       clearProducts();
@@ -208,7 +211,7 @@ const Payment = ({
                       toast.success(`Order #${orderId} Payment Confirmed.`);
                       onBackToOrders();
                     } catch (error) {
-                      console.error(error) //simple error for now
+                      console.error(error); //simple error for now
                     }
                     //NOT NEEDED for now
                     // const orderId = nextOrderNumber;
