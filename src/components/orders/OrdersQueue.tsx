@@ -1,18 +1,60 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import Button from "../Button";
 import SectionContainer from "../SectionContainer";
 import { useOrderStore } from "@/hooks/useOrder";
 import { useHistoryStore } from "@/hooks/useOrderHistory";
 import toast, { Toaster } from "react-hot-toast";
+import { GET_ALL_ORDERS } from "@/app/graphql/query";
+import { useQuery } from "@apollo/client";
+import { Order, Size } from "@prisma/client";
+
+type OrderRawData = {
+  id: number;
+  items: {
+    productVariant: {
+      size: "PT" | "RG" | "GR";
+      price: number;
+      product: {
+        name: string;
+      };
+    };
+    quantity: number;
+    subtotal: number;
+  }[];
+};
 
 const OrdersQueue = () => {
-  const ordersQueue = useOrderStore((state) => state.ordersQueue);
+  // const ordersQueue = useOrderStore((state) => state.ordersQueue);
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
   const updateOrderStatus = useHistoryStore((state) => state.updateOrderStatus);
   const addOrderToHistory = useHistoryStore((state) => state.addOrder); // Added to handle adding orders to history
+
+  let [ordersQueue, setOrdersQueue] = useState<any[]>([]);
+  const { data: orderdata } = useQuery(GET_ALL_ORDERS);
+
+  useEffect(() => {
+    if (orderdata?.getAllOrders) {
+      const orderQueueFormat = orderdata.getAllOrders.map(
+        (order: OrderRawData) => {
+          const items = order.items.map((item) => ({
+            title: item.productVariant.product.name,
+            price: item.productVariant.price,
+            quantity: item.quantity,
+          }));
+
+          return {
+            id: order.id,
+            items,
+          };
+        }
+      );
+
+      setOrdersQueue(orderQueueFormat);
+    }
+  }, [orderdata]);
 
   const bumpSelectedOrder = () => {
     if (selectedOrder !== null) {
