@@ -95,7 +95,6 @@ model Order {
   items      OrderItem[] //One to Many (One order have Many Order Items)
   total      Float
   status     STATUS       @default(QUEUE)
-  orderDate       DateTime
   userId String //Foreign Key
   user User @relation(fields: [userId], references: [id])
   createdAt  DateTime     @default(now())

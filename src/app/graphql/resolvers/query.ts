@@ -1,4 +1,5 @@
 import { GraphQLContext } from "../../lib/context";
+import { format } from 'date-fns';
 
 export const query = {
   Query: {
@@ -256,8 +257,14 @@ export const query = {
       }
 
       try {
-        return await context.prisma.order.findMany({include: includeData});
 
+        const orders = await context.prisma.order.findMany({ include: includeData });
+        const formattedOrders = orders.map(order => ({
+          ...order,
+          createdAt: order.createdAt ? format(order.createdAt, 'yyyy-MM-dd HH:mm:ss a') : null
+        }));
+
+        return formattedOrders;
       } catch (error: unknown) {
         if(error instanceof Error) {
 

@@ -1,12 +1,40 @@
 "use client";
-
+  
 import SectionContainer from "../../SectionContainer";
-import { OrderData, useHistoryStore } from "@/hooks/useOrderHistory";
-import { useOrderStore } from "@/hooks/useOrder";
-import { useShiftStore } from "@/hooks/shiftStore";
-import { format } from "date-fns";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { GET_ALL_ORDERS } from "@/app/graphql/query";
+import { UPDATE_ORDER_STATUS } from "@/app/graphql/mutations";
+import { useMutation, useQuery } from "@apollo/client";
+
+
+type OrderRawData = {
+  id: number;
+  items: {
+    productVariant: {
+      price: number;
+      product: {
+        name: string;
+      };
+    };
+    quantity: number;
+  }[];
+  total: number
+  status: "QUEUE" | "COMPLETED" | "VOIDED"
+  createdAt: string
+};
+
+type Orders = {
+  id: number
+  items: {
+    title: string
+    price: number
+    quantity: number
+  }[]
+  status: "QUEUE" | "COMPLETED" | "VOIDED"
+  total: number
+  createdAt: string
+}
 
 const ConfirmationModal = ({
   onConfirm,
@@ -34,7 +62,7 @@ const ConfirmationModal = ({
             Cancel
           </button>
           <button
-            onClick={onConfirm}
+            onClick={(onConfirm)}
             className="bg-red-600 hover:bg-red-700 text-white py-1 px-4 rounded"
           >
             Confirm Void
@@ -46,96 +74,74 @@ const ConfirmationModal = ({
 };
 
 const VoidOrder = () => {
-  const { orderHistory, updateOrderStatus } = useHistoryStore();
   const [searchId, setSearchId] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Orders | null>(null);
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
-  const [previousStatus, setPreviousStatus] = useState<
-    Record<number, "Queued" | "Completed" | "Voided" | null>
-  >({});
+  // const [previousStatus, setPreviousStatus] = useState<
+  //   Record<number, "Queued" | "Completed" | "Voided" | null>
+  // >({});
+
+  const [updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS)
+  const [orders, setOrders] = useState<Orders[]>([])
+  const {data: orderData, refetch} = useQuery(GET_ALL_ORDERS);
+  
 
   useEffect(() => {
-    console.log("Order History updated:", orderHistory);
-  }, [orderHistory]);
+    if (orderData?.getAllOrders) {
+      const ordersFormat = orderData.getAllOrders.map((order: OrderRawData) => {
 
-  const voidOrder = (orderId: number) => {
-    const orderToVoid = orderHistory.find((order) => order.OrderId === orderId);
-    if (orderToVoid) {
-      setPreviousStatus((prev) => ({
-        ...prev,
-        [orderId]: orderToVoid.Status,
-      }));
+        const items = order.items.map((item) => ({
+          title: item.productVariant.product.name,
+          price: item.productVariant.price,
+          quantity: item.quantity,
+        }));
 
-      const refundAmount = calculateTotalPrice(orderToVoid.items);
-      updateOrderStatus(orderId, "Voided");
 
-      useOrderStore.setState((state) => ({
-        ordersQueue: state.ordersQueue.filter((order) => order.id !== orderId),
-      }));
 
-      useShiftStore.getState().recordVoidRefund(refundAmount);
+        return {
+          id: order.id,
+          items,
+          status: order.status,
+          total: order.total,
+          createdAt: order.createdAt
+        };
 
-      setSelectedOrder(null);
-      setIsConfirmationVisible(false);
-      toast.success(`Order #${orderId} has been voided successfully.`);
+      });
+
+      setOrders(ordersFormat)
     }
-  };
+  }, [orderData]);
 
-  const revertOrder = (orderId: number) => {
-    console.log("Attempting to revert order:", orderId);
 
-    const prevStatus = previousStatus[orderId];
-    if (!prevStatus) {
-      console.error(`No previous status found for order #${orderId}`);
-      return;
+  const voidOrder = async (orderId: number) => {
+
+    const orderToVoid = orders.find((order) => order.id === orderId);
+
+    try {
+      await updateOrderStatus({
+        variables: {
+          data: {
+            id: orderToVoid?.id,
+            status: "VOIDED"
+          }
+        }
+      });
+      refetch();
+    } catch (error) {
+      console.error(error) //simple error for
     }
+    setIsConfirmationVisible(false);  
+  }
 
-    const originalOrder = orderHistory.find(
-      (order) => order.OrderId === orderId
-    );
-    if (!originalOrder) {
-      console.error(`No order found with ID ${orderId}`);
-      return;
-    }
-
-    updateOrderStatus(orderId, prevStatus);
-
-    if (prevStatus === "Queued") {
-      useOrderStore.setState((state) => ({
-        ordersQueue: [
-          ...state.ordersQueue,
-          {
-            id: orderId,
-            items: originalOrder.items,
-            confirmedAt: Date.now(),
-          },
-        ],
-      }));
-    }
-
-    setPreviousStatus((prev) => {
-      const newStatus = { ...prev };
-      delete newStatus[orderId];
-      return newStatus;
-    });
-
-    const updatedOrder = useHistoryStore
-      .getState()
-      .orderHistory.find((order) => order.OrderId === orderId);
-
-    setSelectedOrder(updatedOrder || null);
-    toast.success(`Order #${orderId} has been restored.`);
-  };
-
-  const filteredOrders = orderHistory.filter((order) =>
-    order.OrderId.toString().includes(searchId)
+  const filteredOrders = orders.filter((order) =>
+    order.id.toString().includes(searchId)
   );
 
   const handleVoidClick = () => {
     if (!selectedOrder) return;
 
-    if (selectedOrder.Status === "Voided") {
-      toast.error(`Order #${selectedOrder.OrderId} is already voided.`);
+    if (selectedOrder.status === "VOIDED") {
+      toast.error(`Order #${selectedOrder.id} is already voided.`);
       return;
     }
 
@@ -144,18 +150,16 @@ const VoidOrder = () => {
 
   const truncateItemName = (
     itemName: string = "No Item",
-    maxLength: number = 20
+    maxLength: number = 10
   ) => {
     return itemName.length > maxLength
       ? `${itemName.substring(0, maxLength)}...`
       : itemName;
   };
 
-  const calculateTotalPrice = (
-    items: { title: string; price: number; quantity: number }[]
-  ) => {
-    return items.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
+  const revertOrder = (orderId: number) => {
+
+  }
 
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
@@ -187,7 +191,7 @@ const VoidOrder = () => {
                 <thead className="bg-secondaryGray text-primary text-left sticky top-0 z-20 pr-[10px]">
                   <tr>
                     <th className="px-[12px] py-[15px]">Order ID</th>
-                    <th className="px-[12px] py-[15px]">Item</th>
+                    <th className="px-[12px] py-[15px]">Items</th>
                     <th className="px-[12px] py-[15px]">Total</th>
                     <th className="px-[12px] py-[15px]">Date & Time</th>
                     <th className="px-[12px] py-[15px]">Status</th>
@@ -196,23 +200,28 @@ const VoidOrder = () => {
                 <tbody>
                   {filteredOrders.map((order) => (
                     <tr
-                      key={order.OrderId}
+                      key={order.id}
                       onClick={() => setSelectedOrder(order)}
                       className="border-b hover:bg-secondaryGray/50 cursor-pointer"
                     >
-                      <td className="px-[12px] py-[12px]">{order.OrderId}</td>
+                      <td className="px-[12px] py-[12px]">{order.id}</td>
                       <td className="px-[12px] py-[12px]">
                         {truncateItemName(
-                          `${order.items[0]?.title}...` || "No Items"
+                          order.items.length > 0 ? 
+                          order.items.map((item) => item.title).join(",")
+                          : "No Items"
                         )}
                       </td>
                       <td className="px-[12px] py-[12px]">
-                        {calculateTotalPrice(order.items)}
+                        {new Intl.NumberFormat("en-PH", {
+                          style: "currency",
+                          currency: "PHP"
+                        }).format(order.total)}
                       </td>
                       <td className="px-[12px] py-[12px]">
-                        {format(order.Date, "yyyy-MM-dd HH:mm:ss")}
+                        {order.createdAt}
                       </td>
-                      <td className="px-[12px] py-[12px]">{order.Status}</td>
+                      <td className="px-[12px] py-[12px]">{order.status}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -226,7 +235,7 @@ const VoidOrder = () => {
                     Order Details
                   </h2>
                   <p>
-                    <strong>Order ID:</strong> {selectedOrder.OrderId}
+                    <strong>Order ID:</strong> {selectedOrder.id}
                   </p>
                   <div>
                     <strong>Items:</strong>
@@ -240,10 +249,10 @@ const VoidOrder = () => {
                   </div>
                   <p>
                     <strong>Total Price:</strong>{" "}
-                    {calculateTotalPrice(selectedOrder.items)}
+                    {selectedOrder.total}
                   </p>
                   <p>
-                    <strong>Status:</strong> {selectedOrder.Status}
+                    <strong>Status:</strong> {selectedOrder.status}
                   </p>
 
                   <div className="flex justify-end gap-2 mt-6">
@@ -254,9 +263,9 @@ const VoidOrder = () => {
                       Cancel
                     </button>
 
-                    {selectedOrder.Status === "Voided" ? (
+                    {selectedOrder.status === "VOIDED" ? (
                       <button
-                        onClick={() => revertOrder(selectedOrder.OrderId)}
+                        onClick={() => revertOrder(selectedOrder.id)}
                         className="bg-green-600 hover:bg-green-700 text-white py-1 px-4 rounded"
                       >
                         Revert Void
@@ -279,8 +288,8 @@ const VoidOrder = () => {
 
       {isConfirmationVisible && selectedOrder && (
         <ConfirmationModal
-          orderId={selectedOrder.OrderId}
-          onConfirm={() => voidOrder(selectedOrder.OrderId)}
+          orderId={selectedOrder.id}
+          onConfirm={() => {voidOrder(selectedOrder.id); setSelectedOrder(null)}}
           onCancel={() => setIsConfirmationVisible(false)}
         />
       )}
