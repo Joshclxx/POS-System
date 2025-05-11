@@ -25,57 +25,44 @@ model User {
   email      String   
   password    String 
   role       Role  
-  shiftId Int
-  shift      Shift @relation(fields: [shiftId], references: [id])
-  cashpickId Int
-  cashpick Cashpick @relation(fields: [cashpickId], references: [id])
+  shift      Shift[]
+  cashpick Cashpick[]
   orders Order[]
-  spotCheckId Int
-  spotCheck Spotcheck @relation(fields: [spotCheckId], references: [id])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime 
+  spotCheck Spotcheck[]
 
-  @@unique([id, email, password])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime?
+
+  @@unique([email, password])
 }
 
 model Shift {
   id        Int      @id @default(autoincrement())
   shiftType shiftType  @default(OPENING)
   shiftIn   DateTime @default(now())
-  shiftOut  DateTime? 
+  shiftOut  DateTime
   startingCash Float
-  cashpickId Int
-  cashpick Cashpick @relation(fields: [cashpickId], references: [id])
-  voidedId Int?
-  voided VoidedOrder? @relation(fields: [voidedId], references: [id])
+  cashpickAmount Cashpick[]
+  voidedAmount VoidedOrder[]
   totalCash Float
-  userId Int
-  user User[]
-  createdAt DateTime @default(now())
-}
-
-model VoidedOrder {
-  id Int @id @default(autoincrement())
-  orderId Int
-  order Order[]
-  shiftid Int
-  shift Shift[]
+  userId String 
+  user User @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }
 
 model Cashpick{
   id Int @id @default(autoincrement())
-  shiftId Int
-  shift Shift[]
-  userId Int
-  user User[]
+  shiftId Int 
+  shift Shift @relation(fields: [shiftId], references: [id])
+  userId String 
+  user User @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }
 
 model Spotcheck {
   id Int @id @default(autoincrement())
-  userid Int
-  user User[]
+  userid String 
+  user User @relation(fields: [userid], references: [id])
   posCash Float
   actualCash Float
   createdAt DateTime @default(now())
@@ -99,7 +86,7 @@ model Product {
   categoryId Int //Foreign Key 
   category   Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   createdAt  DateTime         @default(now())
-  updatedAt  DateTime         
+  updatedAt  DateTime?      
 }
 
 model ProductVariant {
@@ -110,7 +97,8 @@ model ProductVariant {
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   orders OrderItem[]
   createdAt DateTime @default(now())
-  updatedAt DateTime 
+  updatedAt DateTime?
+
   @@unique([productId, size])
 }
 
@@ -135,10 +123,9 @@ model Order {
   status     STATUS       @default(QUEUE) 
   userId String //Foreign Key
   user User @relation(fields: [userId], references: [id])
-  voidedId Int?//Forein Key to voided order
-  voidedOrder VoidedOrder? @relation(fields: [voidedId], references: [id])
+  voidedOrderId Int?
+  voidedOrder VoidedOrder? @relation("OrderToVoidOrder")
   createdAt  DateTime     @default(now())
-  updatedAt  DateTime?   
 }
 
 model OrderItem {
@@ -150,6 +137,16 @@ model OrderItem {
   quantity        Int
   subtotal        Float
   createdAt  DateTime     @default(now())    
+}
+
+model VoidedOrder {
+  id Int @id @default(autoincrement())
+  amount Float
+  orderId Int @unique
+  order Order @relation("OrderToVoidOrder", fields: [orderId], references: [id]) 
+  shiftId Int
+  shift Shift @relation(fields: [shiftId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum STATUS {
