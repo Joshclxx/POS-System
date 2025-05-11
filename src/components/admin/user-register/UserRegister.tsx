@@ -313,6 +313,3 @@ const UserRegister = () => {
 };
 
 export default UserRegister;
-
-// TODO
-// Table Actions "Edit and Delete User"

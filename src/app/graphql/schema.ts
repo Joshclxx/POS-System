@@ -1,32 +1,31 @@
 import { gql } from "@apollo/client";
 
 export const typeDefs = gql`
-
-enum Role {
+  enum Role {
     CASHIER
     MANAGER
     ADMIN
-} 
+  }
 
-enum ShiftType {
+  enum ShiftType {
     OPENING
     CLOSING
-}
+  }
 
-enum STATUS {
+  enum STATUS {
     QUEUE
     COMPLETED
     VOIDED
-}
+  }
 
-enum Size {
-  PT
-  RG
-  GR
-}
+  enum Size {
+    PT
+    RG
+    GR
+  }
 
-type User {
-    id: ID!,
+  type User {
+    id: ID!
     firstname: String!
     middlename: String!
     lastname: String!
@@ -38,9 +37,9 @@ type User {
     shift: [Shift!]!
     createdAt: String!
     updatedAt: String!
-}
+  }
 
-type Shift {
+  type Shift {
     id: ID!
     shiftType: ShiftType!
     shiftIn: String!
@@ -48,9 +47,9 @@ type Shift {
     user: User!
     createdAt: String!
     updatedAt: String!
-}
+  }
 
-type Product {
+  type Product {
     id: Int!
     name: String!
     variants: [ProductVariant!]!
@@ -58,9 +57,9 @@ type Product {
     category: Category!
     createdAt: String!
     updatedAt: String!
-}
+  }
 
-type ProductVariant {
+  type ProductVariant {
     id: Int!
     size: Size!
     price: Float
@@ -69,17 +68,17 @@ type ProductVariant {
     orders: [OrderItem!]!
     createdAt: String!
     updatedAt: String!
-}
+  }
 
-type Category {
+  type Category {
     id: Int!
     name: String!
     products: [Product!]!
     createdAt: String!
     updatedAt: String!
-}
+  }
 
-type Order {
+  type Order {
     id: Int!
     items: [OrderItem!]!
     total: Float!
@@ -88,9 +87,9 @@ type Order {
     user: User!
     createdAt: String!
     updatedAt: String!
-}
+  }
 
-type OrderItem {
+  type OrderItem {
     id: Int!
     quantity: Int!
     subtotal: Float!
@@ -99,22 +98,21 @@ type OrderItem {
     productVariant: ProductVariant!
     createdAt: String!
     updatedAt: String!
-}
+  }
 
-type Query {
+  type Query {
     getAllUsers: [User!]!
-    getUser(id: String!) : User
+    getUser(id: String!): User
     getAllProducts: [Product!]!
-    getProduct(name: String) : Product
+    getProduct(name: String): Product
     getAllOrders: [Order!]!
     getOrder(id: Int!): Order
     getCategory(name: String!): Category
     getAllCategories: [Category!]!
     getProductVariant(data: SearchProductVariantInput!): ProductVariant
+  }
 
-}
-
-type Mutation {
+  type Mutation {
     createUser(data: CreateUserInput!): User
     createCategory(data: CreateCategoryInput!): Category
     createProduct(data: CreateProductInput!): Product
@@ -123,56 +121,57 @@ type Mutation {
     deleteUser(id: String!): User
     deleteProduct(id: Int!): Product
     deleteCategory(name: String!): Category
+    # deleteAllOrder: [Order!]!
 
     updateProduct(name: String!): Product
     updateOrderStatus(data: UpdateOrderStatusInput!): Order
-}
+  }
 
-#Products related mutations ------------------------------------------------------------------
-input CreateProductVariantInput {
+  #Products related mutations ------------------------------------------------------------------
+  input CreateProductVariantInput {
     size: Size!
     price: Float!
-}
+  }
 
-input EditProductInput {
+  input EditProductInput {
     name: String #Optional vice versa to variants
     variants: [CreateProductVariantInput!] #Optional if we only want to update the name
-}
+  }
 
-input SearchProductVariantInput {
+  input SearchProductVariantInput {
     productId: Int!
     size: Size!
-}
+  }
 
-input CreateCategoryInput {
+  input CreateCategoryInput {
     name: String!
-}
+  }
 
-input CreateProductInput {
+  input CreateProductInput {
     name: String!
     variants: [CreateProductVariantInput!]!
     categoryId: Int!
-}
+  }
 
-#ORDERS RELATED MUTATIONS -------------------------------------------------------------------
-input CreateOrderInput{ 
+  #ORDERS RELATED MUTATIONS -------------------------------------------------------------------
+  input CreateOrderInput {
     items: [CreateOrderItemInput!]!
     total: Float!
     status: STATUS!
     userId: String!
-}
-input CreateOrderItemInput { 
+  }
+  input CreateOrderItemInput {
     productVariantId: Int!
     quantity: Int!
     subtotal: Float!
-}
-input UpdateOrderStatusInput {
+  }
+  input UpdateOrderStatusInput {
     id: Int!
     status: STATUS!
-}
+  }
 
-#Users related mutations ---------------------------------------------------------------------
-input CreateUserInput {
+  #Users related mutations ---------------------------------------------------------------------
+  input CreateUserInput {
     firstname: String!
     middlename: String!
     lastname: String!
@@ -180,6 +179,5 @@ input CreateUserInput {
     email: String!
     password: String!
     role: Role!
-}
-
+  }
 `;
