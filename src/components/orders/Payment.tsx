@@ -7,7 +7,11 @@ import { useOrderStore } from "@/hooks/useOrder";
 // import { useHistoryStore } from "@/hooks/useOrderHistory";
 import toast, { Toaster } from "react-hot-toast";
 import { CREATE_ORDER } from "@/app/graphql/mutations";
-import { GET_PRODUCT, GET_PRODUCT_VARIANT, GET_ALL_ORDERS } from "@/app/graphql/query";
+import {
+  GET_PRODUCT,
+  GET_PRODUCT_VARIANT,
+  GET_ALL_ORDERS,
+} from "@/app/graphql/query";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 
 type PaymentProps = {
@@ -72,7 +76,7 @@ const Payment = ({
   const [createOrder] = useMutation(CREATE_ORDER);
   const [getProduct] = useLazyQuery(GET_PRODUCT);
   const [getProductVariant] = useLazyQuery(GET_PRODUCT_VARIANT);
-  const {refetch} = useQuery(GET_ALL_ORDERS)
+  const { refetch } = useQuery(GET_ALL_ORDERS);
 
   return (
     <SectionContainer background="mt-1 w-[900px] h-auto">
@@ -202,11 +206,11 @@ const Payment = ({
                             items: itemInputs,
                             total: totalAmount,
                             status: "QUEUE",
-                            userId: "733a5559-b2b8-49c5-92ce-66ebb3af13d8", //for testing only 733a5559-b2b8-49c5-92ce-66ebb3af13d8 / Josh cd260fa5-a3f4-4b4c-855a-7918d2a0d51d
+                            userId: "f22efa5c-899c-4bad-ba78-5270a1622aaa", //for testing only 733a5559-b2b8-49c5-92ce-66ebb3af13d8 / Josh f22efa5c-899c-4bad-ba78-5270a1622aaa
                           },
                         },
                       });
-                      refetch() //refetch the Orders to get the latest update
+                      refetch(); //refetch the Orders to get the latest update
                       clearProducts();
                       setOkPressed(false); // Reset after confirmation
                       toast.success(`Order #${orderId} Payment Confirmed.`);
