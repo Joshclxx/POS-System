@@ -331,7 +331,7 @@ export const mutationResolvers = {
 
     updateOrderStatus: async (
       _: unknown,
-      args: { data: {id: number; status: "QUEUE" | "COMPLETED" | "VOIDED" }},
+      args: { data: { id: number; status: "QUEUE" | "COMPLETED" | "VOIDED" } },
       context: GraphQLContext
     ) => {
       try {
@@ -347,5 +347,17 @@ export const mutationResolvers = {
         console.error(error); //simple error for now
       }
     },
+
+    // deleteAllOrder: async (
+    //   _: unknown,
+    //   __: unknown,
+    //   context: GraphQLContext
+    // ) => {
+    //   try {
+    //     return await context.prisma.order.deleteMany();
+    //   } catch (error) {
+    //     console.error(error); // simple error fow now
+    //   }
+    // },
   },
 };
