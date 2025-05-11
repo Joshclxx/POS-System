@@ -256,22 +256,30 @@ export const query = {
         }
       }
 
-      try {
+      
 
-        const orders = await context.prisma.order.findMany({ include: includeData });
+      try {
+        const orders = await context.prisma.order.findMany({include: includeData});
         const formattedOrders = orders.map(order => ({
           ...order,
-          createdAt: order.createdAt ? format(order.createdAt, 'yyyy-MM-dd HH:mm:ss a') : null
+          createdAt: order.createdAt ? format(order.createdAt, "MM/dd/yyyy hh:mm:dd a") : null
         }));
 
         return formattedOrders;
+
       } catch (error: unknown) {
         if(error instanceof Error) {
 
           if(error.message.includes("connect")) {
             try {
               await context.prisma.$connect();
-              return await context.prisma.order.findMany({include: includeData});
+              const orders = await context.prisma.order.findMany({include: includeData});
+              const formattedOrders = orders.map(order => ({
+                ...order,
+                createdAt: order.createdAt ? format(order.createdAt, "MM/dd/yyyy hh:mm:dd a") : null
+              }));
+
+              return formattedOrders;
 
             } catch (reconnectError) {
               throw new Error(`Database is unreachable: ${reconnectError}`);
