@@ -325,7 +325,39 @@ export const mutationResolvers = {
           },
         });
       } catch (error) {
-        console.error(error);
+        console.error(error); //simple error for nowwwwwwwww
+      }
+    },
+
+    createVoidOrder: async (_: unknown, args: {data: {orderId: number, shiftId: number, userId: string}}, context: GraphQLContext) => {
+      const voidOrderData = {
+          orderId: args.data.orderId,
+          shiftId: args.data.shiftId,
+          userId: args.data.userId
+      }
+
+      try {
+        return await context.prisma.voidedOrder.create({data: voidOrderData})
+
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          if (error.message.includes("database")) {
+            try {
+              await context.prisma.$connect();
+              return await context.prisma.voidedOrder.create({data: voidOrderData})
+              
+            } catch (reconnectError: unknown) {
+              if (reconnectError instanceof Error) {
+                throw new Error(
+                  `Failed to connect database: ${reconnectError.message}`
+                );
+              }
+              throw new Error("Database is unreachable.");
+            }
+          }
+          throw new Error(`Failed to void an order: ${error.message}`);
+        }
+        throw new Error("An unknown error occured while voiding an order.");
       }
     },
 
