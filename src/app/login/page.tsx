@@ -4,23 +4,48 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import SectionContainer from "@/components/SectionContainer";
+import { USER_LOGIN } from "../graphql/query";
+import { useLazyQuery } from "@apollo/client";
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const [userLogin] = useLazyQuery(USER_LOGIN);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (email === "heebrew@cafe.employee" && password === "Employee01") {
+    const {data} = await userLogin({
+      variables: {
+        data: {
+          email: email,
+          password: password
+        }
+      }
+    });
+
+    
+    if (data && data.userLogin) {
       localStorage.setItem("loggedIn", "true");
       localStorage.setItem("userEmail", email);
+      localStorage.setItem("userRole", data.userLogin.role);
       toast.success("Logged in successfully!");
       router.push("/admin/shift");
     } else {
       toast.error("Login Denied, Email & Password Incorrect!");
     }
+
+    // if (email === "heebrew@cafe.employee" && password === "Employee01") {
+    //   localStorage.setItem("loggedIn", "true");
+    //   localStorage.setItem("userEmail", email);
+    //   toast.success("Logged in successfully!");
+    //   router.push("/admin/shift");
+    // } else {
+    //   toast.error("Login Denied, Email & Password Incorrect!");
+    // }
+    
   };
 
   return (

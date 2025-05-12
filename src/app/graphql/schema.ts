@@ -100,9 +100,18 @@ export const typeDefs = gql`
     updatedAt: String!
   }
 
+  type VoidOrder {
+    id: Int!
+    orderId: Int!
+    shiftId: Int!
+    userId: String!
+    createdAt: String!
+  }
+
   type Query {
     getAllUsers: [User!]!
     getUser(id: String!): User
+    userLogin(data: UserLoginInput!): User
     getAllProducts: [Product!]!
     getProduct(name: String): Product
     getAllOrders: [Order!]!
@@ -117,6 +126,7 @@ export const typeDefs = gql`
     createCategory(data: CreateCategoryInput!): Category
     createProduct(data: CreateProductInput!): Product
     createOrder(data: CreateOrderInput!): Order
+    createVoidOrder(data: CreateVoidOrderInput!): VoidOrder
 
     deleteUser(id: String!): User
     deleteProduct(id: Int!): Product
@@ -170,6 +180,12 @@ export const typeDefs = gql`
     status: STATUS!
   }
 
+  input CreateVoidOrderInput {
+    orderId: Int!
+    shiftId: Int!
+    userId: String!
+  }
+
   #Users related mutations ---------------------------------------------------------------------
   input CreateUserInput {
     firstname: String!
@@ -179,5 +195,10 @@ export const typeDefs = gql`
     email: String!
     password: String!
     role: Role!
+  }
+
+  input UserLoginInput {
+    email: String!
+    password: String!
   }
 `;
