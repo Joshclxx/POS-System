@@ -57,6 +57,57 @@ export const query = {
       }
     },
 
+    userLogin: async (_: unknown, args: {data: {email: string, password: string}}, context: GraphQLContext) => {
+      const fetchUser = () => {
+        return context.prisma.user.findUnique({
+          where: {
+            email_password: {
+              email: args.data.email,
+              password: args.data.password
+            }
+          }
+        })
+      };
+
+      const userDataFormat = async () => {
+        const user = await fetchUser();
+
+        if(!user) {
+          throw new Error("Invalid email or password");
+        }
+
+        return {
+          id: user.id,
+          email: user.email, // I will include email and password for testing purposes  
+          password: user.password, // I didn't use hashed password for now for testing purposes
+          role: user.role
+        }
+      };
+
+      try {
+        return userDataFormat();
+
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+
+          if(error.message.includes("connect")){
+            try {
+              await context.prisma.$connect();
+              return userDataFormat();
+
+            } catch (reconnectError: unknown) {
+              if(reconnectError instanceof Error) {
+                throw new Error(`Failed to connect database.`);
+              }
+              throw new Error("Database is unreachable");
+            }
+          }
+          throw new Error(`Failed to fetch user: ${error.message}`);
+        }
+        throw new Error("An unknown error occurred while fetching the user.");
+      }
+    },
+
     //PRODUCTS-------------------------------------------------------------------------------------------
     //ALL PRODUCTS
     getAllProducts: async (_: unknown, __: unknown, context: GraphQLContext) => {

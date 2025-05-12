@@ -79,3 +79,14 @@ export const UPDATE_ORDER_STATUS = gql`
     }
   }
 `
+
+export const VOID_ORDER = gql`
+  mutation createVoidOrder($data: CreateVoidOrderInput!) {
+    createVoidOrder(data: $data){
+      orderId
+      shiftId
+      userId
+      createdAt
+    }
+  }
+`
