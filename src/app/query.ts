@@ -1,14 +1,5 @@
 import { gql } from "@apollo/client";
-export const USER_LOGIN = gql`
-  query userLogin($data: UserLoginInput!) {
-    userLogin(data: $data) {
-      id
-      email
-      password
-      role
-    }
-  }
-`
+
 export const GET_CATEGORY = gql`
   query getCategory($name: String!) {
     getCategory(name: $name) {

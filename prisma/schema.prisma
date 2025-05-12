@@ -29,7 +29,7 @@ model User {
   cashpick Cashpick[]
   orders Order[]
   spotCheck Spotcheck[]
-
+  voidOrder VoidedOrder[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime?
 
@@ -141,11 +141,12 @@ model OrderItem {
 
 model VoidedOrder {
   id Int @id @default(autoincrement())
-  amount Float
   orderId Int @unique
   order Order @relation("OrderToVoidOrder", fields: [orderId], references: [id]) 
   shiftId Int
   shift Shift @relation(fields: [shiftId], references: [id])
+  userId String
+  user User @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }
 
