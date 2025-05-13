@@ -58,12 +58,14 @@ export const query = {
     },
 
     userLogin: async (_: unknown, args: {data: {email: string, password: string}}, context: GraphQLContext) => {
+      const { email, password } = args.data;
+
       const fetchUser = () => {
         return context.prisma.user.findUnique({
           where: {
             email_password: {
-              email: args.data.email,
-              password: args.data.password
+              email: email.toLowerCase(),
+              password: password
             }
           }
         })
@@ -244,7 +246,7 @@ export const query = {
       }
     },
 
-    getProductVariant: async (_: unknown, args : {data: {productId: number, size: "PT" | "RG" | "GR"}}, context: GraphQLContext) => {
+    getProductVariant: async (_: unknown, args : {data: {productId: number, size: "pt" | "rg" | "gr"}}, context: GraphQLContext) => {
       try {
         return await context.prisma.productVariant.findUnique({
           where: {

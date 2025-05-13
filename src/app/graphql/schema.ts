@@ -2,26 +2,31 @@ import { gql } from "@apollo/client";
 
 export const typeDefs = gql`
   enum Role {
-    CASHIER
-    MANAGER
-    ADMIN
+    cashier
+    manager
+    admin
+  }
+
+  enum Gender{
+    male
+    female
   }
 
   enum ShiftType {
-    OPENING
-    CLOSING
+    opening
+    closing
   }
 
   enum STATUS {
-    QUEUE
-    COMPLETED
-    VOIDED
+    queue
+    completed
+    voided
   }
 
   enum Size {
-    PT
-    RG
-    GR
+    pt
+    rg
+    gr
   }
 
   type User {
@@ -29,7 +34,8 @@ export const typeDefs = gql`
     firstname: String!
     middlename: String!
     lastname: String!
-    age: Int!
+    suffix: String
+    gender: Gender!
     email: String!
     password: String!
     role: Role!
@@ -191,7 +197,8 @@ export const typeDefs = gql`
     firstname: String!
     middlename: String!
     lastname: String!
-    age: Int!
+    suffix: String
+    gender: Gender!
     email: String!
     password: String!
     role: Role!

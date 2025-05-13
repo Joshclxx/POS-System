@@ -1,5 +1,6 @@
 import { GraphQLContext } from "@/app/lib/context";
 
+
 export const mutationResolvers = {
   Mutation: {
     //CREATE MUTATION----------------------------------------------------------------------------------------------------------------------------------
@@ -10,22 +11,24 @@ export const mutationResolvers = {
           firstname: string;
           middlename: string;
           lastname: string;
-          age: number;
+          suffix: string;
+          gender: "male" | "female";
           email: string;
           password: string;
-          role: "CASHIER" | "MANAGER" | "ADMIN";
+          role: "cashier" | "manager" | "admin";
         };
       },
       context: GraphQLContext
     ) => {
-      const { firstname, middlename, lastname, age, email, password, role } =
+      const { firstname, middlename, lastname, suffix, gender, email, password, role } =
         args.data;
       const userData = {
-        firstname,
-        middlename,
-        lastname,
-        age,
-        email,
+        firstname: firstname.toLowerCase(),
+        middlename: middlename.toLowerCase(),
+        lastname: lastname.toLowerCase(),
+        suffix: suffix.toLowerCase(),
+        gender,
+        email: email.toLowerCase(),
         password,
         role,
       };
@@ -52,6 +55,7 @@ export const mutationResolvers = {
         throw new Error("An unkown error occured while creating user.");
       }
     },
+
     deleteCategory: async (
       _: unknown,
       { name }: { name: string },
@@ -117,7 +121,7 @@ export const mutationResolvers = {
       args: {
         data: {
           name: string;
-          variants: { size: "PT" | "RG" | "GR"; price: number }[];
+          variants: { size: "pt" | "rg" | "gr"; price: number }[];
           categoryId: number;
         };
       },
@@ -209,7 +213,7 @@ export const mutationResolvers = {
         id: number;
         edits: {
           name: string;
-          variants: { size: "PT" | "RG" | "GR"; price: number }[];
+          variants: { size: "pt" | "rg" | "gr"; price: number }[];
         };
       },
       context: GraphQLContext
@@ -295,7 +299,7 @@ export const mutationResolvers = {
             subtotal: number;
           }[];
           total: number;
-          status: "QUEUE" | "COMPLETED" | "VOIDED";
+          status: "queue" | "completed" | "voided";
           userId: string;
         };
       },
@@ -363,7 +367,7 @@ export const mutationResolvers = {
 
     updateOrderStatus: async (
       _: unknown,
-      args: { data: { id: number; status: "QUEUE" | "COMPLETED" | "VOIDED" } },
+      args: { data: { id: number; status: "queue" | "completed" | "voided" } },
       context: GraphQLContext
     ) => {
       try {
