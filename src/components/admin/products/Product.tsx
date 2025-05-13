@@ -137,9 +137,9 @@ const Product: React.FC = () => {
               data: {
                 name: itemName,
                 variants: [
-                  { size: "PT", price: parseFloat(itemPrices.PT) },
-                  { size: "RG", price: parseFloat(itemPrices.RG) },
-                  { size: "GR", price: parseFloat(itemPrices.GR) },
+                  { size: "pt", price: parseFloat(itemPrices.PT) },
+                  { size: "rg", price: parseFloat(itemPrices.RG) },
+                  { size: "gr", price: parseFloat(itemPrices.GR) },
                 ],
                 categoryId: parseInt(categoryId),
               },

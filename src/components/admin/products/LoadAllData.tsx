@@ -14,7 +14,7 @@ type RawProduct = {
 };
 
 type ProductVariants = {
-  size: "PT" | "RG" | "GR";
+  size: "pt" | "rg" | "gr";
   price: number;
 };
 
@@ -42,9 +42,9 @@ const DataLoader = () => {
       const formattedProducts = productData.getAllProducts.map(
         (product: RawProduct) => {
           const prices = {
-            PT: product.variants.find((v) => v.size === "PT")?.price ?? 0, //just to make sure that the price is never null/undefined :>
-            RG: product.variants.find((v) => v.size === "RG")?.price ?? 0,
-            GR: product.variants.find((v) => v.size === "GR")?.price ?? 0,
+            PT: product.variants.find((v) => v.size === "pt")?.price ?? 0, //just to make sure that the price is never null/undefined :>
+            RG: product.variants.find((v) => v.size === "rg")?.price ?? 0,
+            GR: product.variants.find((v) => v.size === "gr")?.price ?? 0,
           };
 
           return {
