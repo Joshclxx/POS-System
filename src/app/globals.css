@@ -180,3 +180,57 @@ button.bg-green-600:hover {
 .table-cell {
   @apply px-6 py-4 whitespace-nowrap border-b;
 }
+
+/* LOGIN BORDER */
+.login-form {
+  position: relative;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  padding: 1.5rem;
+  border: 1px solid #131a15;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px 2px #131a15;
+  max-width: 24rem;
+  width: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.login-form::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  border-radius: 0.5rem;
+  background: linear-gradient(
+    90deg,
+    transparent 20%,
+    rgba(211, 47, 47, 0.3) 60%,
+    transparent 90%
+  );
+  background-size: 200% auto;
+  z-index: 0; /* behind everything */
+  animation: border-run 2s linear infinite;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.login-form:hover::before {
+  opacity: 1;
+}
+
+.login-form * {
+  position: relative;
+  z-index: 1; /* above the border effect */
+}
+
+@keyframes border-run {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
