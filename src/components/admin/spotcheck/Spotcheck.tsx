@@ -6,9 +6,10 @@ import SectionContainer from "@/components/SectionContainer";
 import AdminDrawer from "../AdminDrawer";
 import useGlobal from "@/hooks/useGlobal";
 import { useShiftStore } from "@/hooks/shiftStore";
-import ManagerPasswordOnlyLogin from "../ManagerPasswordOnlyLogin";
+
+import ManagerLogin from "../ManagerLogin";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 const denominations = [1, 5, 10, 20, 50, 100, 200, 500, 1000];
@@ -119,6 +120,7 @@ const Spotcheck = () => {
   }
 
   const handleLoginSuccess = (email: string, password: string) => {
+    localStorage.setItem("userEmail", email);
     login(email, password);
   };
 
@@ -128,7 +130,7 @@ const Spotcheck = () => {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
         <Toaster />
-        <ManagerPasswordOnlyLogin onSuccess={() => router.refresh()} />
+        <ManagerLogin onLoginSuccess={handleLoginSuccess} />
       </SectionContainer>
     );
   }
@@ -136,6 +138,7 @@ const Spotcheck = () => {
   return (
     <>
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
+        <Toaster />
         <div className="grid grid-cols-12 mt-4">
           <div className="bg-colorDirtyWhite w-[1280px] h-[800px] relative">
             {/* TITLE */}
@@ -147,14 +150,29 @@ const Spotcheck = () => {
                   </p>
                 </div>
               </div>
-              {/* HISTORY BUTTON */}
-              <Button
-                variant="universal"
-                onClick={() => setShowDrawer(true)}
-                className="w-[172px] h-[44px] bg-colorBlue text-tertiary rounded-3xl text-[24px] font-regular ml-auto"
-              >
-                History
-              </Button>
+
+              <div className="w-[414px]" />
+              {/* HISTORY and LOGOUT BUTTON */}
+              <div className="flex justify-between gap-4">
+                <Button
+                  variant="universal"
+                  onClick={() => setShowDrawer(true)}
+                  className="w-[172px] h-[44px] bg-colorBlue text-tertiary rounded-3xl text-[24px] font-regular ml-auto"
+                >
+                  History
+                </Button>
+                <Button
+                  variant="universal"
+                  onClick={() => {
+                    logout();
+                    router.replace("/");
+                    toast.success("Spotcheck Logged Out.");
+                  }}
+                  className="w-[172px] h-[44px] bg-colorBlue text-tertiary rounded-3xl text-[24px] font-regular ml-auto"
+                >
+                  Logout
+                </Button>
+              </div>
             </div>
             {/* AMOUNT DISPLAY */}
             <div className="flex items-center justify-center container border-1 border-primary bg-tertiary w-[610px] h-[72px] rounded-lg mx-auto mt-[20px]">
@@ -312,8 +330,8 @@ const Spotcheck = () => {
                   variant="universal"
                   onClick={() => {
                     logout();
-                    window.location.reload();
-                    router.push("/");
+                    router.replace("/");
+                    toast.success("Spotcheck Logged Out.");
                   }}
                   className="w-[172px] h-[44px] bg-colorGreen text-tertiary rounded-3xl text-[24px] font-regular absolute right-4"
                 >

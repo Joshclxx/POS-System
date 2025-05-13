@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import Button from "@/components/Button";
 import SectionContainer from "../../SectionContainer";
+import ManagerLogin from "../ManagerLogin";
+import { useManagerAuth } from "@/hooks/useManagerAuth";
 import { useShiftStore } from "@/hooks/shiftStore";
 
 const Cashpick = () => {
@@ -12,23 +14,40 @@ const Cashpick = () => {
   const [amount, setAmount] = useState("");
   const router = useRouter();
 
+  const { isVerified, loading, login, logout } = useManagerAuth();
+  console.log("Auth state ->", { isVerified, loading });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setAmount(e.target.value);
+
   const handleConfirm = () => {
     const num = parseFloat(amount.replace(/[^\d.]/g, "")) || 0;
     pickCash(num);
     setAmount("");
     toast.success("Cash Picked");
-
-    setTimeout(() => {
-      router.push("/");
-    }, 2000);
+    router.push("/");
+    logout();
   };
+
   const handleReset = () => setAmount("");
   const isConfirmDisabled = !amount.trim();
   const formatted = amount
     ? parseFloat(amount.replace(/[^\d.]/g, "")).toFixed(2)
     : "0.00";
+
+  const handleLoginSuccess = (email: string, password: string) => {
+    localStorage.setItem("userEmail", email);
+    login(email, password);
+  };
+
+  if (!isVerified) {
+    return (
+      <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
+        <Toaster />
+        <ManagerLogin onLoginSuccess={handleLoginSuccess} />
+      </SectionContainer>
+    );
+  }
 
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">

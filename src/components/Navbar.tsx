@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,41 +20,45 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
 export default function Navbar() {
   const [isOpenMenu, setOpenMenu] = useState(false);
   const [isOpenPos, setOpenPos] = useState(false);
+  const [isManager, setIsManager] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
-  const { isVerified } = useManagerAuth(); // <-- only use auth now
+  useManagerAuth(); // no need to destructure anything
+
+  // NEW: hide if manager
+  useEffect(() => {
+    const role = localStorage.getItem("userRole");
+    if (role === "manager" || role === "admin") {
+      setIsManager(true);
+      setIsAdmin(true);
+    }
+  }, []);
+
+  if (isManager) return null;
 
   const chunkedMenu = chunkArray(MENU_FEATURE_LINKS, 2);
 
-  // only navigate when manager has verified
   const handleNavigation = (href: string) => {
-    if (isVerified) {
-      router.push(href);
-    }
+    router.push(href);
   };
 
   return (
-    <div className={`${!isVerified ? "pointer-events-none opacity-50" : ""}`}>
+    <>
       <nav className="bg-navbar w-full h-[48px] mt-4 flex items-center z-30 relative">
         <div className="w-full max-w-[1280px] mx-auto flex justify-between items-center px-4">
-          {/* LEFT SECTION: Menu + Nav */}
+          {/* LEFT SECTION */}
           <div className="flex items-center gap-4 flex-1">
-            <button
-              onClick={() => {
-                if (isVerified) setOpenMenu(true);
-              }}
-            >
+            <button onClick={() => setOpenMenu(true)}>
               <Image src="/icon/menu.svg" alt="Menu" width={32} height={32} />
             </button>
 
             <ul className="flex gap-2">
               {NAV_LINKS.map((link) => (
                 <li key={link.key}>
-                  <Link href={isVerified ? link.href : "#"}>
+                  <Link href={link.href}>
                     <Button
                       variant="navbar"
-                      onClick={() => {
-                        handleNavigation(link.href);
-                      }}
+                      onClick={() => handleNavigation(link.href)}
                     >
                       {link.label}
                     </Button>
@@ -64,25 +68,19 @@ export default function Navbar() {
             </ul>
           </div>
 
-          {/* CENTER: POS Name */}
+          {/* CENTER SECTION */}
           <div className="flex justify-center items-center flex-1">
             <span
               className="text-primary font-bold text-[24px] cursor-pointer"
-              onClick={() => {
-                if (isVerified) setOpenPos(true);
-              }}
+              onClick={() => setOpenPos(true)}
             >
               HEEBREW CAFE
             </span>
           </div>
 
-          {/* RIGHT SECTION: POS Icon */}
+          {/* RIGHT SECTION */}
           <div className="flex justify-end items-center flex-1">
-            <button
-              onClick={() => {
-                if (isVerified) setOpenPos(true);
-              }}
-            >
+            <button onClick={() => setOpenPos(true)}>
               <Image
                 src="/icon/pos-icon-dark.svg"
                 alt="POS"
@@ -102,7 +100,6 @@ export default function Navbar() {
             onClick={() => setOpenPos(false)}
           />
           <div className="fixed top-2 right-2 h-[55%] w-1/3 bg-primary z-50 border border-primaryGray shadow-lg transition-transform duration-300 ease-in-out flex flex-col">
-            {/* Header */}
             <div className="p-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold underline">
                 BSIS 32A1 POS SYSTEM
@@ -110,13 +107,10 @@ export default function Navbar() {
               <button
                 onClick={() => setOpenPos(false)}
                 className="text-tertiary text-xl font-bold bg-colorRed w-[32px] h-[32px] rounded-full"
-                aria-label="Close"
               >
                 X
               </button>
             </div>
-
-            {/* Main content */}
             <div className="px-4 mt-6 flex-grow">
               <div className="flex justify-between items-center">
                 <p>version</p>
@@ -141,8 +135,6 @@ export default function Navbar() {
                 <p>march 2025</p>
               </div>
             </div>
-
-            {/* Credits at the bottom */}
             <div className="px-4 pb-4">
               <p className="text-center text-[14px]">
                 © Hebrew Cafe. All Rights Reserved
@@ -178,10 +170,8 @@ export default function Navbar() {
                   <button
                     className="text-base text-left transition-colors w-full py-2"
                     onClick={() => {
-                      if (isVerified) {
-                        setOpenMenu(false);
-                        handleNavigation(link.href);
-                      }
+                      setOpenMenu(false);
+                      handleNavigation(link.href);
                     }}
                   >
                     {link.label}
@@ -195,6 +185,6 @@ export default function Navbar() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }

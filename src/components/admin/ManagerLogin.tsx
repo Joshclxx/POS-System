@@ -1,18 +1,24 @@
-// src/components/ManagerLogin.tsx
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useManagerAuth } from "@/hooks/useManagerAuth"; // Adjust path as needed
 
 interface Props {
-  onLoginSuccess: (email: string, password: string) => void;
+  onLoginSuccess?: (email: string, password: string) => void;
 }
 
 const ManagerLogin = ({ onLoginSuccess }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useManagerAuth();
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLoginSuccess(email, password);
+    const success = login(email, password);
+    if (success) {
+      onLoginSuccess?.(email, password);
+    }
   };
 
   return (
