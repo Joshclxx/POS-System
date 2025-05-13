@@ -9,6 +9,8 @@ import Button from "@/components/Button";
 import { motion, AnimatePresence } from "motion/react";
 import useGlobal from "@/hooks/useGlobal";
 import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+
 import {
   CREATE_CATEGORY,
   CREATE_PRODUCT,
@@ -22,6 +24,9 @@ import {
   GET_ALL_PRODUCTS,
   GET_CATEGORY,
 } from "@/app/graphql/query";
+// import ManagerLogin from "../ManagerLogin";
+// import { useManagerAuth } from "@/hooks/useManagerAuth";
+// import { useRouter } from "next/navigation";
 
 // Explicit type for menu items
 interface MenuItem {
@@ -71,6 +76,8 @@ const Product: React.FC = () => {
   const menus = useGlobal((state) => state.menus);
   const menuItems = useGlobal((state) => state.menuItems);
 
+  // const { isVerified, login, logout } = useManagerAuth();
+
   // Reset form and drawer state
   const handleCancel = () => {
     setOpenDrawer(false);
@@ -105,12 +112,14 @@ const Product: React.FC = () => {
           });
           // addMenu(newMenuName.trim());
           await refetchCategories();
-          toast.success(`${newMenuName} added successfully!`);
+          toast.success(`${newMenuName} added successfully!`, {
+            id: "menu-add",
+          });
         } catch (error) {
           console.error(error);
         }
       } else {
-        toast.error("Please enter a menu name.");
+        toast.error("Please enter a menu name.", { id: "menu-error" });
       }
     } else if (drawerMode === "menuItem") {
       if (
@@ -147,7 +156,7 @@ const Product: React.FC = () => {
           //   },
           // });
           await refetchProducts();
-          toast.success(`${itemName} added successfully!`);
+          toast.success(`${itemName} added successfully!`, { id: "item-add" });
         } catch (error) {
           console.error(error);
         }
@@ -177,7 +186,9 @@ const Product: React.FC = () => {
             },
           });
           await refetchProducts();
-          toast.success(`${itemName} updated successfully!`);
+          toast.success(`${itemName} updated successfully!`, {
+            id: "item-update",
+          });
         } catch (error) {
           console.log(error);
         }
@@ -197,7 +208,7 @@ const Product: React.FC = () => {
       try {
         await deleteCategory({ variables: { name: selectedMenu } });
         await refetchCategories();
-        toast.success(`Menu "${selectedMenu}" deleted.`);
+        toast.success(`Menu "${selectedMenu}" deleted.`, { id: "menu-delete" });
       } catch (error) {
         console.error(error);
       }
@@ -207,7 +218,9 @@ const Product: React.FC = () => {
       try {
         await deleteProduct({ variables: { id: selectedMenuItem.id } });
         await refetchProducts();
-        toast.success(`"${selectedMenuItem.name}" deleted.`);
+        toast.success(`"${selectedMenuItem.name}" deleted.`, {
+          id: "item-delete",
+        });
       } catch (error) {
         console.error("Error deleting product:", error);
         console.error(error);
@@ -232,15 +245,29 @@ const Product: React.FC = () => {
       ? "Confirm Delete"
       : "";
 
+  // const handleLoginSuccess = (email: string, password: string) => {
+  //   login(email, password);
+  // };
+
+  // if (!isVerified) {
+  //   return (
+  //     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
+  //       <Toaster />
+  //       <ManagerLogin onLoginSuccess={handleLoginSuccess} />
+  //     </SectionContainer>
+  //   );
+  // }
+  const router = useRouter();
+
   return (
     <>
       {/* Toast container */}
-      <Toaster position="top-center" />
+      <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
 
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
         <div className="grid grid-cols-12 gap-5 mt-4">
           {/* ADD MENU Section */}
-          <div className="col-span-3 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[782px] relative flex flex-col">
+          <div className="col-span-3 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[700px] relative flex flex-col">
             <div className="bg-primary w-full h-[52px] flex items-center justify-center rounded-lg">
               <div className="flex justify-between w-full items-center px-2">
                 <p className="text-colorDirtyWhite font-bold text-[24px]">
@@ -308,7 +335,7 @@ const Product: React.FC = () => {
           </div>
 
           {/* ADD MENU ITEM SECTION */}
-          <div className="col-span-9 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[782px] relative flex flex-col">
+          <div className="col-span-9 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[700px] relative flex flex-col">
             <div className="bg-primary w-full h-[52px] flex items-center justify-center rounded-lg">
               <div className="flex justify-between w-full items-center px-2">
                 <p className="text-colorDirtyWhite font-bold text-[24px]">
@@ -432,6 +459,17 @@ const Product: React.FC = () => {
                   </tbody>
                 </table>
               )}
+              <div className="absolute bottom-[60px] right-4">
+                <Button
+                  variant="universal"
+                  onClick={() => {
+                    router.replace("/login");
+                  }}
+                  className="z-10 w-[140px] h-auto bg-colorBlue text-tertiary rounded-3xl p-6 text-[18px] font-regular absolute right-4"
+                >
+                  Logout
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -440,7 +478,7 @@ const Product: React.FC = () => {
         <Drawer.Root open={openDrawer} onOpenChange={setOpenDrawer}>
           <Drawer.Portal>
             <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-            <Drawer.Content className="fixed bottom-0 left-1/2 transform -translate-x-1/2 items-center bg-secondary rounded-t-xl p-6 transition-all duration-300 w-[1024px] max-h-[80vh]">
+            <Drawer.Content className="z-[50] fixed bottom-0 left-1/2 transform -translate-x-1/2 items-center bg-secondary rounded-t-xl p-6 transition-all duration-300 w-[1024px] max-h-[80vh]">
               <div className="text-center text-colorDirtyWhite">
                 {drawerMode === "menu" && (
                   <p className="text-lg font-semibold">Add Menu</p>

@@ -13,6 +13,19 @@ const Shift = () => {
   const router = useRouter();
   const timer = useTimer();
   const { isVerified, login, logout } = useManagerAuth();
+  const [isManagerVerified, setIsManagerVerified] = useState(false); // for local control
+  const handleLoginSuccess = (email: string, password: string) => {
+    login(email, password);
+    setIsManagerVerified(true); // mark verified
+  };
+
+  const handleCloseShift = () => {
+    toast.success("Shift closed!");
+    closeShift();
+    timer.stop();
+    logout();
+    router.push("/login");
+  };
 
   const {
     isShiftActive,
@@ -43,9 +56,9 @@ const Shift = () => {
     [actualCash, expectedCash]
   );
 
-  const handleLoginSuccess = (email: string, password: string) => {
-    login(email, password);
-  };
+  // const handleLoginSuccess = (email: string, password: string) => {
+  //   login(email, password);
+  // };
 
   const handleOpenShift = () => {
     if (!startCashInput) {
@@ -56,15 +69,24 @@ const Shift = () => {
     router.push("/");
   };
 
-  const handleCloseShift = () => {
-    toast.success("Shift closed!");
-    closeShift();
-    timer.stop();
-    logout();
-    router.push("/login");
-  };
+  // const handleCloseShift = () => {
+  //   toast.success("Shift closed!");
+  //   closeShift();
+  //   timer.stop();
+  //   // logout();
+  //   router.push("/login");
+  // };
 
-  if (!isVerified) {
+  // if (!isVerified) {
+  //   return (
+  //     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
+  //       <Toaster />
+  //       <ManagerLogin onLoginSuccess={handleLoginSuccess} />
+  //     </SectionContainer>
+  //   );
+  // }
+
+  if (!isShiftActive && !isManagerVerified) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
         <Toaster />
