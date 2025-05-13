@@ -9,6 +9,21 @@ export const USER_LOGIN = gql`
     }
   }
 `
+
+export const GET_ALL_USERS = gql`
+  query getAllUsers{
+    getAllUsers{
+      firstname
+      middlename
+      lastname
+      suffix
+      gender
+      email
+      password
+      role
+    }
+  }
+`
 export const GET_CATEGORY = gql`
   query getCategory($name: String!) {
     getCategory(name: $name) {

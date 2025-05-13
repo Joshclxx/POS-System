@@ -7,6 +7,12 @@ import SectionContainer from "@/components/SectionContainer";
 import { USER_LOGIN } from "../graphql/query";
 import { useLazyQuery } from "@apollo/client";
 
+type UserData = {
+  id: string,
+  email: string,
+  password: string,
+  role: "cashier" | "manager" | "admin"
+}
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,32 +23,61 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const storedUsers = JSON.parse(
-      localStorage.getItem("registeredUsers") || "[]"
-    );
+    const {data} = await userLogin({
+      variables: {
+        data: {
+          email: email,
+          password: password,
+        }
+      }
+    });
 
-    const foundUser = storedUsers.find(
-      (user: any) => user.email === email && user.password === password
-    );
-
-    if (foundUser) {
+    if(data && data.userLogin) {
+      const userData: UserData = data.userLogin;
       localStorage.setItem("loggedIn", "true");
       localStorage.setItem("userEmail", email);
-      localStorage.setItem("userRole", foundUser.position.toLowerCase());
+      localStorage.setItem("userRole", userData.role);
 
       toast.success("Logged in successfully!");
 
-      if (foundUser.position === "Manager") {
+      if (data.position === "manager") {
         router.push("/admin/products");
-      } else if (foundUser.position === "Cashier") {
+      } else if (userData.role === "cashier") {
         router.push("/admin/shift");
-      }
+      } 
 
       return; // prevent falling through to admin check
+
     }
 
+    // const storedUsers = JSON.parse(
+    //   localStorage.getItem("registeredUsers") || "[]"
+    // );
+
+    // const foundUser = storedUsers.find(
+    //   (user: any) => user.email === email && user.password === password
+    // );
+
+    // if (foundUser) {
+    //   localStorage.setItem("loggedIn", "true");
+    //   localStorage.setItem("userEmail", email);
+    //   localStorage.setItem("userRole", foundUser.position.toLowerCase());
+
+    //   toast.success("Logged in successfully!");
+
+    //   if (foundUser.position === "Manager") {
+    //     router.push("/admin/products");
+    //   } else if (foundUser.position === "Cashier") {
+    //     router.push("/admin/shift");
+    //   }
+
+    //   return; // prevent falling through to admin check
+    // }
+
+
     // Default Admin Login
-    if (email === "heebrew@cafe.admin" && password === "Admin01") {
+    
+    if (email.toLowerCase() === "heebrew@cafe.admin" && password === "Admin01") {
       localStorage.setItem("loggedIn", "true");
       localStorage.setItem("userEmail", email);
       localStorage.setItem("userRole", "admin");

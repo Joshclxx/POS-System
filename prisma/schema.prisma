@@ -21,7 +21,8 @@ model User {
   firstname  String
   middlename String
   lastname   String
-  age        Int
+  suffix String?
+  gender        Gender
   email      String   
   password    String 
   role       Role  
@@ -38,9 +39,9 @@ model User {
 
 model Shift {
   id        Int      @id @default(autoincrement())
-  shiftType shiftType  @default(OPENING)
+  shiftType shiftType  @default(opening)
   shiftIn   DateTime @default(now())
-  shiftOut  DateTime
+  shiftOut  DateTime?
   startingCash Float
   cashpickAmount Cashpick[]
   voidedAmount VoidedOrder[]
@@ -61,21 +62,25 @@ model Cashpick{
 
 model Spotcheck {
   id Int @id @default(autoincrement())
-  userid String 
-  user User @relation(fields: [userid], references: [id])
+  userId String 
+  user User @relation(fields: [userId], references: [id])
   posCash Float
   actualCash Float
   createdAt DateTime @default(now())
 }
 
 enum shiftType {
-  OPENING
-  CLOSING
+  opening
+  closing
 }
 enum Role {
-  CASHIER
-  MANAGER
-  ADMIN
+  cashier
+  manager
+  admin
+}
+enum Gender {
+  male
+  female
 }
 
 //Products related model------------------------------------------------------------
@@ -110,9 +115,9 @@ model Category {
 }
 
 enum Size {
-  PT
-  RG
-  GR
+  pt
+  rg
+  gr
 }
 
 // Order related models-------------------------------------------------------------
@@ -120,7 +125,7 @@ model Order {
   id         Int          @id @default(autoincrement())
   items      OrderItem[] //One to Many (One order have Many Order Items)
   total      Float
-  status     STATUS       @default(QUEUE) 
+  status     STATUS       @default(queue) 
   userId String //Foreign Key
   user User @relation(fields: [userId], references: [id])
   voidedOrderId Int?
@@ -151,9 +156,9 @@ model VoidedOrder {
 }
 
 enum STATUS {
-  QUEUE
-  COMPLETED
-  VOIDED
+  queue
+  completed
+  voided
 }
 
 

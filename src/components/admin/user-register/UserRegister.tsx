@@ -4,29 +4,48 @@ import React, { useState, useEffect } from "react";
 import SectionContainer from "@/components/SectionContainer";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
-import { useLocalStorageState } from "@/hooks/useLocalStorageState";
+// import { useLocalStorageState } from "@/hooks/useLocalStorageState";
+import { GET_ALL_USERS } from "@/app/graphql/query";
+import { CREATE_USER } from "@/app/graphql/mutations";
+import { useMutation, useQuery } from "@apollo/client";
+
 
 // Initial form state
 const initialForm = {
-  firstName: "",
-  middleName: "",
-  lastName: "",
+  firstname: "",
+  middlename: "",
+  lastname: "",
   suffix: "",
   gender: "",
-  position: "",
+  role: "", //pinalitan ko muna position into role para mag match sa database
   email: "",
   password: "",
   retypePassword: "",
 };
 
+const capitalize = (str: string) => {
+  if(!str) return "";
+
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 type User = typeof initialForm;
 
 const UserRegister = () => {
   const [form, setForm] = useState<User>(initialForm);
-  const [users, setUsers] = useLocalStorageState<User[]>("registeredUsers", []);
+  const [users, setUsers] = useState<User[]>([]); //useState muna ginamit ko hindi kasi secured ang LocalStorages sa pag save ng passwords
+  // const [users, setUsers] = useLocalStorageState<User[]>("registeredUsers", []); //nag cacause sya ng hydration error
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const [createUser] = useMutation(CREATE_USER);
+  const {data: usersData, refetch} = useQuery(GET_ALL_USERS)
+
+  useEffect(() => {
+    if(usersData?.getAllUsers) {
+      setUsers(usersData.getAllUsers)
+    }
+  }, [usersData])
 
   // Handle input changes
   const handleChange = (
@@ -38,20 +57,22 @@ const UserRegister = () => {
   // Check form validity
   const isFormValid = () => {
     const {
-      firstName,
-      lastName,
+      firstname,
+      middlename,
+      lastname,
       gender,
-      position,
+      role,
       email,
       password,
       retypePassword,
     } = form;
 
     if (
-      !firstName ||
-      !lastName ||
+      !firstname ||
+      !middlename ||
+      !lastname ||
       !gender ||
-      !position ||
+      !role ||
       !email ||
       !password ||
       !retypePassword
@@ -70,31 +91,58 @@ const UserRegister = () => {
   };
 
   // ✅ Save user to localStorage + update state
-  const handleRegister = () => {
+  const handleRegister = async () => {
+    
     if (!isFormValid()) return;
 
     // Only allow Cashier or Manager
-    if (form.position !== "Cashier" && form.position !== "Manager") {
+    if (form.role !== "Cashier" && form.role !== "Manager") {
       setError("Only Cashier and Manager can register.");
       return;
     }
 
-    const existingUsers: User[] = JSON.parse(
-      localStorage.getItem("registeredUsers") || "[]"
-    );
+
+    const existingUsers: User[] = users;
+    
+    // const existingUsers: User[] = JSON.parse(
+    //   localStorage.getItem("registeredUsers") || "[]"
+    // );
 
     // Prevent duplicate email
     const emailExists = existingUsers.some((user) => user.email === form.email);
+
     if (emailExists) {
       setError("Email already registered.");
       return;
     }
 
-    const updatedUsers = [...existingUsers, form];
-    localStorage.setItem("registeredUsers", JSON.stringify(updatedUsers)); // SAVE to localStorage
-    setUsers(updatedUsers);
+    try {
+      await createUser({
+        variables: {
+          data: {
+            firstname: form.firstname,
+            middlename: form.middlename,
+            lastname: form.lastname,
+            suffix: form.suffix,
+            gender: form.gender.toLowerCase(),
+            email: form.email,
+            password: form.password,
+            role: form.role.toLowerCase()
+          }
+        }
+      });
+
+    //no need for now
+    // const updatedUsers = [...existingUsers, form];
+    // localStorage.setItem("registeredUsers", JSON.stringify(updatedUsers)); // SAVE to localStorage
+    // setUsers(updatedUsers);
+
+    await refetch()
     setForm(initialForm); // Reset form
     setError("");
+    } catch (error) {
+    console.error(error); //simple error for now
+    }
   };
 
   // Reset form
@@ -114,11 +162,11 @@ const UserRegister = () => {
               <div>
                 <p className="text-primary font-semibold">First Name *</p>
                 <input
-                  name="firstName"
+                  name="firstname"
                   type="text"
                   placeholder="e.g Joshua"
                   required
-                  value={form.firstName}
+                  value={form.firstname}
                   onChange={handleChange}
                   className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
                 />
@@ -127,10 +175,10 @@ const UserRegister = () => {
               <div>
                 <p className="text-primary font-semibold">Middle Name</p>
                 <input
-                  name="middleName"
+                  name="middlename"
                   type="text"
                   placeholder="e.g Colobong"
-                  value={form.middleName}
+                  value={form.middlename}
                   onChange={handleChange}
                   className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
                 />
@@ -140,11 +188,11 @@ const UserRegister = () => {
                 <div className="col-span-4">
                   <p className="text-primary font-semibold">Last Name *</p>
                   <input
-                    name="lastName"
+                    name="lastname"
                     type="text"
                     placeholder="e.g Paet"
                     required
-                    value={form.lastName}
+                    value={form.lastname}
                     onChange={handleChange}
                     className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
                   />
@@ -181,8 +229,8 @@ const UserRegister = () => {
               <div>
                 <p className="text-primary font-semibold">Position *</p>
                 <select
-                  name="position"
-                  value={form.position}
+                  name="role"
+                  value={form.role}
                   onChange={handleChange}
                   required
                   className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
@@ -313,25 +361,25 @@ const UserRegister = () => {
                 {users.map((user, idx) => (
                   <tr key={idx} className="hover:bg-gray-100">
                     <td className="border border-primary px-4 py-2">
-                      {user.firstName}
+                      {capitalize(user.firstname)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {user.middleName}
+                      {capitalize(user.middlename)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {user.lastName}
+                      {capitalize(user.lastname)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {user.suffix}
+                      {capitalize(user.suffix)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {user.gender}
+                      {capitalize(user.gender)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {user.position}
+                      {capitalize(user.role)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {user.email}
+                      {capitalize(user.email)}
                     </td>
                     <td className="border border-primary px-4 py-2">
                       ••••••••
