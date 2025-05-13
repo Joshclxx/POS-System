@@ -8,24 +8,35 @@ export function useManagerAuth() {
 
   useEffect(() => {
     const stored = localStorage.getItem("isManagerVerified") === "true";
-    console.log("Loaded from localStorage:", stored);
     setIsVerified(stored);
     setLoading(false);
   }, []);
 
   const login = (email: string, password: string) => {
-    if (email === "heebrew@cafe.manager" && password === "Manager01") {
+    const users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
+
+    const manager = users.find(
+      (user: any) =>
+        user.email.toLowerCase() === email.toLowerCase() &&
+        user.password === password &&
+        user.position === "Manager"
+    );
+
+    if (manager) {
       localStorage.setItem("isManagerVerified", "true");
+      localStorage.setItem("userEmail", email);
       setIsVerified(true);
-      toast.success("Manager verified!");
+      toast.success("Manager verified!", { id: "manager-verified" });
       return true;
     }
-    toast.error("Invalid email or password.");
+
+    toast.error("Invalid email or password.", { id: "manager-denied" });
     return false;
   };
 
   const logout = () => {
     localStorage.removeItem("isManagerVerified");
+    localStorage.removeItem("userEmail");
     setIsVerified(false);
   };
 

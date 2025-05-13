@@ -1,9 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SectionContainer from "@/components/SectionContainer";
 import Button from "@/components/Button";
+import { useRouter } from "next/navigation";
+import { useLocalStorageState } from "@/hooks/useLocalStorageState";
 
+// Initial form state
 const initialForm = {
   firstName: "",
   middleName: "",
@@ -20,16 +23,19 @@ type User = typeof initialForm;
 
 const UserRegister = () => {
   const [form, setForm] = useState<User>(initialForm);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useLocalStorageState<User[]>("registeredUsers", []);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
+  // Handle input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Check form validity
   const isFormValid = () => {
     const {
       firstName,
@@ -63,14 +69,35 @@ const UserRegister = () => {
     return true;
   };
 
+  // ✅ Save user to localStorage + update state
   const handleRegister = () => {
     if (!isFormValid()) return;
 
-    const newUser = { ...form };
-    setUsers([...users, newUser]);
-    setForm(initialForm);
+    // Only allow Cashier or Manager
+    if (form.position !== "Cashier" && form.position !== "Manager") {
+      setError("Only Cashier and Manager can register.");
+      return;
+    }
+
+    const existingUsers: User[] = JSON.parse(
+      localStorage.getItem("registeredUsers") || "[]"
+    );
+
+    // Prevent duplicate email
+    const emailExists = existingUsers.some((user) => user.email === form.email);
+    if (emailExists) {
+      setError("Email already registered.");
+      return;
+    }
+
+    const updatedUsers = [...existingUsers, form];
+    localStorage.setItem("registeredUsers", JSON.stringify(updatedUsers)); // SAVE to localStorage
+    setUsers(updatedUsers);
+    setForm(initialForm); // Reset form
+    setError("");
   };
 
+  // Reset form
   const handleReset = () => {
     setForm(initialForm);
     setError("");
@@ -80,10 +107,10 @@ const UserRegister = () => {
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
       <div className="container bg-colorDirtyWhite w-full h-[914px]">
         <div className="grid grid-cols-12 gap-4 p-4">
-          {/* LEFT CONTAINER */}
+          {/* LEFT FORM PANEL */}
           <div className="container bg-secondaryGray w-full h-[882px] col-span-4 p-4 flex flex-col justify-between">
             <div className="flex flex-col gap-4">
-              {/* FIRST NAME */}
+              {/* Input Fields */}
               <div>
                 <p className="text-primary font-semibold">First Name *</p>
                 <input
@@ -97,7 +124,6 @@ const UserRegister = () => {
                 />
               </div>
 
-              {/* MIDDLE NAME */}
               <div>
                 <p className="text-primary font-semibold">Middle Name</p>
                 <input
@@ -110,7 +136,6 @@ const UserRegister = () => {
                 />
               </div>
 
-              {/* LAST NAME and SUFFIX */}
               <div className="grid grid-cols-6 gap-2">
                 <div className="col-span-4">
                   <p className="text-primary font-semibold">Last Name *</p>
@@ -124,7 +149,6 @@ const UserRegister = () => {
                     className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
                   />
                 </div>
-
                 <div className="col-span-2">
                   <p className="text-primary font-semibold">Suffix</p>
                   <input
@@ -138,7 +162,6 @@ const UserRegister = () => {
                 </div>
               </div>
 
-              {/* GENDER */}
               <div>
                 <p className="text-primary font-semibold">Gender *</p>
                 <select
@@ -155,7 +178,6 @@ const UserRegister = () => {
                 </select>
               </div>
 
-              {/* POSITION */}
               <div>
                 <p className="text-primary font-semibold">Position *</p>
                 <select
@@ -171,7 +193,6 @@ const UserRegister = () => {
                 </select>
               </div>
 
-              {/* EMAIL */}
               <div>
                 <p className="text-primary font-semibold">Email *</p>
                 <input
@@ -184,7 +205,7 @@ const UserRegister = () => {
                   className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
                 />
               </div>
-              {/* PASSWORD and RE-TYPE PASSWORD */}
+
               <div>
                 <p className="text-primary font-semibold">Password *</p>
                 <input
@@ -211,7 +232,7 @@ const UserRegister = () => {
                 />
               </div>
 
-              {/* CHECK BOX */}
+              {/* Show Password Checkbox */}
               <div className="flex items-center gap-2 mt-[-8px]">
                 <input
                   type="checkbox"
@@ -228,7 +249,7 @@ const UserRegister = () => {
               {error && <p className="text-colorRed text-sm">{error}</p>}
             </div>
 
-            {/* BUTTON */}
+            {/* Buttons */}
             <div className="flex gap-4 pt-6">
               <Button
                 variant="universal"
@@ -247,11 +268,25 @@ const UserRegister = () => {
             </div>
           </div>
 
-          {/* RIGHT CONTAINER: TABLE */}
+          {/* RIGHT TABLE PANEL */}
           <div className="container bg-secondaryGray w-full h-[882px] col-span-8 p-4 overflow-auto">
-            <h2 className="text-lg font-bold text-primary mb-4">
-              Registered Users
-            </h2>
+            <div className="flex justify-between">
+              <h2 className="text-lg font-bold text-primary mb-4">
+                Registered Users
+              </h2>
+              <div>
+                <Button
+                  variant="universal"
+                  onClick={() => {
+                    // localStorage.clear();
+                    router.replace("/login");
+                  }}
+                  className="bg-colorBlue w-[150px] h-[32px] rounded-xl"
+                >
+                  Logout
+                </Button>
+              </div>
+            </div>
             <table className="min-w-full table-auto text-primary rounded-md overflow-hidden">
               <thead className="bg-primaryGray">
                 <tr>
