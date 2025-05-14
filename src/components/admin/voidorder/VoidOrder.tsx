@@ -23,7 +23,7 @@ type OrderRawData = {
     quantity: number;
   }[];
   total: number;
-  status: "QUEUE" | "COMPLETED" | "VOIDED";
+  status: "queue" | "completed" | "voided";
   createdAt: string;
 };
 
@@ -34,7 +34,7 @@ type Orders = {
     price: number;
     quantity: number;
   }[];
-  status: "QUEUE" | "COMPLETED" | "VOIDED";
+  status: "queue" | "completed" | "voided"; 
   total: number;
   createdAt: string;
 };
@@ -87,7 +87,7 @@ const VoidOrder = () => {
   const [selectedOrder, setSelectedOrder] = useState<Orders | null>(null);
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
   const [previousStatus, setPreviousStatus] = useState<
-    Record<number, "QUEUE" | "COMPLETED" | "VOIDED">
+    Record<number, "queue" | "completed" | "voided">
   >({});
 
   const [updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
@@ -153,7 +153,7 @@ const VoidOrder = () => {
         variables: {
           data: {
             id: orderToVoid?.id,
-            status: "VOIDED",
+            status: "voided",
           },
         },
       });
@@ -197,7 +197,7 @@ const VoidOrder = () => {
   const handleVoidClick = () => {
     if (!selectedOrder) return;
 
-    if (selectedOrder.status === "VOIDED") {
+    if (selectedOrder.status === "voided") {
       toast.error(`Order #${selectedOrder.id} is already voided.`);
       return;
     }
@@ -221,6 +221,11 @@ const VoidOrder = () => {
         <ManagerLogin onLoginSuccess={handleLoginSuccess} />
       </SectionContainer>
     );
+  }
+
+  const capitalized = (str: string) => {
+    if(!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
   }
 
   return (
@@ -292,7 +297,7 @@ const VoidOrder = () => {
                         }).format(order.total)}
                       </td>
                       <td className="px-[12px] py-[12px]">{order.createdAt}</td>
-                      <td className="px-[12px] py-[12px]">{order.status}</td>
+                      <td className="px-[12px] py-[12px]">{capitalized(order.status)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -333,7 +338,7 @@ const VoidOrder = () => {
                       Cancel
                     </button>
 
-                    {selectedOrder.status === "VOIDED" ? (
+                    {selectedOrder.status === "voided" ? (
                       <button
                         onClick={() => revertOrder(selectedOrder.id)}
                         className="bg-green-600 hover:bg-green-700 text-white py-1 px-4 rounded"

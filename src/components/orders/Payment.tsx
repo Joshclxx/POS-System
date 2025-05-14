@@ -13,6 +13,8 @@ import {
   GET_ALL_ORDERS,
 } from "@/app/graphql/query";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useUserStore } from "@/hooks/useUserSession";
+
 
 type PaymentProps = {
   amountType: string;
@@ -20,6 +22,9 @@ type PaymentProps = {
   itemAmount: number;
   onBackToOrders: () => void;
 };
+
+//check if the user Role is Cashier
+
 
 const Payment = ({
   amountType,
@@ -33,6 +38,7 @@ const Payment = ({
   const [okPressed, setOkPressed] = useState(false);
   // const { addOrder } = useHistoryStore();
   const { selectedProducts, clearProducts, nextOrderNumber } = useOrderStore();
+  const {userId} = useUserStore.getState() 
 
   const handleKeyClick = (key: string) => {
     if (key === "←") {
@@ -183,15 +189,17 @@ const Payment = ({
                           variables: {
                             data: {
                               productId: productId,
-                              size: item.size,
+                              size: item.size.toLowerCase(),
                             },
                           },
                         });
+
                         const variantId = variantData?.getProductVariant?.id;
                         const price = item.price[item.size];
                         const quantity = item.quantity ?? 1;
                         const subtotal = price * quantity;
 
+                        console.log(variantId)
                         return {
                           productVariantId: variantId,
                           quantity,
@@ -205,6 +213,7 @@ const Payment = ({
                       0
                     );
 
+
                     try {
                       const orderId = nextOrderNumber;
                       await createOrder({
@@ -212,8 +221,7 @@ const Payment = ({
                           data: {
                             items: itemInputs,
                             total: totalAmount,
-                            status: "QUEUE",
-                            userId: "923aac0e-5acd-45e6-a43b-9334de465b7d",
+                            userId: userId, //JAY 50a26a2b-f640-409b-97a5-702a2dcd298a //change to actual id if not working in testing
                           },
                         },
                       });
