@@ -9,7 +9,6 @@ import { GET_ALL_USERS } from "@/app/graphql/query";
 import { CREATE_USER } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
 
-
 // Initial form state
 const initialForm = {
   firstname: "",
@@ -17,6 +16,7 @@ const initialForm = {
   lastname: "",
   suffix: "",
   gender: "",
+  age: "",
   role: "", //pinalitan ko muna position into role para mag match sa database
   email: "",
   password: "",
@@ -24,10 +24,10 @@ const initialForm = {
 };
 
 const capitalize = (str: string) => {
-  if(!str) return "";
+  if (!str) return "";
 
-  return str.charAt(0).toUpperCase() + str.slice(1)
-}
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 
 type User = typeof initialForm;
 
@@ -39,13 +39,13 @@ const UserRegister = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const [createUser] = useMutation(CREATE_USER);
-  const {data: usersData, refetch} = useQuery(GET_ALL_USERS)
+  const { data: usersData, refetch } = useQuery(GET_ALL_USERS);
 
   useEffect(() => {
-    if(usersData?.getAllUsers) {
-      setUsers(usersData.getAllUsers)
+    if (usersData?.getAllUsers) {
+      setUsers(usersData.getAllUsers);
     }
-  }, [usersData])
+  }, [usersData]);
 
   // Handle input changes
   const handleChange = (
@@ -92,7 +92,6 @@ const UserRegister = () => {
 
   // ✅ Save user to localStorage + update state
   const handleRegister = async () => {
-    
     if (!isFormValid()) return;
 
     // Only allow Cashier or Manager
@@ -101,9 +100,8 @@ const UserRegister = () => {
       return;
     }
 
-
     const existingUsers: User[] = users;
-    
+
     // const existingUsers: User[] = JSON.parse(
     //   localStorage.getItem("registeredUsers") || "[]"
     // );
@@ -127,21 +125,22 @@ const UserRegister = () => {
             gender: form.gender.toLowerCase(),
             email: form.email,
             password: form.password,
-            role: form.role.toLowerCase()
-          }
-        }
+            role: form.role.toLowerCase(),
+            age: Number(form.age),
+          },
+        },
       });
 
-    //no need for now
-    // const updatedUsers = [...existingUsers, form];
-    // localStorage.setItem("registeredUsers", JSON.stringify(updatedUsers)); // SAVE to localStorage
-    // setUsers(updatedUsers);
+      //no need for now
+      // const updatedUsers = [...existingUsers, form];
+      // localStorage.setItem("registeredUsers", JSON.stringify(updatedUsers)); // SAVE to localStorage
+      // setUsers(updatedUsers);
 
-    await refetch()
-    setForm(initialForm); // Reset form
-    setError("");
+      await refetch();
+      setForm(initialForm); // Reset form
+      setError("");
     } catch (error) {
-    console.error(error); //simple error for now
+      console.error(error); //simple error for now
     }
   };
 
@@ -158,9 +157,11 @@ const UserRegister = () => {
           {/* LEFT FORM PANEL */}
           <div className="container bg-secondaryGray w-full h-[882px] col-span-4 p-4 flex flex-col justify-between">
             <div className="flex flex-col gap-4">
-              {/* Input Fields */}
+              {/* FIRST NAME */}
               <div>
-                <p className="text-primary font-semibold">First Name *</p>
+                <p className="text-primary font-semibold">
+                  First Name <span className="text-colorRed">*</span>
+                </p>
                 <input
                   name="firstname"
                   type="text"
@@ -172,6 +173,7 @@ const UserRegister = () => {
                 />
               </div>
 
+              {/* MIDDLE NAME */}
               <div>
                 <p className="text-primary font-semibold">Middle Name</p>
                 <input
@@ -184,9 +186,12 @@ const UserRegister = () => {
                 />
               </div>
 
+              {/* LAST NAME and SUFFIX */}
               <div className="grid grid-cols-6 gap-2">
                 <div className="col-span-4">
-                  <p className="text-primary font-semibold">Last Name *</p>
+                  <p className="text-primary font-semibold">
+                    Last Name <span className="text-colorRed">*</span>
+                  </p>
                   <input
                     name="lastname"
                     type="text"
@@ -209,25 +214,47 @@ const UserRegister = () => {
                   />
                 </div>
               </div>
+              {/* GENDER and AGE */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <p className="text-primary font-semibold">
+                    Gender <span className="text-colorRed">*</span>
+                  </p>
+                  <select
+                    name="gender"
+                    value={form.gender}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
+                  >
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
+                </div>
 
-              <div>
-                <p className="text-primary font-semibold">Gender *</p>
-                <select
-                  name="gender"
-                  value={form.gender}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
-                >
-                  <option value="">Select</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Prefer not to say">Prefer not to say</option>
-                </select>
+                <div>
+                  <p className="text-primary font-semibold">
+                    Age <span className="text-colorRed">*</span>
+                  </p>
+                  <input
+                    name="age"
+                    type="number"
+                    placeholder="e.g 18"
+                    value={form.age}
+                    required
+                    onChange={handleChange}
+                    className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
+                  />
+                </div>
               </div>
 
+              {/* POSITION */}
               <div>
-                <p className="text-primary font-semibold">Position *</p>
+                <p className="text-primary font-semibold">
+                  Position <span className="text-colorRed">*</span>
+                </p>
                 <select
                   name="role"
                   value={form.role}
@@ -241,8 +268,11 @@ const UserRegister = () => {
                 </select>
               </div>
 
+              {/* EMAIL */}
               <div>
-                <p className="text-primary font-semibold">Email *</p>
+                <p className="text-primary font-semibold">
+                  Email <span className="text-colorRed">*</span>
+                </p>
                 <input
                   type="email"
                   name="email"
@@ -254,8 +284,11 @@ const UserRegister = () => {
                 />
               </div>
 
+              {/* PASSWORD */}
               <div>
-                <p className="text-primary font-semibold">Password *</p>
+                <p className="text-primary font-semibold">
+                  Password <span className="text-colorRed">*</span>
+                </p>
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
@@ -268,7 +301,9 @@ const UserRegister = () => {
               </div>
 
               <div>
-                <p className="text-primary font-semibold">Re-type Password *</p>
+                <p className="text-primary font-semibold">
+                  Re-type Password <span className="text-colorRed">*</span>
+                </p>
                 <input
                   type={showPassword ? "text" : "password"}
                   name="retypePassword"

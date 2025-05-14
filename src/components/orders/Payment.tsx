@@ -117,7 +117,15 @@ const Payment = ({
             <p className="primary-title">Amount</p>
             <p className="primary-title">{amountType || "0.00"}</p>
           </div>
-          <button className="bg-secondary text-white rounded-lg w-[200px] h-[84px] font-semibold shadow hover:bg-primary-dark">
+          <button
+            onClick={() =>
+              toast.error(
+                "DISCOUNT is not yet available. Developer is working on it.",
+                { id: "label-error" }
+              )
+            }
+            className="bg-secondary text-white rounded-lg w-[200px] h-[84px] font-semibold shadow hover:bg-primary-dark"
+          >
             DISCOUNT
           </button>
         </div>
@@ -192,12 +200,11 @@ const Payment = ({
                       })
                     );
 
-                    console.log(itemInputs);
-
                     const totalAmount = itemInputs.reduce(
                       (acc, item) => acc + item.subtotal,
                       0
                     );
+
                     try {
                       const orderId = nextOrderNumber;
                       await createOrder({
@@ -206,17 +213,17 @@ const Payment = ({
                             items: itemInputs,
                             total: totalAmount,
                             status: "QUEUE",
-                            userId: "923aac0e-5acd-45e6-a43b-9334de465b7d", //for testing only Jaylord 923aac0e-5acd-45e6-a43b-9334de465b7d / Josh f22efa5c-899c-4bad-ba78-5270a1622aaa
+                            userId: "923aac0e-5acd-45e6-a43b-9334de465b7d",
                           },
                         },
                       });
-                      refetch(); //refetch the Orders to get the latest update
+                      refetch();
                       clearProducts();
-                      setOkPressed(false); // Reset after confirmation
+                      setOkPressed(false);
                       toast.success(`Order #${orderId} Payment Confirmed.`);
                       onBackToOrders();
                     } catch (error) {
-                      console.error(error); //simple error for now
+                      console.error(error);
                     }
                     //NOT NEEDED for now
                     // const orderId = nextOrderNumber;
@@ -236,7 +243,10 @@ const Payment = ({
 
                     // addOrder(newOrder);
                   } else {
-                    handleKeyClick(label);
+                    toast.error(
+                      `${label} is not yet available. Developer is working on it.`,
+                      { id: "label-error" }
+                    );
                   }
                 }}
                 className={`rounded-lg w-[200px] h-[90px] font-semibold shadow ${
