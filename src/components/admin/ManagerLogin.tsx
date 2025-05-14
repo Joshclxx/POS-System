@@ -14,9 +14,9 @@ const ManagerLogin = ({ onLoginSuccess }: Props) => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = login(email, password);
+    const success = await login(email, password);
     if (success) {
       onLoginSuccess?.(email, password);
     }
