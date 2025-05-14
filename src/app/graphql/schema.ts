@@ -173,7 +173,6 @@ export const typeDefs = gql`
   input CreateOrderInput {
     items: [CreateOrderItemInput!]!
     total: Float!
-    status: STATUS!
     userId: String!
   }
   input CreateOrderItemInput {

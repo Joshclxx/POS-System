@@ -22,7 +22,7 @@ type OrderRawData = {
     };
     quantity: number;
   }[];
-  status: "QUEUE" | "COMPLETED" | "VOIDED"
+  status: "queue" | "completed" | "voided"
 };
 
 type OrderQueuesItem = {
@@ -48,9 +48,11 @@ const OrdersQueue = () => {
 
   // LOAD ALL ORDERS WITH STATUS QUEUE
   useEffect(() => {
+
+    console.log(orderdata?.getAllOrders)
     if (orderdata?.getAllOrders) {
       const orderQueueFormat = orderdata.getAllOrders
-      .filter((order: OrderRawData) => order.status === "QUEUE") //only show the order wth qeue
+      .filter((order: OrderRawData) => order.status === "queue") //only show the order wth qeue
       .map((order: OrderRawData) => {
 
         const items = order.items.map((item) => ({
@@ -59,10 +61,12 @@ const OrdersQueue = () => {
           quantity: item.quantity,
         }));
 
+
         return {
           id: order.id,
           items,
         };
+
 
       })
 
@@ -71,6 +75,7 @@ const OrdersQueue = () => {
   }, [orderdata]);
 
   const bumpSelectedOrder = async () => {
+
     const orderToBump = ordersQueue.find(
       (order) => order.id === selectedOrder
     );
@@ -81,7 +86,7 @@ const OrdersQueue = () => {
           variables: {
             data: {
               id: orderToBump?.id,
-              status: "COMPLETED"
+              status: "completed"
             }
           }
         });

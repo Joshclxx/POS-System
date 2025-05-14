@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { GET_ALL_USERS } from "@/app/graphql/query";
 import { CREATE_USER } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
+import { useUserStore } from "@/hooks/useUserSession";
 
 // Initial form state
 const initialForm = {
@@ -16,7 +17,6 @@ const initialForm = {
   lastname: "",
   suffix: "",
   gender: "",
-  age: "",
   role: "", //pinalitan ko muna position into role para mag match sa database
   email: "",
   password: "",
@@ -126,7 +126,7 @@ const UserRegister = () => {
             email: form.email,
             password: form.password,
             role: form.role.toLowerCase(),
-            age: Number(form.age),
+            // age: Number(form.age),
           },
         },
       });
@@ -241,7 +241,7 @@ const UserRegister = () => {
                   <input
                     name="age"
                     type="number"
-                    placeholder="e.g 18"
+                    placeholder="e.g 18"  
                     value={form.age}
                     required
                     onChange={handleChange}
@@ -361,7 +361,7 @@ const UserRegister = () => {
                 <Button
                   variant="universal"
                   onClick={() => {
-                    // localStorage.clear();
+                    useUserStore.getState().logout()
                     router.replace("/login");
                   }}
                   className="bg-colorBlue w-[150px] h-[32px] rounded-xl"
