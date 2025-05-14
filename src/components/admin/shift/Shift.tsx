@@ -13,7 +13,7 @@ const Shift = () => {
   const router = useRouter();
   const timer = useTimer();
   const { isVerified, login, logout } = useManagerAuth();
-  const [isManagerVerified, setIsManagerVerified] = useState(false); // for local control
+  const [isManagerVerified, setIsManagerVerified] = useState(true); // for local control
   const handleLoginSuccess = (email: string, password: string) => {
     login(email, password);
     setIsManagerVerified(true); // mark verified

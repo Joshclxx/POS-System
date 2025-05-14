@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { NAV_LINKS, MENU_FEATURE_LINKS } from "@/app/constants";
 import Button from "./Button";
-import { useManagerAuth } from "@/hooks/useManagerAuth";
+// import { useManagerAuth } from "@/hooks/useManagerAuth";
+import { useUserStore } from "@/hooks/useUserSession";
 
 // Function to split an array into chunks of a given size
 function chunkArray<T>(arr: T[], size: number): T[][] {
@@ -23,12 +24,12 @@ export default function Navbar() {
   const [isManager, setIsManager] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
-  useManagerAuth(); // no need to destructure anything
+  // useManagerAuth(); // no need to destructure anything
+  const {userRole} = useUserStore.getState()
 
   // NEW: hide if manager
   useEffect(() => {
-    const role = localStorage.getItem("userRole");
-    if (role === "manager" || role === "admin") {
+    if (userRole === "manager" || userRole === "admin") {
       setIsManager(true);
       setIsAdmin(true);
     }
