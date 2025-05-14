@@ -1,10 +1,12 @@
+"use client";
+
 import React, { useState } from "react";
 import SectionContainer from "../SectionContainer";
 import OrderImageContainer from "./OrderImageContainer";
 import { useOrderStore } from "@/hooks/useOrder";
 import useGlobal, { MenuItem } from "@/hooks/useGlobal";
 import { motion } from "motion/react";
-import toast, { Toaster } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 
 interface OrderMenuItemsProps {
   activeMenu: string;
@@ -12,6 +14,7 @@ interface OrderMenuItemsProps {
 
 const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
   const menuItems = useGlobal((state) => state.menuItems) as MenuItem[];
+  const shownToasts = new Set<string>();
 
   const filteredItems = menuItems.filter(
     (item) => item.menu.toLowerCase() === activeMenu.toLowerCase()
@@ -36,12 +39,19 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
       imageSrc: "",
       imageAlt: "",
     });
-    toast.success(`${item.name} (${size}) added to order`);
+
+    const toastId = `${item.id}-${size}`;
+    if (!shownToasts.has(toastId)) {
+      toast.success(`${item.name} (${size}) added to order`, {
+        id: "menu-item",
+      });
+      shownToasts.add(toastId);
+    }
   };
 
   return (
     <SectionContainer background="mt-[4px] w-[585px] h-[850px]">
-      <Toaster position="top-center" />
+      <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
       <div className="bg-colorDirtyWhite w-[585px] h-[710px] flex items-start justify-center text-[14px]">
         <div className="grid grid-cols-3 gap-4 max-h-[710px] overflow-y-auto w-[585px] mx-auto hide-scrollbar">
           {filteredItems.length === 0 ? (
