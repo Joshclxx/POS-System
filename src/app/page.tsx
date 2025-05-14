@@ -9,6 +9,7 @@ import OrdersView from "@/components/orders/OrdersView";
 import SectionContainer from "@/components/SectionContainer";
 import Payment from "@/components/orders/Payment";
 import { useOrderStore } from "@/hooks/useOrder";
+import { useUserStore } from "@/hooks/useUserSession";
 
 export default function Home() {
   const [activeKey, setActiveKey] = useState("espresso");
@@ -16,6 +17,7 @@ export default function Home() {
   const [amountType, setAmountType] = useState("");
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const {userRole} = useUserStore.getState()
 
   const router = useRouter();
 
@@ -27,6 +29,14 @@ export default function Home() {
       } else {
         setLoading(false);
       }
+    }
+  }, []);
+
+  //check if the userRole is cashier if not it will go to login
+  useEffect(() => {
+    if(userRole !== "cashier") {
+      useUserStore.getState().logout()
+      router.push("/login")
     }
   }, []);
 

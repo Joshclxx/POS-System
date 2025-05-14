@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SectionContainer from "../../SectionContainer";
 import Image from "next/image";
 import { Drawer } from "vaul";
@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from "motion/react";
 import useGlobal from "@/hooks/useGlobal";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
+import { useUserStore } from "@/hooks/useUserSession";
 import {
   CREATE_CATEGORY,
   CREATE_PRODUCT,
@@ -73,10 +73,18 @@ const Product: React.FC = () => {
   // const addMenu = useGlobal((state) => state.addMenu);
   // const removeMenuItem = useGlobal((state) => state.removeMenuItem);
   // const addMenuItem = useGlobal((state) => state.addMenuItem);
+   // const { isVerified, login, logout } = useManagerAuth();
   const menus = useGlobal((state) => state.menus);
   const menuItems = useGlobal((state) => state.menuItems);
+  const {userRole, logout} = useUserStore.getState();
 
-  // const { isVerified, login, logout } = useManagerAuth();
+  useEffect(() => {
+    if(userRole !== "manager") {
+      logout();
+      router.push("/login");
+    }
+  }, [])
+ 
 
   // Reset form and drawer state
   const handleCancel = () => {
@@ -178,9 +186,9 @@ const Product: React.FC = () => {
               edits: {
                 name: itemName.trim(),
                 variants: [
-                  { size: "PT", price: parseFloat(itemPrices.PT) },
-                  { size: "RG", price: parseFloat(itemPrices.RG) },
-                  { size: "GR", price: parseFloat(itemPrices.GR) },
+                  { size: "pt", price: parseFloat(itemPrices.PT) },
+                  { size: "rg", price: parseFloat(itemPrices.RG) },
+                  { size: "gr", price: parseFloat(itemPrices.GR) },
                 ],
               },
             },
@@ -463,6 +471,7 @@ const Product: React.FC = () => {
                 <Button
                   variant="universal"
                   onClick={() => {
+                    logout();
                     router.replace("/login");
                   }}
                   className="z-10 w-[140px] h-auto bg-colorBlue text-tertiary rounded-3xl p-6 text-[18px] font-regular absolute right-4"

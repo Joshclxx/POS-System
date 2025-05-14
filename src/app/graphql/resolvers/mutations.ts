@@ -299,13 +299,12 @@ export const mutationResolvers = {
             subtotal: number;
           }[];
           total: number;
-          status: "queue" | "completed" | "voided";
           userId: string;
         };
       },
       context: GraphQLContext
     ) => {
-      const { items, total, status, userId } = args.data;
+      const { items, total, userId } = args.data;
       try {
         return await context.prisma.order.create({
           data: {
@@ -317,7 +316,6 @@ export const mutationResolvers = {
               })),
             },
             total,
-            status,
             userId,
           },
           include: {

@@ -6,6 +6,8 @@ import toast, { Toaster } from "react-hot-toast";
 import SectionContainer from "@/components/SectionContainer";
 import { USER_LOGIN } from "../graphql/query";
 import { useLazyQuery } from "@apollo/client";
+import { useUserStore } from "@/hooks/useUserSession";
+
 
 type UserData = {
   id: string;
@@ -13,40 +15,53 @@ type UserData = {
   password: string;
   role: "cashier" | "manager" | "admin";
 };
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   const [userLogin] = useLazyQuery(USER_LOGIN);
   const [showPassword, setShowPassword] = useState(false);
-
+  
   const handleLogin = async (e: React.FormEvent) => {
+
     e.preventDefault();
 
-    const { data } = await userLogin({
-      variables: {
-        data: {
-          email: email,
-          password: password,
-        },
-      },
-    });
-
-    if (data && data.userLogin) {
-      const userData: UserData = data.userLogin;
-      localStorage.setItem("loggedIn", "true");
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("userRole", userData.role);
-
+    if (email === "heebrew@cafe.admin" && password === "Admin01") { 
+      useUserStore.getState().setUser("testingId", "admin", email)
       toast.success("Logged in successfully!");
+      router.push("/admin/user-register");
+    } else {
+      try {
+        //find user
+        const { data } = await userLogin({
+          variables: {
+            data: {
+              email: email,
+              password: password,
+            },
+          },
+        });
+     
+        if (data && data.userLogin) {
+          const userData: UserData = data.userLogin;
+          useUserStore.getState().setUser(userData.id, userData.role, email);
 
-      if (data.position === "manager") {
-        router.push("/admin/products");
-      } else if (userData.role === "cashier") {
-        router.push("/admin/shift");
+          toast.success("Logged in successfully!");
+
+          if (userData.role === "manager") {
+            router.push("/admin/products");
+          } else if (userData.role === "cashier") {
+            router.push("/admin/shift");
+          }
+
+          return; // prevent falling through to admin check
+        }
+
+      } catch (error) {
+        console.error(error)//simple error for now
+        toast.error("Login Denied, Email & Password Incorrect!");
       }
-
-      return; // prevent falling through to admin check
     }
 
     // const storedUsers = JSON.parse(
@@ -121,27 +136,7 @@ export default function LoginPage() {
 
     // LOCAL LOGIN CREDENTIALS
 
-    if (email === "heebrew@cafe.employee" && password === "Employee01") {
-      localStorage.setItem("loggedIn", "true");
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("userRole", "employee");
-      toast.success("Logged in successfully!");
-      router.push("/admin/shift");
-    } else if (email === "heebrew@cafe.manager" && password === "Manager01") {
-      localStorage.setItem("loggedIn", "true");
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("userRole", "manager");
-      toast.success("Logged in successfully!");
-      router.push("/admin/products");
-    } else if (email === "heebrew@cafe.admin" && password === "Admin01") {
-      localStorage.setItem("loggedIn", "true");
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("userRole", "admin");
-      toast.success("Logged in successfully!");
-      router.push("/admin/user-register");
-    } else {
-      toast.error("Login Denied, Email & Password Incorrect!");
-    }
+
   };
 
   return (
