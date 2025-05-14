@@ -8,11 +8,11 @@ import { USER_LOGIN } from "../graphql/query";
 import { useLazyQuery } from "@apollo/client";
 
 type UserData = {
-  id: string,
-  email: string,
-  password: string,
-  role: "cashier" | "manager" | "admin"
-}
+  id: string;
+  email: string;
+  password: string;
+  role: "cashier" | "manager" | "admin";
+};
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,16 +23,16 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const {data} = await userLogin({
+    const { data } = await userLogin({
       variables: {
         data: {
           email: email,
           password: password,
-        }
-      }
+        },
+      },
     });
 
-    if(data && data.userLogin) {
+    if (data && data.userLogin) {
       const userData: UserData = data.userLogin;
       localStorage.setItem("loggedIn", "true");
       localStorage.setItem("userEmail", email);
@@ -44,10 +44,9 @@ export default function LoginPage() {
         router.push("/admin/products");
       } else if (userData.role === "cashier") {
         router.push("/admin/shift");
-      } 
+      }
 
       return; // prevent falling through to admin check
-
     }
 
     // const storedUsers = JSON.parse(
@@ -74,75 +73,76 @@ export default function LoginPage() {
     //   return; // prevent falling through to admin check
     // }
 
-
     // Default Admin Login
-    
-    if (email.toLowerCase() === "heebrew@cafe.admin" && password === "Admin01") {
+
+    // FINAL CODE
+    //   if (
+    //     email.toLowerCase() === "heebrew@cafe.admin" &&
+    //     password === "Admin01"
+    //   ) {
+    //     localStorage.setItem("loggedIn", "true");
+    //     localStorage.setItem("userEmail", email);
+    //     localStorage.setItem("userRole", "admin");
+    //     toast.success("Logged in successfully!");
+    //     router.push("/admin/user-register");
+    //     return; // ✅ stop here
+    //   }
+
+    //   toast.error("Login Denied, Email & Password Incorrect!");
+    // };
+
+    // const { data } = await userLogin({
+    //   variables: {
+    //     data: {
+    //       email: email,
+    //       password: password,
+    //     },
+    //   },
+    // });
+
+    // DATABASE LOGIN CREDENTIALS
+
+    // if (data && data.userLogin) {
+    //   localStorage.setItem("loggedIn", "true");
+    //   localStorage.setItem("userEmail", email);
+    //   localStorage.setItem("userRole", data.userLogin.role);
+    //   toast.success("Logged in successfully!");
+
+    //   if (data.userLogin.role === "manager") {
+    //     router.push("/admin/user-register");
+    //   } else if (data.userLogin.role === "employee") {
+    //     router.push("/homepage");
+    //   } else {
+    //     toast.error("Unknown role");
+    //   }
+    // } else {
+    //   toast.error("Login Denied, Email & Password Incorrect!");
+    // }
+
+    // LOCAL LOGIN CREDENTIALS
+
+    if (email === "heebrew@cafe.employee" && password === "Employee01") {
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userRole", "employee");
+      toast.success("Logged in successfully!");
+      router.push("/admin/shift");
+    } else if (email === "heebrew@cafe.manager" && password === "Manager01") {
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userRole", "manager");
+      toast.success("Logged in successfully!");
+      router.push("/admin/products");
+    } else if (email === "heebrew@cafe.admin" && password === "Admin01") {
       localStorage.setItem("loggedIn", "true");
       localStorage.setItem("userEmail", email);
       localStorage.setItem("userRole", "admin");
       toast.success("Logged in successfully!");
       router.push("/admin/user-register");
-      return; // ✅ stop here
+    } else {
+      toast.error("Login Denied, Email & Password Incorrect!");
     }
-
-    toast.error("Login Denied, Email & Password Incorrect!");
   };
-
-  // const { data } = await userLogin({
-  //   variables: {
-  //     data: {
-  //       email: email,
-  //       password: password,
-  //     },
-  //   },
-  // });
-
-  // DATABASE LOGIN CREDENTIALS
-
-  // if (data && data.userLogin) {
-  //   localStorage.setItem("loggedIn", "true");
-  //   localStorage.setItem("userEmail", email);
-  //   localStorage.setItem("userRole", data.userLogin.role);
-  //   toast.success("Logged in successfully!");
-
-  //   if (data.userLogin.role === "manager") {
-  //     router.push("/admin/user-register");
-  //   } else if (data.userLogin.role === "employee") {
-  //     router.push("/homepage");
-  //   } else {
-  //     toast.error("Unknown role");
-  //   }
-  // } else {
-  //   toast.error("Login Denied, Email & Password Incorrect!");
-  // }
-
-  // LOCAL LOGIN CREDENTIALS
-
-  // LOCAL LOGIN CREDENTIALS
-
-  //   if (email === "heebrew@cafe.employee" && password === "Employee01") {
-  //     localStorage.setItem("loggedIn", "true");
-  //     localStorage.setItem("userEmail", email);
-  //     localStorage.setItem("userRole", "employee");
-  //     toast.success("Logged in successfully!");
-  //     router.push("/admin/shift");
-  //   } else if (email === "heebrew@cafe.manager" && password === "Manager01") {
-  //     localStorage.setItem("loggedIn", "true");
-  //     localStorage.setItem("userEmail", email);
-  //     localStorage.setItem("userRole", "manager");
-  //     toast.success("Logged in successfully!");
-  //     router.push("/admin/products");
-  //   } else if (email === "heebrew@cafe.admin" && password === "Admin01") {
-  //     localStorage.setItem("loggedIn", "true");
-  //     localStorage.setItem("userEmail", email);
-  //     localStorage.setItem("userRole", "admin");
-  //     toast.success("Logged in successfully!");
-  //     router.push("/admin/user-register");
-  //   } else {
-  //     toast.error("Login Denied, Email & Password Incorrect!");
-  //   }
-  // };
 
   return (
     <SectionContainer background="mt-1 w-full max-w-[1280px] h-auto">

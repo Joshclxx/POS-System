@@ -12,6 +12,7 @@ const ManagerLogin = ({ onLoginSuccess }: Props) => {
   const [password, setPassword] = useState("");
   const { login } = useManagerAuth();
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,14 +34,24 @@ const ManagerLogin = ({ onLoginSuccess }: Props) => {
           className="mb-2 px-4 py-2 border border-primary rounded w-[500px] text-primary placeholder:text-primary"
           required
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="mb-4 px-4 py-2 border border-primary rounded w-[500px] text-primary placeholder:text-primary"
-          required
-        />
+        <div>
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mb-4 px-4 py-2 border border-primary rounded w-[500px] text-primary placeholder:text-primary"
+            required
+          />
+          <label className="text-sm text-primary flex justify-end gap-2 mb-4">
+            <input
+              type="checkbox"
+              checked={showPassword}
+              onChange={() => setShowPassword(!showPassword)}
+            />
+            Show Password
+          </label>
+        </div>
         <button
           type="submit"
           className="bg-colorBlue text-white px-6 py-2 rounded hover:bg-colorBlueDark transition-all"
