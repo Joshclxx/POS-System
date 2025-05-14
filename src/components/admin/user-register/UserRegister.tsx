@@ -214,40 +214,23 @@ const UserRegister = () => {
                   />
                 </div>
               </div>
-              {/* GENDER and AGE */}
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <p className="text-primary font-semibold">
-                    Gender <span className="text-colorRed">*</span>
-                  </p>
-                  <select
-                    name="gender"
-                    value={form.gender}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
-                  >
-                    <option value="">Select</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Prefer not to say">Prefer not to say</option>
-                  </select>
-                </div>
 
-                <div>
-                  <p className="text-primary font-semibold">
-                    Age <span className="text-colorRed">*</span>
-                  </p>
-                  <input
-                    name="age"
-                    type="number"
-                    placeholder="e.g 18"  
-                    value={form.age}
-                    required
-                    onChange={handleChange}
-                    className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
-                  />
-                </div>
+              <div>
+                <p className="text-primary font-semibold">
+                  Gender <span className="text-colorRed">*</span>
+                </p>
+                <select
+                  name="gender"
+                  value={form.gender}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
+                >
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
               </div>
 
               {/* POSITION */}
@@ -361,7 +344,7 @@ const UserRegister = () => {
                 <Button
                   variant="universal"
                   onClick={() => {
-                    useUserStore.getState().logout()
+                    useUserStore.getState().logout();
                     router.replace("/login");
                   }}
                   className="bg-colorBlue w-[150px] h-[32px] rounded-xl"
