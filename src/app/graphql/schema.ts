@@ -100,8 +100,9 @@ export const typeDefs = gql`
     quantity: Int!
     subtotal: Float!
     order: Order!
-    productVariantId: Int!
-    productVariant: ProductVariant!
+    productName: String!
+    productSize: Size!
+    productPrice: Float!
     createdAt: String!
     updatedAt: String!
   }
@@ -176,7 +177,9 @@ export const typeDefs = gql`
     userId: String!
   }
   input CreateOrderItemInput {
-    productVariantId: Int!
+    productName: String!
+    productSize: Size!
+    productPrice: Float!
     quantity: Int!
     subtotal: Float!
   }

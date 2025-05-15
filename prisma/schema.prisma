@@ -100,7 +100,6 @@ model ProductVariant {
   price     Float?
   productId Int //Foreign Key (Many to One relation with Product)
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  orders OrderItem[]
   createdAt DateTime @default(now())
   updatedAt DateTime?
 
@@ -137,8 +136,9 @@ model OrderItem {
   id              Int             @id @default(autoincrement())
   orderId         Int
   order           Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productVariantId Int
-  productVariant  ProductVariant  @relation(fields: [productVariantId], references: [id])
+  productName     String
+  productSize     Size
+  productPrice    Float
   quantity        Int
   subtotal        Float
   createdAt  DateTime     @default(now())    
