@@ -8,7 +8,6 @@ import { USER_LOGIN } from "../graphql/query";
 import { useLazyQuery } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
 
-
 type UserData = {
   id: string;
   email: string;
@@ -22,13 +21,13 @@ export default function LoginPage() {
   const router = useRouter();
   const [userLogin] = useLazyQuery(USER_LOGIN);
   const [showPassword, setShowPassword] = useState(false);
-  
-  const handleLogin = async (e: React.FormEvent) => {
 
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (email === "heebrew@cafe.admin" && password === "Admin01") { 
-      useUserStore.getState().setUser("testingId", "admin", email)
+    if (email === "heebrew@cafe.admin" && password === "Admin01") {
+      useUserStore.getState().setUser("testingId", "admin", email);
+      localStorage.setItem("loginTime", new Date().toISOString());
       toast.success("Logged in successfully!");
       router.push("/admin/user-register");
     } else {
@@ -42,11 +41,11 @@ export default function LoginPage() {
             },
           },
         });
-     
+
         if (data && data.userLogin) {
           const userData: UserData = data.userLogin;
           useUserStore.getState().setUser(userData.id, userData.role, email);
-
+          localStorage.setItem("loginTime", new Date().toISOString());
           toast.success("Logged in successfully!");
 
           if (userData.role === "manager") {
@@ -57,9 +56,8 @@ export default function LoginPage() {
 
           return; // prevent falling through to admin check
         }
-
       } catch (error) {
-        console.error(error)//simple error for now
+        console.error(error); //simple error for now
         toast.error("Login Denied, Email & Password Incorrect!");
       }
     }
@@ -135,8 +133,6 @@ export default function LoginPage() {
     // }
 
     // LOCAL LOGIN CREDENTIALS
-
-
   };
 
   return (
@@ -159,23 +155,19 @@ export default function LoginPage() {
         <div
           className="flex-1 relative"
           style={{
-            backgroundImage: "url('/image/login-bg-cafe.jpeg')",
+            backgroundImage: "url('/image/anime-bg.png')",
             backgroundRepeat: "no-repeat",
           }}
         >
-          {/* Title at the top */}
-          {/* <div className="pt-12 container bg-secondaryGray/40 text-[32px] text-center font-semibold leading-loose tracking-widest">
-            <p className="text-primary">HEEBREW CAFE POS SYSTEM</p>
-          </div> */}
           <div className="absolute left-50 top-1/2 transform -translate-y-1/2 flex justify-center">
             <form onSubmit={handleLogin} className="login-form">
-              <h1 className="text-2xl font-bold mb-4 text-primary text-center">
+              <h1 className="text-2xl font-bold mb-4 text-tertiary text-center">
                 Login
               </h1>
               <input
                 type="email"
                 placeholder="Email"
-                className="w-full mb-3 p-2 border border-primaryGray rounded text-primary placeholder:text-tertiary/50"
+                className="w-full mb-3 p-2 border-2 border-primary rounded text-tertiary placeholder:text-tertiary/60"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -183,7 +175,7 @@ export default function LoginPage() {
               <input
                 type={showPassword ? "text" : "password"} // <-- dynamic type
                 placeholder="Password"
-                className="w-full mb-4 p-2 border border-primaryGray rounded text-primary placeholder:text-tertiary/50"
+                className="w-full mb-4 p-2 border-2 border-primary rounded text-tertiary placeholder:text-tertiary/60"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
