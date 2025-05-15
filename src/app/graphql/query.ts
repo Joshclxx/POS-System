@@ -79,13 +79,9 @@ export const GET_ALL_ORDERS = gql`
     getAllOrders {
       id
       items {
-        productVariant {
-          size
-          price
-          product {
-            name
-          }
-        }
+        productName
+        productSize
+        productPrice
         quantity
         subtotal
       }
