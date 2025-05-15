@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import SectionContainer from "../SectionContainer";
-import { useShiftStore } from "@/hooks/shiftStore";
+import { useShiftStore } from "@/hooks/useShiftStore";
 import { useOrderStore } from "@/hooks/useOrder";
 // import { useHistoryStore } from "@/hooks/useOrderHistory";
 import toast, { Toaster } from "react-hot-toast";
@@ -15,7 +15,6 @@ import {
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
 
-
 type PaymentProps = {
   amountType: string;
   setAmountType: React.Dispatch<React.SetStateAction<string>>;
@@ -24,7 +23,6 @@ type PaymentProps = {
 };
 
 //check if the user Role is Cashier
-
 
 const Payment = ({
   amountType,
@@ -38,7 +36,7 @@ const Payment = ({
   const [okPressed, setOkPressed] = useState(false);
   // const { addOrder } = useHistoryStore();
   const { selectedProducts, clearProducts, nextOrderNumber } = useOrderStore();
-  const {userId} = useUserStore.getState() 
+  const { userId } = useUserStore.getState();
 
   const handleKeyClick = (key: string) => {
     if (key === "←") {
@@ -199,7 +197,7 @@ const Payment = ({
                         const quantity = item.quantity ?? 1;
                         const subtotal = price * quantity;
 
-                        console.log(variantId)
+                        console.log(variantId);
                         return {
                           productVariantId: variantId,
                           quantity,
@@ -212,7 +210,6 @@ const Payment = ({
                       (acc, item) => acc + item.subtotal,
                       0
                     );
-
 
                     try {
                       const orderId = nextOrderNumber;

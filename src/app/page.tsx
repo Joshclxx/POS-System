@@ -17,7 +17,7 @@ export default function Home() {
   const [amountType, setAmountType] = useState("");
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const {userRole} = useUserStore.getState()
+  const { userRole } = useUserStore.getState();
 
   const router = useRouter();
 
@@ -34,9 +34,9 @@ export default function Home() {
 
   //check if the userRole is cashier if not it will go to login
   useEffect(() => {
-    if(userRole !== "cashier") {
-      useUserStore.getState().logout()
-      router.push("/login")
+    if (userRole !== "cashier") {
+      useUserStore.getState().logout();
+      router.push("/login");
     }
   }, []);
 

@@ -102,7 +102,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({
                     // Show toast per deleted item or all together
                     toast.success(
                       deletedItems.length === 1
-                        ? `Removed ${deletedItems[0]}`
+                        ? `${deletedItems[0]} Removed`
                         : `Removed ${deletedItems.length} items`
                     );
 
@@ -152,7 +152,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({
         </motion.div>
       </AnimatePresence>
 
-      <div className="bg-colorDirtyWhite w-full max-w-[428px] h-[677px] mt-1 p-2 overflow-y-auto">
+      <div className="bg-colorDirtyWhite w-full max-w-[428px] h-[600px] mt-1 p-2 overflow-y-auto">
         <div className="bg-primary w-full h-[40px] flex items-center">
           <div className="text-tertiary flex justify-between px-2 w-full">
             <p className="w-1/2">ITEMS</p>

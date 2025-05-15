@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import SectionContainer from "../../SectionContainer";
 import toast, { Toaster } from "react-hot-toast";
 import { useTimer } from "@/hooks/useTimer";
-import { useShiftStore } from "@/hooks/shiftStore";
+import { useShiftStore } from "@/hooks/useShiftStore";
 import ManagerLogin from "../ManagerLogin";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
 
@@ -20,7 +20,11 @@ const Shift = () => {
   };
 
   const handleCloseShift = () => {
-    toast.success("Shift closed!");
+    if (!actualCash || parseFloat(actualCash) === 0) {
+      return toast.error("Enter Cash On Hand Before Closing Shift.");
+    }
+
+    toast.success("Shift Closed!");
     closeShift();
     timer.stop();
     logout();
@@ -41,8 +45,8 @@ const Shift = () => {
   const [actualCash, setActualCash] = useState("");
 
   const posCashTotal = useMemo(
-    () => totalSales - totalPicked,
-    [totalSales, totalPicked]
+    () => totalSales - totalPicked - voidRefund,
+    [totalSales, totalPicked, voidRefund]
   );
 
   // subtract voidRefund when calculating expected drawer cash
@@ -67,6 +71,7 @@ const Shift = () => {
     openShift(parseFloat(startCashInput));
     timer.start();
     router.push("/");
+    toast.success("Shift Opened!");
   };
 
   // const handleCloseShift = () => {
@@ -206,6 +211,7 @@ const Shift = () => {
                     placeholder="₱ 0.00"
                     className="w-full px-4 py-2 border border-primary rounded text-gray-900"
                     value={actualCash}
+                    required
                     onChange={(e) => setActualCash(e.target.value)}
                   />
                 </div>
