@@ -25,7 +25,7 @@ export default function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   // useManagerAuth(); // no need to destructure anything
-  const {userRole} = useUserStore.getState()
+  const { userRole } = useUserStore.getState();
 
   // NEW: hide if manager
   useEffect(() => {
@@ -38,6 +38,8 @@ export default function Navbar() {
   if (isManager) return null;
 
   const chunkedMenu = chunkArray(MENU_FEATURE_LINKS, 2);
+
+  const { userEmail } = useUserStore.getState();
 
   const handleNavigation = (href: string) => {
     router.push(href);
@@ -114,8 +116,8 @@ export default function Navbar() {
             </div>
             <div className="px-4 mt-6 flex-grow">
               <div className="flex justify-between items-center">
-                <p>version</p>
-                <p>1.0.1</p>
+                <p>CASHIER</p>
+                <p>{userEmail || "Unknown User"}</p>
               </div>
               <hr className="border-primaryGray w-full mt-4 mb-4" />
               <div className="flex justify-between items-start">
@@ -138,7 +140,7 @@ export default function Navbar() {
             </div>
             <div className="px-4 pb-4">
               <p className="text-center text-[14px]">
-                © Hebrew Cafe. All Rights Reserved
+                Copyright © {new Date().getFullYear()}. All rights reserved.
               </p>
             </div>
           </div>

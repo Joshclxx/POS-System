@@ -5,7 +5,7 @@ import Button from "@/components/Button";
 import SectionContainer from "@/components/SectionContainer";
 import AdminDrawer from "../AdminDrawer";
 import useGlobal from "@/hooks/useGlobal";
-import { useShiftStore } from "@/hooks/shiftStore";
+import { useShiftStore } from "@/hooks/useShiftStore";
 
 import ManagerLogin from "../ManagerLogin";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
@@ -140,7 +140,7 @@ const Spotcheck = () => {
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
         <Toaster />
         <div className="grid grid-cols-12 mt-4">
-          <div className="bg-colorDirtyWhite w-[1280px] h-[800px] relative">
+          <div className="bg-colorDirtyWhite w-[1280px] h-[700px] relative">
             {/* TITLE */}
             <div className="relative flex items-center justify-between w-full max-w-[1280px] px-6 mt-[20px]">
               <div className="absolute left-1/2 transform -translate-x-1/2">

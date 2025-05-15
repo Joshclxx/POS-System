@@ -73,18 +73,17 @@ const Product: React.FC = () => {
   // const addMenu = useGlobal((state) => state.addMenu);
   // const removeMenuItem = useGlobal((state) => state.removeMenuItem);
   // const addMenuItem = useGlobal((state) => state.addMenuItem);
-   // const { isVerified, login, logout } = useManagerAuth();
+  // const { isVerified, login, logout } = useManagerAuth();
   const menus = useGlobal((state) => state.menus);
   const menuItems = useGlobal((state) => state.menuItems);
-  const {userRole, logout} = useUserStore.getState();
+  const { userRole, logout } = useUserStore.getState();
 
   useEffect(() => {
-    if(userRole !== "manager") {
+    if (userRole !== "manager") {
       logout();
       router.push("/login");
     }
-  }, [])
- 
+  }, []);
 
   // Reset form and drawer state
   const handleCancel = () => {

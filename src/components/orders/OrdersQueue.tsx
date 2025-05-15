@@ -4,14 +4,13 @@ import { useState, useEffect } from "react";
 import React from "react";
 import Button from "../Button";
 import SectionContainer from "../SectionContainer";
-// import { useOrderStore } from "@/hooks/useOrder";
-// import { useHistoryStore } from "@/hooks/useOrderHistory";
 import toast, { Toaster } from "react-hot-toast";
 import { GET_ALL_ORDERS } from "@/app/graphql/query";
 import { UPDATE_ORDER_STATUS } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
 
 type OrderRawData = {
+  type: "DINE IN" | "TAKE OUT";
   id: number;
   items: {
     productVariant: {
@@ -22,19 +21,18 @@ type OrderRawData = {
     };
     quantity: number;
   }[];
-  status: "queue" | "completed" | "voided"
+  status: "queue" | "completed" | "voided";
 };
 
 type OrderQueuesItem = {
-  id: number,
+  id: number;
+  type: "DINE IN" | "TAKE OUT";
   items: {
-    title: string
-    price: number
-    quantity: number
-  }[]
-}
-
-
+    title: string;
+    price: number;
+    quantity: number;
+  }[];
+};
 
 const OrdersQueue = () => {
   // const ordersQueue = useOrderStore((state) => state.ordersQueue);
@@ -44,41 +42,34 @@ const OrdersQueue = () => {
 
   const [ordersQueue, setOrdersQueue] = useState<OrderQueuesItem[]>([]);
   const { data: orderdata, refetch } = useQuery(GET_ALL_ORDERS);
-  const [ updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
+  const [updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
 
   // LOAD ALL ORDERS WITH STATUS QUEUE
   useEffect(() => {
-
-    console.log(orderdata?.getAllOrders)
+    console.log(orderdata?.getAllOrders);
     if (orderdata?.getAllOrders) {
       const orderQueueFormat = orderdata.getAllOrders
-      .filter((order: OrderRawData) => order.status === "queue") //only show the order wth qeue
-      .map((order: OrderRawData) => {
+        .filter((order: OrderRawData) => order.status === "queue") //only show the order wth qeue
+        .map((order: OrderRawData) => {
+          const items = order.items.map((item) => ({
+            title: item.productVariant.product.name,
+            price: item.productVariant.price,
+            quantity: item.quantity,
+          }));
 
-        const items = order.items.map((item) => ({
-          title: item.productVariant.product.name,
-          price: item.productVariant.price,
-          quantity: item.quantity,
-        }));
-
-
-        return {
-          id: order.id,
-          items,
-        };
-
-
-      })
+          return {
+            id: order.id,
+            type: order.type,
+            items,
+          };
+        });
 
       setOrdersQueue(orderQueueFormat);
     }
   }, [orderdata]);
 
   const bumpSelectedOrder = async () => {
-
-    const orderToBump = ordersQueue.find(
-      (order) => order.id === selectedOrder
-    );
+    const orderToBump = ordersQueue.find((order) => order.id === selectedOrder);
 
     if (selectedOrder !== null) {
       try {
@@ -86,14 +77,14 @@ const OrdersQueue = () => {
           variables: {
             data: {
               id: orderToBump?.id,
-              status: "completed"
-            }
-          }
+              status: "completed",
+            },
+          },
         });
         refetch();
         toast.success(`Oder #${selectedOrder} Served!`);
-      } catch(error) {
-        console.error(error) // simpl error for now
+      } catch (error) {
+        console.error(error); // simpl error for now
       }
 
       // updateOrderStatus(selectedOrder, "Completed");
@@ -123,7 +114,7 @@ const OrdersQueue = () => {
   };
 
   return (
-    <SectionContainer background="mt-1 w-[235px] h-[914px]">
+    <SectionContainer background="mt-1 w-[235px] h-[700px]">
       <Toaster position="top-center" />
       {/* ORDER QUEUE HEADER */}
       <div className="bg-primary w- h-[60px] flex items-center justify-center menu-total text-[18px]">
@@ -131,7 +122,7 @@ const OrdersQueue = () => {
       </div>
 
       {/* Order List */}
-      <div className="bg-colorDirtyWhite w-full h-[674px] mt-[4px] p-2 overflow-y-auto">
+      <div className="bg-colorDirtyWhite w-full h-[600px] mt-[4px] p-2 overflow-y-auto">
         <div className="flex flex-col gap-3 text-center">
           {ordersQueue.map((order) => (
             <div
@@ -146,6 +137,7 @@ const OrdersQueue = () => {
               }
             >
               <p className="primary-title">{order.id}</p>
+              <p className="primary-title">{order.type}</p>
 
               {/* Conditionally show items only if this order is selected */}
               {selectedOrder === order.id && (
