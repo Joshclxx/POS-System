@@ -16,7 +16,7 @@ const OrdersMenuNavBar = ({ activeKey, setActiveKey }: Props) => {
     <nav className="bg-colorDirtyWhite w-[585px] h-[60px] flex items-center mt-[12px]">
       <div className="w-full max-w-[1280px] mx-auto flex items-center px-4">
         <div
-          className="overflow-x-auto scroll-smooth thin-scrollbar"
+          className="overflow-x-auto scroll-smooth hide-scrollbar"
           style={{ scrollSnapType: "x mandatory" }}
         >
           <ul className="flex gap-2 flex-nowrap min-w-max">

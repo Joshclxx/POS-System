@@ -96,6 +96,9 @@ const VoidOrder = () => {
   const { data: orderData, refetch } = useQuery(GET_ALL_ORDERS);
   const { recordVoidRefund } = useShiftStore();
 
+  const [startDate, setStartDate] = useState<string>();
+  const [endDate, setEndDate] = useState<string>();
+
   const router = useRouter();
 
   // MANAGERS LOGIN
@@ -195,9 +198,17 @@ const VoidOrder = () => {
     }
   };
 
-  const filteredOrders = orders.filter((order) =>
-    order.id.toString().includes(searchId)
-  );
+  const filteredOrders = orders.filter((order) => {
+    const matchesId = order.id.toString().includes(searchId);
+    const orderDate = new Date(order.createdAt);
+    const afterStart = startDate
+      ? orderDate >= new Date(new Date(startDate).toISOString())
+      : true;
+    const beforeEnd = endDate
+      ? orderDate <= new Date(new Date(endDate).toISOString())
+      : true;
+    return matchesId && afterStart && beforeEnd;
+  });
 
   const handleVoidClick = () => {
     if (!selectedOrder) return;
@@ -258,16 +269,39 @@ const VoidOrder = () => {
               </p>
             </div>
 
-            <div className="flex justify-end mb-2 px-[10px]">
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="\d*"
-                value={searchId}
-                onChange={(e) => setSearchId(e.target.value)}
-                placeholder="Search Order ID..."
-                className="border border-gray-300 rounded-[6px] px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all w-[250px]"
-              />
+            <div className="grid grid-cols-9 gap-4">
+              {/* SEARCH ID */}
+              <div className="col-span-5 mt-2">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="\d*"
+                  value={searchId}
+                  onChange={(e) => setSearchId(e.target.value)}
+                  placeholder="Search Order ID..."
+                  className="border border-primary rounded-[6px] px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                />
+              </div>
+
+              {/* START DATE & TIME */}
+              <div className="col-span-2 mt-2">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="border border-primary rounded-[6px] px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                />
+              </div>
+
+              {/* END DATE & TIME */}
+              <div className="col-span-2 mt-2">
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="border border-primary rounded-[6px] px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                />
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto hide-scrollbar mt-[5px] px-[10px]">
