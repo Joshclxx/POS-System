@@ -9,6 +9,7 @@ import ManagerLogin from "../ManagerLogin";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useShiftStore } from "@/hooks/useShiftStore";
 import Button from "@/components/Button";
 
 type OrderRawData = {
@@ -34,7 +35,7 @@ type Orders = {
     price: number;
     quantity: number;
   }[];
-  status: "queue" | "completed" | "voided"; 
+  status: "queue" | "completed" | "voided";
   total: number;
   createdAt: string;
 };
@@ -93,6 +94,7 @@ const VoidOrder = () => {
   const [updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
   const [orders, setOrders] = useState<Orders[]>([]);
   const { data: orderData, refetch } = useQuery(GET_ALL_ORDERS);
+  const { recordVoidRefund } = useShiftStore();
 
   const router = useRouter();
 
@@ -157,6 +159,9 @@ const VoidOrder = () => {
           },
         },
       });
+
+      recordVoidRefund(orderToVoid.total);
+
       refetch();
     } catch (error) {
       console.error(error); //simple error for
@@ -224,17 +229,18 @@ const VoidOrder = () => {
   }
 
   const capitalized = (str: string) => {
-    if(!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-  }
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
 
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
       <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
-      <div className="absolute bottom-[60px] right-4">
+      <div className="absolute bottom-[200px] right-4">
         <Button
           variant="universal"
           onClick={() => {
+            logout();
             router.replace("/");
           }}
           className="w-[140px] h-auto bg-colorBlue text-tertiary rounded-3xl p-6 text-[18px] font-regular absolute right-4"
@@ -244,9 +250,9 @@ const VoidOrder = () => {
       </div>
 
       <div className="grid grid-cols-12 mt-4">
-        <div className="container bg-colorDirtyWhite w-[1280px] flex flex-row p-[10px]">
-          <div className="order-history-panel flex flex-col basis-[100%] h-[914px]">
-            <div className="heading flex h-[52px] items-center bg-[#000000] border rounded-[8px] mb-[5px]">
+        <div className="container bg-colorDirtyWhite w-[1280px] h-[700px] flex flex-row p-[10px]">
+          <div className="order-history-panel flex flex-col basis-[100%] h-[600px]">
+            <div className="heading flex h-[52px] items-center bg-primary border rounded-[8px] mb-[5px]">
               <p className="text-colorDirtyWhite font-bold text-[24px] px-[10px]">
                 VOID ORDER
               </p>
@@ -280,7 +286,7 @@ const VoidOrder = () => {
                     <tr
                       key={order.id}
                       onClick={() => setSelectedOrder(order)}
-                      className="border-b hover:bg-secondaryGray/50 cursor-pointer"
+                      className="border-b hover:bg-secondaryGray/50 cursor-pointer "
                     >
                       <td className="px-[12px] py-[12px]">{order.id}</td>
                       <td className="px-[12px] py-[12px]">
@@ -297,7 +303,9 @@ const VoidOrder = () => {
                         }).format(order.total)}
                       </td>
                       <td className="px-[12px] py-[12px]">{order.createdAt}</td>
-                      <td className="px-[12px] py-[12px]">{capitalized(order.status)}</td>
+                      <td className="px-[12px] py-[12px]">
+                        {capitalized(order.status)}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

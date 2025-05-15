@@ -8,11 +8,11 @@ export const USER_LOGIN = gql`
       role
     }
   }
-`
+`;
 
 export const GET_ALL_USERS = gql`
-  query getAllUsers{
-    getAllUsers{
+  query getAllUsers {
+    getAllUsers {
       firstname
       middlename
       lastname
@@ -23,7 +23,7 @@ export const GET_ALL_USERS = gql`
       role
     }
   }
-`
+`;
 export const GET_CATEGORY = gql`
   query getCategory($name: String!) {
     getCategory(name: $name) {
