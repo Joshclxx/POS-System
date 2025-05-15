@@ -15,12 +15,9 @@ import Button from "@/components/Button";
 type OrderRawData = {
   id: number;
   items: {
-    productVariant: {
-      price: number;
-      product: {
-        name: string;
-      };
-    };
+    productName: string,
+    productSize: "pt" | "rg" | "gr",
+    productPrice: number,
     quantity: number;
   }[];
   total: number;
@@ -121,8 +118,8 @@ const VoidOrder = () => {
     if (orderData?.getAllOrders) {
       const ordersFormat = orderData.getAllOrders.map((order: OrderRawData) => {
         const items = order.items.map((item) => ({
-          title: item.productVariant.product.name,
-          price: item.productVariant.price,
+          title: item.productName,
+          price: item.productPrice,
           quantity: item.quantity,
         }));
 

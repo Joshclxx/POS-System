@@ -26,7 +26,7 @@ export const mutationResolvers = {
         firstname: firstname.toLowerCase(),
         middlename: middlename.toLowerCase(),
         lastname: lastname.toLowerCase(),
-        suffix: suffix.toLowerCase(),
+        suffix: suffix ? suffix.toLowerCase() : "N/A",
         gender,
         email: email.toLowerCase(),
         password,
@@ -294,7 +294,9 @@ export const mutationResolvers = {
       args: {
         data: {
           items: {
-            productVariantId: number;
+            productName: string;
+            productSize: "pt" | "rg" | "gr";
+            productPrice: number;
             quantity: number;
             subtotal: number;
           }[];
@@ -310,7 +312,9 @@ export const mutationResolvers = {
           data: {
             items: {
               create: items.map((item) => ({
-                productVariantId: item.productVariantId,
+                productName: item.productName.toLowerCase(),
+                productSize: item.productSize,
+                productPrice: item.productPrice,
                 quantity: item.quantity,
                 subtotal: item.subtotal,
               })),
@@ -319,11 +323,7 @@ export const mutationResolvers = {
             userId,
           },
           include: {
-            items: {
-              include: {
-                productVariant: true,
-              },
-            },
+            items: true
           },
         });
       } catch (error) {

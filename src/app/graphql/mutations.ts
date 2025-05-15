@@ -71,11 +71,9 @@
     mutation createOrder($data: CreateOrderInput!){
       createOrder(data: $data) {
         items {
-          productVariant {
-            id
-            size
-            price
-          }
+          productName
+          productSize
+          productPrice
           quantity
           subtotal
         }

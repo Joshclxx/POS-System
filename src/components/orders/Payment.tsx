@@ -7,12 +7,8 @@ import { useOrderStore } from "@/hooks/useOrder";
 // import { useHistoryStore } from "@/hooks/useOrderHistory";
 import toast, { Toaster } from "react-hot-toast";
 import { CREATE_ORDER } from "@/app/graphql/mutations";
-import {
-  GET_PRODUCT,
-  GET_PRODUCT_VARIANT,
-  GET_ALL_ORDERS,
-} from "@/app/graphql/query";
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import {GET_ALL_ORDERS} from "@/app/graphql/query";
+import {  useMutation, useQuery } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
 
 type PaymentProps = {
@@ -78,8 +74,6 @@ const Payment = ({
 
   //mutatation
   const [createOrder] = useMutation(CREATE_ORDER);
-  const [getProduct] = useLazyQuery(GET_PRODUCT);
-  const [getProductVariant] = useLazyQuery(GET_PRODUCT_VARIANT);
   const { refetch } = useQuery(GET_ALL_ORDERS);
 
   return (
@@ -179,27 +173,14 @@ const Payment = ({
 
                     const itemInputs = await Promise.all(
                       selectedProducts.map(async (item) => {
-                        const { data: productData } = await getProduct({
-                          variables: { name: item.imageTitle },
-                        });
-                        const productId = productData?.getProduct?.id;
-                        const { data: variantData } = await getProductVariant({
-                          variables: {
-                            data: {
-                              productId: productId,
-                              size: item.size.toLowerCase(),
-                            },
-                          },
-                        });
-
-                        const variantId = variantData?.getProductVariant?.id;
                         const price = item.price[item.size];
                         const quantity = item.quantity ?? 1;
                         const subtotal = price * quantity;
 
-                        console.log(variantId);
                         return {
-                          productVariantId: variantId,
+                          productName: item.imageTitle,
+                          productSize: item.size.toLowerCase(),
+                          productPrice: price,
                           quantity,
                           subtotal,
                         };
@@ -218,7 +199,7 @@ const Payment = ({
                           data: {
                             items: itemInputs,
                             total: totalAmount,
-                            userId: userId, //JAY 50a26a2b-f640-409b-97a5-702a2dcd298a //change to actual id if not working in testing
+                            userId: userId,
                           },
                         },
                       });
