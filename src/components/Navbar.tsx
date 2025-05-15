@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { NAV_LINKS, MENU_FEATURE_LINKS } from "@/app/constants";
 import Button from "./Button";
 // import { useManagerAuth } from "@/hooks/useManagerAuth";
+import { motion, AnimatePresence } from "framer-motion";
 import { useUserStore } from "@/hooks/useUserSession";
 
 // Function to split an array into chunks of a given size
@@ -35,9 +36,22 @@ export default function Navbar() {
     }
   }, []);
 
+  useEffect(() => {
+    const storedTime = localStorage.getItem("loginTime");
+    if (storedTime) {
+      const formatted = new Date(storedTime).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      setLoginTime(formatted);
+    }
+  }, []);
+
   if (isManager) return null;
 
   const chunkedMenu = chunkArray(MENU_FEATURE_LINKS, 2);
+
+  const [loginTime, setLoginTime] = useState<string>("");
 
   const { userEmail } = useUserStore.getState();
 
@@ -96,97 +110,149 @@ export default function Navbar() {
       </nav>
 
       {/* POS PANEL */}
-      {isOpenPos && (
-        <>
-          <div
-            className="fixed inset-0 bg-black bg-opacity-40 z-40"
-            onClick={() => setOpenPos(false)}
-          />
-          <div className="fixed top-2 right-2 h-[55%] w-1/3 bg-primary z-50 border border-primaryGray shadow-lg transition-transform duration-300 ease-in-out flex flex-col">
-            <div className="p-4 flex justify-between items-center">
-              <h2 className="text-xl font-semibold underline">
-                BSIS 32A1 POS SYSTEM
-              </h2>
-              <button
-                onClick={() => setOpenPos(false)}
-                className="text-tertiary text-xl font-bold bg-colorRed w-[32px] h-[32px] rounded-full"
-              >
-                X
-              </button>
-            </div>
-            <div className="px-4 mt-6 flex-grow">
-              <div className="flex justify-between items-center">
-                <p>CASHIER</p>
-                <p>{userEmail || "Unknown User"}</p>
+      <AnimatePresence>
+        {isOpenPos && (
+          <>
+            {/* BACKDROP */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 backdrop-blur-sm"
+              onClick={() => setOpenPos(false)}
+            />
+
+            {/* PANEL */}
+            <motion.div
+              initial={{ x: 400, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 400, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed top-6 right-6 h-[60%] w-[400px] bg-[#1C1F26] rounded-xl z-50 border border-gray-700 shadow-2xl flex flex-col overflow-hidden"
+            >
+              {/* HEADER */}
+              <div className="p-4 flex justify-between items-center bg-[#121417] border-b border-gray-600">
+                <h2 className="text-lg font-bold tracking-wide text-white">
+                  BSIS 32A1 POS SYSTEM
+                </h2>
+                <button
+                  onClick={() => setOpenPos(false)}
+                  className="text-white text-base font-bold bg-red-600 hover:bg-red-700 w-8 h-8 rounded-full flex items-center justify-center transition"
+                >
+                  X
+                </button>
               </div>
-              <hr className="border-primaryGray w-full mt-4 mb-4" />
-              <div className="flex justify-between items-start">
-                <p>developed by</p>
-                <div className="flex flex-col">
-                  <p>colobong</p>
-                  <p>soguilon</p>
-                  <p>manalo</p>
-                  <p>alaan</p>
-                  <p>bacudo</p>
-                  <p>manila</p>
-                  <p>dizon</p>
+
+              {/* BODY */}
+              <div className="p-5 text-white flex-grow overflow-y-auto text-sm">
+                <div className="flex justify-between mb-2">
+                  <span className="text-gray-300">CASHIER</span>
+                  <span>{userEmail || "Unknown User"}</span>
+                </div>
+                <div className="flex justify-between mb-4">
+                  <span className="text-gray-300">TIME IN</span>
+                  <span>{loginTime || "N/A"}</span>
+                </div>
+
+                <hr className="border-gray-600 mb-4" />
+
+                <div className="mb-4 text-center">
+                  <span className="block text-tertiary mb-4">DEVELOPED BY</span>
+                  <div className="flex flex-col gap-2">
+                    {[
+                      ["Colobong, Joshua", "Frontend"],
+                      ["Soguilon, Jaylord", "Backend"],
+                      ["Manalo, Jenelyn", "Wireframe"],
+                      ["Alaan, Mariel Krisjean", "Planning"],
+                      ["Bacudo, Michaella", "Planning"],
+                      ["Manila, Jessie Nino", "Planning"],
+                      ["Dizon, Allyssa", "Planning"],
+                    ].map(([name, role]) => (
+                      <div key={name} className="flex justify-between">
+                        <p>{name}</p>
+                        <p>{role}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <hr className="border-gray-600 mb-4" />
+
+                <div className="flex justify-between">
+                  <span className="text-gray-300">CREATED AT</span>
+                  <span>march 2025</span>
                 </div>
               </div>
-              <hr className="border-primaryGray w-full mt-4 mb-4" />
-              <div className="flex justify-between items-center">
-                <p>created at</p>
-                <p>march 2025</p>
+
+              {/* FOOTER */}
+              <div className="p-3 text-center text-gray-400 text-xs border-t border-gray-700">
+                © {new Date().getFullYear()}. All rights reserved.
               </div>
-            </div>
-            <div className="px-4 pb-4">
-              <p className="text-center text-[14px]">
-                Copyright © {new Date().getFullYear()}. All rights reserved.
-              </p>
-            </div>
-          </div>
-        </>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* MENU PANEL */}
       {isOpenMenu && (
-        <>
-          <div
-            className="fixed inset-0 bg-black bg-opacity-40 z-40"
-            onClick={() => setOpenMenu(false)}
-          />
-          <div className="fixed top-2 left-2 h-[50%] w-1/4 bg-primary z-50 shadow-lg border-1 border-primaryGray transition-transform duration-300 ease-in-out">
-            <div className="p-4 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-center flex-1">
-                Menu Features
-              </h2>
-              <button
+        <AnimatePresence>
+          {isOpenMenu && (
+            <>
+              {/* BACKDROP */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="fixed inset-0 bg-black bg-opacity-50 z-40 backdrop-blur-sm"
                 onClick={() => setOpenMenu(false)}
-                className="text-tertiary text-xl font-bold bg-colorRed w-[32px] h-[32px] rounded-full"
-              >
-                X
-              </button>
-            </div>
+              />
 
-            <div className="flex flex-col w-full items-start gap-2 mt-8 px-6">
-              {chunkedMenu.flat().map((link, idx) => (
-                <div key={link.key} className="w-full">
+              {/* MENU PANEL */}
+              <motion.div
+                initial={{ x: -400, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -400, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="fixed top-6 left-6 h-auto w-[280px] bg-[#1C1F26] rounded-xl z-50 border border-gray-700 shadow-2xl overflow-hidden"
+              >
+                {/* HEADER */}
+                <div className="p-4 flex justify-between items-center bg-primary border-b border-gray-600">
+                  <h2 className="text-lg font-semibold text-white flex-1 text-center">
+                    Menu Features
+                  </h2>
                   <button
-                    className="text-base text-left transition-colors w-full py-2"
-                    onClick={() => {
-                      setOpenMenu(false);
-                      handleNavigation(link.href);
-                    }}
+                    onClick={() => setOpenMenu(false)}
+                    className="text-white text-base font-bold bg-red-600 hover:bg-red-700 w-8 h-8 rounded-full flex items-center justify-center transition"
                   >
-                    {link.label}
+                    X
                   </button>
-                  {idx < chunkedMenu.flat().length - 1 && (
-                    <hr className="border-primaryGray w-full" />
-                  )}
                 </div>
-              ))}
-            </div>
-          </div>
-        </>
+
+                {/* MENU ITEMS */}
+                <div className="flex flex-col w-full items-start p-6 gap-1 mt-6 px-4 text-white text-sm overflow-y-auto">
+                  {chunkedMenu.flat().map((link, idx) => (
+                    <div key={link.key} className="w-full">
+                      <button
+                        className="text-left w-full py-2 px-3 rounded-md hover:bg-gray-700 transition"
+                        onClick={() => {
+                          setOpenMenu(false);
+                          handleNavigation(link.href);
+                        }}
+                      >
+                        {link.label}
+                      </button>
+                      {idx < chunkedMenu.flat().length - 1 && (
+                        <hr className="border-gray-700 w-full" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       )}
     </>
   );
