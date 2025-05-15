@@ -7,7 +7,7 @@ import Button from "@/components/Button";
 import SectionContainer from "../../SectionContainer";
 import ManagerLogin from "../ManagerLogin";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
-import { useShiftStore } from "@/hooks/shiftStore";
+import { useShiftStore } from "@/hooks/useShiftStore";
 
 const Cashpick = () => {
   const pickCash = useShiftStore((s) => s.pickCash);
@@ -53,7 +53,7 @@ const Cashpick = () => {
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
       <Toaster />
       <div className="grid grid-cols-12 mt-4">
-        <div className="col-span-12 bg-colorDirtyWhite w-full h-[800px]">
+        <div className="col-span-12 bg-colorDirtyWhite w-full h-[700px]">
           <div className="flex flex-col items-center px-6 mt-[20px]">
             <div className="flex items-center justify-center w-[414px] h-[52px] bg-secondary rounded-lg">
               <p className="text-tertiary text-[24px] font-bold">CASHPICK</p>
@@ -77,7 +77,7 @@ const Cashpick = () => {
               <span>₱ {formatted}</span>
             </div>
           </div>
-          <div className="mt-24 flex justify-end gap-4 pr-4">
+          <div className="mt-5 flex justify-end gap-4 pr-6">
             <Button
               variant="universal"
               className="w-[172px] h-[44px] bg-colorRed text-tertiary rounded-3xl"

@@ -13,6 +13,7 @@ interface OrderQueueItem {
   // items: string[];
   // confirmedAt: number;
   id: number;
+  type: "DINE IN" | "TAKE OUT";
   items: { title: string; price: number; quantity: number }[]; // Updated structure for items
   confirmedAt: number;
 }
@@ -24,7 +25,10 @@ interface OrderStore {
   removeProduct: (index: number) => void;
   ordersQueue: OrderQueueItem[];
   nextOrderNumber: number;
-  addOrderToQueue: (confirmedAt: number) => number;
+  addOrderToQueue: (
+    confirmedAt: number,
+    type: "DINE IN" | "TAKE OUT"
+  ) => number;
   bumpOrder: () => void;
 }
 
@@ -65,7 +69,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   //     nextOrderNumber: next,
   //   }));
   // },
-  addOrderToQueue: (confirmedAt) => {
+  addOrderToQueue: (confirmedAt, type) => {
     const current = get().selectedProducts;
     const items = current.map((it) => ({
       title: it.imageTitle,
@@ -76,12 +80,14 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     const orderId = get().nextOrderNumber; // use current value
 
     set((state) => ({
-      ordersQueue: [...state.ordersQueue, { id: orderId, items, confirmedAt }],
+      ordersQueue: [
+        ...state.ordersQueue,
+        { id: orderId, type, items, confirmedAt },
+      ],
       nextOrderNumber: orderId + 1,
     }));
 
     // Add to the order history as well
-
 
     return orderId; // ✅ return the id used
   },
@@ -122,21 +128,18 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     //   // const orderToRevert = useHistoryStore
     //   //   .getState()
     //   //   .orderHistory.find((order) => order.Status === "Completed");
-
     //   if (orderToRevert) {
     //     // Avoid reversion of voided orders
     //     if (orderToRevert.Status === "Voided") {
     //       console.error("This order has already been voided.");
     //       return state;
     //     }
-
     //     // Convert the items to the correct object format
     //     const items = orderToRevert.items.map((i) => ({
     //       title: i.title,
     //       price: i.price,
     //       quantity: i.quantity,
     //     }));
-
     //     // Add it back to ordersQueue
     //     const newOrderQueue = [
     //       ...state.ordersQueue,
@@ -146,17 +149,14 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     //         confirmedAt: Date.now(),
     //       },
     //     ];
-
     //     // Update the order status to "Queued"
     //     // useHistoryStore
     //     //   .getState()
     //     //   .updateOrderStatus(orderToRevert.OrderId, "Queued");
-
     //     return {
     //       ordersQueue: newOrderQueue,
     //     };
     //   }
-
     //   return state; // Return unchanged state if no order is found
     // });
   },

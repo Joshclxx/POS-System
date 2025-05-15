@@ -175,7 +175,9 @@ const UserRegister = () => {
 
               {/* MIDDLE NAME */}
               <div>
-                <p className="text-primary font-semibold">Middle Name</p>
+                <p className="text-primary font-semibold">
+                  Middle Name <span className="text-colorRed">*</span>
+                </p>
                 <input
                   name="middlename"
                   type="text"
