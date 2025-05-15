@@ -292,17 +292,9 @@ export const query = {
       const includeData = {
         items: {
           select: {
-            productVariant: {
-              select: {
-                size: true,
-                price: true,
-                product: {
-                  select: {
-                    name: true
-                  }
-                }
-              }
-            },
+            productName: true,
+            productSize: true,
+            productPrice: true,
             quantity: true,
             subtotal: true,
           }

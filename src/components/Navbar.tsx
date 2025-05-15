@@ -47,11 +47,12 @@ export default function Navbar() {
     }
   }, []);
 
+  const [loginTime, setLoginTime] = useState<string>("");
   if (isManager) return null;
 
   const chunkedMenu = chunkArray(MENU_FEATURE_LINKS, 2);
 
-  const [loginTime, setLoginTime] = useState<string>("");
+
 
   const { userEmail } = useUserStore.getState();
 

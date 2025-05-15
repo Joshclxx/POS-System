@@ -10,15 +10,12 @@ import { UPDATE_ORDER_STATUS } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
 
 type OrderRawData = {
-  type: "DINE IN" | "TAKE OUT";
+  // type: "DINE IN" | "TAKE OUT";
   id: number;
   items: {
-    productVariant: {
-      price: number;
-      product: {
-        name: string;
-      };
-    };
+    productName: string,
+    productSize: "pt" | "rg" | "gr",
+    productPrice: number,
     quantity: number;
   }[];
   status: "queue" | "completed" | "voided";
@@ -26,10 +23,11 @@ type OrderRawData = {
 
 type OrderQueuesItem = {
   id: number;
-  type: "DINE IN" | "TAKE OUT";
+  // type: "DINE IN" | "TAKE OUT";
   items: {
-    title: string;
-    price: number;
+    title: string,
+    size: "pt" | "rg" | "gr",
+    price: number,
     quantity: number;
   }[];
 };
@@ -46,20 +44,22 @@ const OrdersQueue = () => {
 
   // LOAD ALL ORDERS WITH STATUS QUEUE
   useEffect(() => {
-    console.log(orderdata?.getAllOrders);
+    console.log(`Orders: ${orderdata?.getAllOrders}`);
+    
     if (orderdata?.getAllOrders) {
       const orderQueueFormat = orderdata.getAllOrders
         .filter((order: OrderRawData) => order.status === "queue") //only show the order wth qeue
         .map((order: OrderRawData) => {
           const items = order.items.map((item) => ({
-            title: item.productVariant.product.name,
-            price: item.productVariant.price,
+            title: item.productName,
+            price: item.productPrice,
             quantity: item.quantity,
           }));
 
+          console.log(items)
+
           return {
             id: order.id,
-            type: order.type,
             items,
           };
         });
@@ -82,32 +82,10 @@ const OrdersQueue = () => {
           },
         });
         refetch();
-        toast.success(`Oder #${selectedOrder} Served!`);
+        toast.success(`Order #${selectedOrder} Served!`);
       } catch (error) {
         console.error(error); // simpl error for now
       }
-
-      // updateOrderStatus(selectedOrder, "Completed");
-
-      // const orderToBump = ordersQueue.find(
-      //   (order) => order.id === selectedOrder
-      // );
-      // if (orderToBump) {
-      //   addOrderToHistory({
-      //     OrderId: orderToBump.id,
-      //     Status: "Completed",
-      //     items: orderToBump.items,
-      //     Total: orderToBump.items.reduce(
-      //       (acc, item) => acc + item.price * item.quantity,
-      //       0
-      //     ),
-      //     Date: new Date(),
-      //   });
-      // }
-
-      // useOrderStore.setState((state) => ({
-      //   ordersQueue: state.ordersQueue.filter((o) => o.id !== selectedOrder),
-      // }));
 
       setSelectedOrder(null);
     }
@@ -137,7 +115,7 @@ const OrdersQueue = () => {
               }
             >
               <p className="primary-title">{order.id}</p>
-              <p className="primary-title">{order.type}</p>
+              {/* <p className="primary-title">{order.type}</p> */}
 
               {/* Conditionally show items only if this order is selected */}
               {selectedOrder === order.id && (
