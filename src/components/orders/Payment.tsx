@@ -10,6 +10,7 @@ import { CREATE_ORDER } from "@/app/graphql/mutations";
 import {GET_ALL_ORDERS} from "@/app/graphql/query";
 import {  useMutation, useQuery } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
+import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 
 type PaymentProps = {
   amountType: string;
@@ -203,13 +204,15 @@ const Payment = ({
                           },
                         },
                       });
+
                       refetch();
                       clearProducts();
                       setOkPressed(false);
                       toast.success(`Order #${orderId} Payment Confirmed.`);
                       onBackToOrders();
                     } catch (error) {
-                      console.error(error);
+                      console.error("Caught error:", error);
+                      handleGraphQLError(error)
                     }
                     //NOT NEEDED for now
                     // const orderId = nextOrderNumber;
