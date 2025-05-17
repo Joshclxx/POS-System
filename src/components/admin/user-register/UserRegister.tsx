@@ -9,6 +9,7 @@ import { GET_ALL_USERS } from "@/app/graphql/query";
 import { CREATE_USER } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
+import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 
 // Initial form state
 const initialForm = {
@@ -140,7 +141,7 @@ const UserRegister = () => {
       setForm(initialForm); // Reset form
       setError("");
     } catch (error) {
-      console.error(error); //simple error for now
+      handleGraphQLError(error);
     }
   };
 

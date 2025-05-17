@@ -56,9 +56,10 @@ export default function LoginPage() {
 
           return; // prevent falling through to admin check
         }
-      } catch (error) {
-        console.error(error); //simple error for now
+        
         toast.error("Login Denied, Email & Password Incorrect!");
+      } catch (error) {
+        console.log(error); //simple error for now
       }
     }
 
