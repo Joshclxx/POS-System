@@ -34,14 +34,14 @@ export default function Home() {
 
   //check if the userRole is cashier if not it will go to login
   useEffect(() => {
-    if (userRole !== "cashier") {
+    if (userRole !== "cashier" || !useUserStore.getState().loggedIn) {
       useUserStore.getState().logout();
       router.push("/login");
     }
   }, []);
 
   const handleConfirmPayment = () => {
-    useOrderStore.getState().addOrderToQueue(Date.now());
+    // useOrderStore.getState().addOrderToQueue(Date.now()); //Connent for now
     useOrderStore.getState().clearProducts();
     setIsPaying(false);
   };

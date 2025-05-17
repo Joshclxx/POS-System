@@ -13,9 +13,9 @@ type OrderRawData = {
   // type: "DINE IN" | "TAKE OUT";
   id: number;
   items: {
-    productName: string,
-    productSize: "pt" | "rg" | "gr",
-    productPrice: number,
+    productName: string;
+    productSize: "pt" | "rg" | "gr";
+    productPrice: number;
     quantity: number;
   }[];
   status: "queue" | "completed" | "voided";
@@ -25,9 +25,9 @@ type OrderQueuesItem = {
   id: number;
   // type: "DINE IN" | "TAKE OUT";
   items: {
-    title: string,
-    size: "pt" | "rg" | "gr",
-    price: number,
+    title: string;
+    size: "pt" | "rg" | "gr";
+    price: number;
     quantity: number;
   }[];
 };
@@ -45,7 +45,7 @@ const OrdersQueue = () => {
   // LOAD ALL ORDERS WITH STATUS QUEUE
   useEffect(() => {
     console.log(`Orders: ${orderdata?.getAllOrders}`);
-    
+
     if (orderdata?.getAllOrders) {
       const orderQueueFormat = orderdata.getAllOrders
         .filter((order: OrderRawData) => order.status === "queue") //only show the order wth qeue
@@ -56,7 +56,7 @@ const OrdersQueue = () => {
             quantity: item.quantity,
           }));
 
-          console.log(items)
+          console.log(items);
 
           return {
             id: order.id,
