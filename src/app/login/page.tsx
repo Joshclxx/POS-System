@@ -140,15 +140,15 @@ export default function LoginPage() {
       <Toaster />
       <div className="flex h-screen">
         {/* Left container */}
-        <div className="w-[462px] h-full bg-secondary flex flex-col gap-9 items-center justify-center">
+        <div className="w-[462px] h-full bg-[#300b1c] flex flex-col gap-9 items-center justify-center">
           <img
-            src="/image/heebrew-logo.svg"
+            src="/image/heebrew.svg"
             alt="Heebrew Logo"
-            className="w-[400px] h-auto"
+            className="w-[800px] h-auto"
           />
-          <div className="pt-12 text-[32px] text-center font-semibold leading-loose tracking-widest">
-            <p className="text-tertiary/70">HEEBREW CAFE POS SYSTEM</p>
-          </div>
+          {/* <div className="pt-12 text-[32px] text-center font-semibold leading-loose tracking-widest">
+            <p className="text-tertiary/70">POS SYSTEM</p>
+          </div> */}
         </div>
 
         {/* Right container */}
