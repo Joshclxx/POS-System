@@ -17,14 +17,14 @@ export default function Home() {
   const [amountType, setAmountType] = useState("");
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const { userRole } = useUserStore.getState();
+  const { userRole, loggedIn } = useUserStore.getState();
 
   const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const isLoggedIn = localStorage.getItem("loggedIn") === "true";
-      if (!isLoggedIn) {
+      
+      if (!loggedIn) {
         router.replace("/login?redirect=/");
       } else {
         setLoading(false);

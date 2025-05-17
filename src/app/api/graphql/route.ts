@@ -4,13 +4,15 @@ import { typeDefs } from "@/app/graphql/schema";
 import { query } from "@/app/graphql/resolvers/query";
 import { mutationResolvers } from "@/app/graphql/resolvers/mutations";
 import { context } from "@/app/lib/context";
+import { categoryMutations } from "@/app/graphql/resolvers/mutations/category";
 
 const resolvers = {
   Query: {
     ...query.Query, // Make sure you use the Query object inside query resolver
   },
   Mutation: {
-    ...mutationResolvers.Mutation, // Similarly, use Mutation from mutationResolvers
+    ...mutationResolvers.Mutation, 
+    ...categoryMutations.Mutation,
   },
 };
 
