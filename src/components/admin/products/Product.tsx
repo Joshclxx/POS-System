@@ -24,6 +24,7 @@ import {
   GET_ALL_PRODUCTS,
   GET_CATEGORY,
 } from "@/app/graphql/query";
+import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 // import ManagerLogin from "../ManagerLogin";
 // import { useManagerAuth } from "@/hooks/useManagerAuth";
 // import { useRouter } from "next/navigation";
@@ -152,16 +153,6 @@ const Product: React.FC = () => {
               },
             },
           });
-          // addMenuItem({
-          //   id: crypto.randomUUID(),
-          //   name: itemName.trim(),
-          //   menu: itemMenu,
-          //   prices: {
-          //     PT: Number(itemPrices.PT),
-          //     RG: Number(itemPrices.RG),
-          //     GR: Number(itemPrices.GR),
-          //   },
-          // });
           await refetchProducts();
           toast.success(`${itemName} added successfully!`, { id: "item-add" });
         } catch (error) {
@@ -199,17 +190,6 @@ const Product: React.FC = () => {
         } catch (error) {
           console.log(error);
         }
-        // removeMenuItem(selectedMenuItem.id);
-        // addMenuItem({
-        //   id: selectedMenuItem.id,
-        //   name: itemName.trim(),
-        //   menu: itemMenu,
-        //   prices: {
-        //     PT: Number(itemPrices.PT),
-        //     RG: Number(itemPrices.RG),
-        //     GR: Number(itemPrices.GR),
-        //   },
-        // });
       }
     } else if (drawerMode === "deleteMenu" && selectedMenu) {
       try {
@@ -217,10 +197,8 @@ const Product: React.FC = () => {
         await refetchCategories();
         toast.success(`Menu "${selectedMenu}" deleted.`, { id: "menu-delete" });
       } catch (error) {
-        console.error(error);
+        handleGraphQLError(error);
       }
-      // removeMenu(selectedMenu);
-      // removeMenuItemsByMenu(selectedMenu);
     } else if (drawerMode === "deleteMenuItem" && selectedMenuItem) {
       try {
         await deleteProduct({ variables: { id: selectedMenuItem.id } });
@@ -232,7 +210,6 @@ const Product: React.FC = () => {
         console.error("Error deleting product:", error);
         console.error(error);
       }
-      // removeMenuItem(selectedMenuItem.id);
     }
 
     handleCancel();

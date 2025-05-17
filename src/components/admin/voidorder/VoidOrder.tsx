@@ -191,7 +191,7 @@ const VoidOrder = () => {
       toast.success(`Successfully reverted order #${orderId}.`);
       setSelectedOrder(null);
     } catch (error) {
-      console.error(error); // simple error for now
+      toast.error(`${error}`);
     }
   };
 
