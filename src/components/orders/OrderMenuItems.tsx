@@ -82,7 +82,7 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
                     <div className="flex flex-col items-center justify-start bg-[#DDD9D6] w-full rounded-[8px]">
                       <p className="item-title text-center">{item.name}</p>
                       <OrderImageContainer
-                        imageSrc="/image/default.svg"
+                        imageSrc="/image/sir-bernard.png"
                         imageAlt={item.name}
                         imagePrice={item.prices}
                         imageWidth={140}

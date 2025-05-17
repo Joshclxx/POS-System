@@ -26,7 +26,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({
   const [isEditingQty, setIsEditingQty] = useState(false);
   const [tempQty, setTempQty] = useState<number | null>(null);
 
-  const options = ["DINE IN", "TAKE OUT"];
+  const options = ["DINE IN", "DINE OUT"];
   const selectedProducts = useOrderStore((state) => state.selectedProducts);
   const total = selectedProducts.reduce(
     (acc, item) => acc + item.price[item.size] * (item.quantity || 1),
