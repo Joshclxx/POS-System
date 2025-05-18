@@ -25,7 +25,7 @@ export const categoryMutations = {
                             });
                         }
 
-                        throw new GraphQLError("Database is unreachable.", {
+                        throw new GraphQLError("Database is unreachable. Make sure your database are running.", {
                             extensions: {
                             code: "NO_DATABASE_FOUND"
                             },
@@ -67,7 +67,7 @@ export const categoryMutations = {
                                     },
                                 });
                             }
-                            throw new GraphQLError("Database is unreachable.", {
+                            throw new GraphQLError("Database is unreachable. Make sure your database are running.", {
                                 extensions: {
                                 code: "NO_DATABASE_FOUND"
                                 },
