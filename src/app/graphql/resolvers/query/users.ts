@@ -1,0 +1,164 @@
+import { GraphQLContext } from "@/app/lib/context";
+import { GraphQLError } from "graphql";
+
+export const usersQuery = {
+    Query: {
+        getAllUsers: async (_: unknown, __: unknown, context : GraphQLContext) => {  
+            try {
+                return await context.prisma.user.findMany();
+
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+
+                    if (error.message.includes("connect")) {
+                        try {
+                            await context.prisma.$connect();
+                            return await context.prisma.user.findMany();
+                        
+                        } catch (reconnectError: unknown) {
+                        if (reconnectError instanceof Error) {
+                            throw new GraphQLError("Failed to connect database. Make sure your database are running.", {
+                                extensions: {
+                                    code: "FAILED_RECONNECTION_DB"  
+                                },
+                            });
+                        }
+
+                        throw new GraphQLError("Database is unreachable. Make sure your database are running.", {
+                            extensions: {
+                               code: "NO_DATABASE_FOUND"
+                            },
+                        });
+                        }
+                    }
+                    throw new GraphQLError("Something went wrong. Please contact your administrator.", {
+                        extensions: {
+                           code: "INTERNAL_SERVER_ERROR"
+                        }
+                    });
+
+                }
+                throw new GraphQLError("An unknown error occured fetching all users.", {
+                    extensions: {
+                        code: "UNKNOWN_GET_ALL_USER_ERROR"
+                    }
+                });
+            }
+        },
+    
+        //1 USER
+        getUser: async (_: unknown, { id }: { id: string }, context: GraphQLContext) => {  
+            try {
+                return await context.prisma.user.findUnique({where: { id }});
+
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+
+                    if (error.message.includes("connect")) {
+                        try {
+                            await context.prisma.$connect();
+                            return await context.prisma.user.findUnique({where: { id }});
+                        
+                        } catch (reconnectError: unknown) {
+                        if (reconnectError instanceof Error) {
+                            throw new GraphQLError("Failed to connect database. Make sure your database are running.", {
+                                extensions: {
+                                    code: "FAILED_RECONNECTION_DB"  
+                                },
+                            });
+                        }
+
+                        throw new GraphQLError("Database is unreachable. Make sure your database are running.", {
+                            extensions: {
+                               code: "NO_DATABASE_FOUND"
+                            },
+                        });
+                        }
+                    }
+                    throw new GraphQLError("Something went wrong. Please contact your administrator.", {
+                        extensions: {
+                           code: "INTERNAL_SERVER_ERROR"
+                        }
+                    });
+
+                }
+                throw new GraphQLError("An unknown error occured fetching an user.", {
+                    extensions: {
+                        code: "UNKNOWN_GET_USER_ERROR"
+                    }
+                });
+            }
+        },
+
+        userLogin: async (_: unknown, args: {data: {email: string, password: string}}, context: GraphQLContext) => {
+            const { email, password } = args.data;
+
+            const fetchUser = () => {
+                return context.prisma.user.findUnique({
+                    where: {
+                        email_password: {
+                        email: email.toLowerCase(),
+                        password: password
+                        }
+                    }
+                })
+            };
+
+            const userDataFormat = async () => {
+                const user = await fetchUser();
+
+                if(!user) {
+                    throw new Error("Invalid email or password");
+                }
+
+                return {
+                    id: user.id,
+                    email: user.email, // I will include email and password for testing purposes  
+                    password: user.password, // I didn't use hashed password for now for testing purposes
+                    role: user.role
+                }
+            };
+
+            try {
+                return userDataFormat();
+
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+
+                    if (error.message.includes("connect")) {
+                        try {
+                            await context.prisma.$connect();
+                            return userDataFormat();
+                        
+                        } catch (reconnectError: unknown) {
+                        if (reconnectError instanceof Error) {
+                            throw new GraphQLError("Failed to connect database. Make sure your database are running.", {
+                                extensions: {
+                                    code: "FAILED_RECONNECTION_DB"  
+                                },
+                            });
+                        }
+
+                        throw new GraphQLError("Database is unreachable. Make sure your database are running.", {
+                            extensions: {
+                               code: "NO_DATABASE_FOUND"
+                            },
+                        });
+                        }
+                    }
+                    throw new GraphQLError("Something went wrong. Please contact your administrator.", {
+                        extensions: {
+                           code: "INTERNAL_SERVER_ERROR"
+                        }
+                    });
+
+                }
+                throw new GraphQLError("An unknown error occured while trying to login an user.", {
+                    extensions: {
+                        code: "UNKNOWN_LOGIN_ERROR"
+                    }
+                });
+            }
+        },
+    }
+}
