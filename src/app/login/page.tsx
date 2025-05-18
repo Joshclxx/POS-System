@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import SectionContainer from "@/components/SectionContainer";
@@ -21,6 +21,13 @@ export default function LoginPage() {
   const router = useRouter();
   const [userLogin] = useLazyQuery(USER_LOGIN);
   const [showPassword, setShowPassword] = useState(false);
+
+  //automatically go to main ui pag naka loggedIn na, to avoid showing close shift
+  useEffect(() => {
+    if(useUserStore.getState().loggedIn && useUserStore.getState().userRole === "cashier") {
+      router.push("/")
+    }
+  })
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
