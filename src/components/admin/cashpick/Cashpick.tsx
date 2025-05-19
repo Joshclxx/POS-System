@@ -24,7 +24,7 @@ const Cashpick = () => {
     const num = parseFloat(amount.replace(/[^\d.]/g, "")) || 0;
     pickCash(num);
     setAmount("");
-    toast.success("Cash Picked");
+    toast.success("Cash Picked", { id: "notif-message" });
     router.push("/");
     logout();
   };

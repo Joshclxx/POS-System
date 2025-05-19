@@ -43,7 +43,7 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
     const toastId = `${item.id}-${size}`;
     if (!shownToasts.has(toastId)) {
       toast.success(`${item.name} (${size}) added to order`, {
-        id: "menu-item",
+        id: "notif-message",
       });
       shownToasts.add(toastId);
     }
@@ -82,7 +82,7 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
                     <div className="flex flex-col items-center justify-start bg-[#DDD9D6] w-full rounded-[8px]">
                       <p className="item-title text-center">{item.name}</p>
                       <OrderImageContainer
-                        imageSrc="/image/sir-bernard.png"
+                        imageSrc="/image/default.svg"
                         imageAlt={item.name}
                         imagePrice={item.prices}
                         imageWidth={140}
