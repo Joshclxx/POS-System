@@ -76,6 +76,7 @@ export const CREATE_ORDER = gql`
         subtotal
       }
       total
+      type
       status
       userId
     }
@@ -109,3 +110,12 @@ export const DELETE_USER = gql`
     }
   }
 `;
+
+export const UPDATE_CATEGORY = gql`
+  mutation updateCategory($id: Int!, $name: String!){
+    updateCategory(id: $id, name: $name){
+      id
+      name
+    }
+  }
+`

@@ -130,8 +130,8 @@ export const productMutation = {
             args: {
                 id: number;
                 edits: {
-                name: string;
-                variants: { size: "pt" | "rg" | "gr"; price: number }[];
+                    name: string;
+                    variants: { size: "pt" | "rg" | "gr"; price: number }[];
                 };
             },
             context: GraphQLContext
@@ -149,8 +149,8 @@ export const productMutation = {
                 if (args.edits.name && args.edits.name !== product?.name) {
                     const nameExists = await context.prisma.product.findFirst({
                         where: {
-                        name: args.edits.name,
-                        NOT: { id: args.id },
+                            name: args.edits.name,
+                            NOT: { id: args.id },
                         },
                     });
 
@@ -161,7 +161,7 @@ export const productMutation = {
                     await context.prisma.product.update({
                         where: { id: args.id },
                         data: {
-                        name: args.edits.name,
+                            name: args.edits.name,
                         },
                     });
                 }
@@ -171,8 +171,8 @@ export const productMutation = {
                         args.edits.variants.map((variant) =>
                             context.prisma.productVariant.updateMany({
                                 where: {
-                                productId: args.id,
-                                size: variant.size,
+                                    productId: args.id,
+                                    size: variant.size,
                                 },
                                 data: { price: variant.price },
                             })

@@ -9,14 +9,14 @@ interface EspressoItem {
 }
 
 interface OrderQueueItem {
-  // id: number;
-  // items: string[];
-  // confirmedAt: number;
   id: number;
-  type: "DINE IN" | "TAKE OUT";
+  type: OrderTypeEnum;
   items: { title: string; price: number; quantity: number }[]; // Updated structure for items
   confirmedAt: number;
 }
+
+type OrderTypeEnum = "dine_in" | "take_out";
+
 
 interface OrderStore {
   selectedProducts: EspressoItem[];
@@ -27,12 +27,19 @@ interface OrderStore {
   nextOrderNumber: number;
   addOrderToQueue: (
     confirmedAt: number,
-    type: "DINE IN" | "TAKE OUT"
+    type: "dine_in" | "take_out"
   ) => number;
   bumpOrder: () => void;
+  orderType: OrderTypeEnum; 
+  setOrderType: (type: OrderTypeEnum) => void;
 }
 
 export const useOrderStore = create<OrderStore>((set, get) => ({
+  orderType: "dine_in", // ✅ Add this default value to the initial state
+  setOrderType: (type) => {
+    set({ orderType: type }); // ✅ This now works because it's defined above
+  },
+
   selectedProducts: [],
   addProduct: (item) => {
     const items = get().selectedProducts;
@@ -123,41 +130,5 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     });
   },
 
-  revertOrder: () => {
-    // set((state) => {
-    //   // const orderToRevert = useHistoryStore
-    //   //   .getState()
-    //   //   .orderHistory.find((order) => order.Status === "Completed");
-    //   if (orderToRevert) {
-    //     // Avoid reversion of voided orders
-    //     if (orderToRevert.Status === "Voided") {
-    //       console.error("This order has already been voided.");
-    //       return state;
-    //     }
-    //     // Convert the items to the correct object format
-    //     const items = orderToRevert.items.map((i) => ({
-    //       title: i.title,
-    //       price: i.price,
-    //       quantity: i.quantity,
-    //     }));
-    //     // Add it back to ordersQueue
-    //     const newOrderQueue = [
-    //       ...state.ordersQueue,
-    //       {
-    //         id: orderToRevert.OrderId,
-    //         items,
-    //         confirmedAt: Date.now(),
-    //       },
-    //     ];
-    //     // Update the order status to "Queued"
-    //     // useHistoryStore
-    //     //   .getState()
-    //     //   .updateOrderStatus(orderToRevert.OrderId, "Queued");
-    //     return {
-    //       ordersQueue: newOrderQueue,
-    //     };
-    //   }
-    //   return state; // Return unchanged state if no order is found
-    // });
-  },
+  
 }));

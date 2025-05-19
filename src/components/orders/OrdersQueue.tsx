@@ -8,22 +8,24 @@ import toast, { Toaster } from "react-hot-toast";
 import { GET_ALL_ORDERS } from "@/app/graphql/query";
 import { UPDATE_ORDER_STATUS } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
+import { formatType } from "@/app/utils/capitalized";
+import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 
 type OrderRawData = {
   id: number;
-  type: "DINE IN" | "DINE OUT";
   items: {
     productName: string;
     productSize: "pt" | "rg" | "gr";
     productPrice: number;
     quantity: number;
   }[];
+  type: "dine_in" | "take_out";
   status: "queue" | "completed" | "voided";
 };
 
 type OrderQueuesItem = {
   id: number;
-  type: "DINE IN" | "DINE OUT";
+  type: "dine_in" | "take_out";
   items: {
     title: string;
     size: "pt" | "rg" | "gr";
@@ -33,18 +35,13 @@ type OrderQueuesItem = {
 };
 
 const OrdersQueue = () => {
-  // const ordersQueue = useOrderStore((state) => state.ordersQueue);
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
-  // const updateOrderStatus = useHistoryStore((state) => state.updateOrderStatus);
-  // const addOrderToHistory = useHistoryStore((state) => state.addOrder); // Added to handle adding orders to history
-
   const [ordersQueue, setOrdersQueue] = useState<OrderQueuesItem[]>([]);
   const { data: orderdata, refetch } = useQuery(GET_ALL_ORDERS);
   const [updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
 
   // LOAD ALL ORDERS WITH STATUS QUEUE
   useEffect(() => {
-    console.log(`Orders: ${orderdata?.getAllOrders}`);
 
     if (orderdata?.getAllOrders) {
       const orderQueueFormat = orderdata.getAllOrders
@@ -63,7 +60,6 @@ const OrdersQueue = () => {
             items,
           };
         });
-
       setOrdersQueue(orderQueueFormat);
     }
   }, [orderdata]);
@@ -86,7 +82,7 @@ const OrdersQueue = () => {
           id: "notif-message",
         });
       } catch (error) {
-        console.error(error); // simple error for now
+        handleGraphQLError(error);
       }
 
       setSelectedOrder(null);
@@ -118,7 +114,7 @@ const OrdersQueue = () => {
             >
               <div>
                 <p className="primary-title">{order.id}</p>
-                <p className="primary-title">{order.type}</p>
+                <p className="primary-title">{formatType(order.type)}</p>
               </div>
 
               {/* Conditionally show items only if this order is selected */}

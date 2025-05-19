@@ -8,7 +8,8 @@ import { useOrderStore } from "@/hooks/useOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
 import toast, { Toaster } from "react-hot-toast";
-
+import { formatType } from "@/app/utils/capitalized";
+type OrderTypeInum = "dine_in" | "take_out";
 interface OrdersViewProps {
   isPaying: boolean;
   setIsPaying: Dispatch<SetStateAction<boolean>>;
@@ -20,13 +21,15 @@ const OrdersView: React.FC<OrdersViewProps> = ({
   setIsPaying,
   setTotal,
 }) => {
-  const [selectedOption, setSelectedOption] = useState("DINE IN");
+  // const [selectedOption, setSelectedOption] = useState("dine_in");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndexes, setSelectedIndexes] = useState<number[]>([]);
   const [isEditingQty, setIsEditingQty] = useState(false);
   const [tempQty, setTempQty] = useState<number | null>(null);
 
-  const options = ["DINE IN", "DINE OUT"];
+  const orderType = useOrderStore((state) => state.orderType);
+  const setOrderType = useOrderStore((state) => state.setOrderType);
+  const options: OrderTypeInum[] = ["dine_in", "take_out"];
   const selectedProducts = useOrderStore((state) => state.selectedProducts);
   const total = selectedProducts.reduce(
     (acc, item) => acc + item.price[item.size] * (item.quantity || 1),
@@ -121,7 +124,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({
                   className="flex items-center justify-between p-2 bg-colorBlue w-full h-[60px] text-white font-semibold"
                   onClick={() => setIsOpen(!isOpen)}
                 >
-                  <span className="text-lg">{selectedOption}</span>
+                  <span className="text-lg">{formatType(orderType)}</span>
                   <Image
                     src="/icon/dropdown.svg"
                     alt="DropDown"
@@ -135,10 +138,10 @@ const OrdersView: React.FC<OrdersViewProps> = ({
                       <button
                         key={option}
                         className={`w-full text-left p-2 text-black hover:bg-gray-200 ${
-                          selectedOption === option ? "font-bold" : ""
+                          orderType === (option) ? "font-bold" : ""
                         }`}
                         onClick={() => {
-                          setSelectedOption(option);
+                          setOrderType(option);
                           setIsOpen(false);
                         }}
                       >
@@ -164,7 +167,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({
 
         <div className="w-full text-left mt-2">
           <p className="text-[16px] font-semibold text-primary px-2">
-            {selectedOption}
+            {formatType(orderType)}
           </p>
         </div>
 

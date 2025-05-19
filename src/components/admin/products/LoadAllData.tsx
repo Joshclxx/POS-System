@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/client";
 import useGlobal from "@/hooks/useGlobal";
 import { GET_ALL_PRODUCTS, GET_ALL_CATEGORIES } from "@/app/graphql/query";
 
+
 //types for raw data
 type RawProduct = {
   id: number;
@@ -56,16 +57,15 @@ const DataLoader = () => {
           };
         }
       );
-      console.log("Formatted Products:", formattedProducts); //pang double check ayaw guamana e
+      console.log(formattedProducts)
       setMenuItems(formattedProducts);
+
     }
 
     if (categoryData?.getAllCategories) {
       const formattedMenus = categoryData.getAllCategories.map(
         (menu: RawCategory) => menu.name
       );
-
-      console.log("Formatted Menus:", formattedMenus); //isa kapa
       setMenus(formattedMenus);
     }
   }, [productData, categoryData, setMenuItems, setMenus]);
