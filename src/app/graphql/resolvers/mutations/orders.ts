@@ -15,12 +15,13 @@ export const ordersMutation = {
                     subtotal: number;
                 }[];
                 total: number;
+                type: "dine_in" | "take_out";
                 userId: string;
                 };
             },
             context: GraphQLContext
         ) => {
-            const { items, total, userId } = args.data;
+            const { items, total, type, userId } = args.data;
             const orderData = {
                 items: {
                     create: items.map((item) => ({
@@ -32,6 +33,7 @@ export const ordersMutation = {
                     })),
                 },
                 total,
+                type,
                 userId,
             };
             
@@ -75,53 +77,53 @@ export const ordersMutation = {
             };
         },
 
-        createVoidOrder: async (_: unknown, args: {data: {orderId: number, shiftId: number, userId: string}}, context: GraphQLContext) => {
-            const voidOrderData = {
-                orderId: args.data.orderId,
-                shiftId: args.data.shiftId,
-                userId: args.data.userId
-            }
+        // createVoidOrder: async (_: unknown, args: {data: {orderId: number, shiftId: number, userId: string}}, context: GraphQLContext) => {
+        //     const voidOrderData = {
+        //         orderId: args.data.orderId,
+        //         shiftId: args.data.shiftId,
+        //         userId: args.data.userId
+        //     }
 
-            try {
-                return await context.prisma.voidedOrder.create({data: voidOrderData})
+        //     try {
+        //         return await context.prisma.voidedOrder.create({data: voidOrderData})
 
-            } catch (error: unknown) {
-                if (error instanceof Error) {
+        //     } catch (error: unknown) {
+        //         if (error instanceof Error) {
 
-                    if (error.message.includes("database")) {
-                        try {
-                            await context.prisma.$connect();
-                            return await context.prisma.voidedOrder.create({data: voidOrderData})
+        //             if (error.message.includes("database")) {
+        //                 try {
+        //                     await context.prisma.$connect();
+        //                     return await context.prisma.voidedOrder.create({data: voidOrderData})
                         
-                        } catch (reconnectError: unknown) {
-                            if (reconnectError instanceof Error) {
-                                throw new GraphQLError("Failed to connect database. Make sure your database are running.", {
-                                    extensions: {
-                                        code: "FAILED_RECONNECTION_DB"  
-                                    },
-                                });
-                            }
-                            throw new GraphQLError("Database is unreachable. Make sure your database are running.", {
-                                extensions: {
-                                  code: "NO_DATABASE_FOUND"
-                                },
-                            });
-                        }
-                    }
-                    //expect error from input / code logi
-                    throw new GraphQLError("Something went wrong. Please contact your administrator.", {
-                        extensions: {
-                        code: "INTERNAL_SERVER_ERROR"
-                        }
-                    });
-                }
-                throw new GraphQLError("An unknown error occured while voiding an order. Please contact your administrator.", {
-                    extensions: {
-                        code: "UNKNOWN_VOID_ERROR"
-                    }
-                });
-            };
-        },
+        //                 } catch (reconnectError: unknown) {
+        //                     if (reconnectError instanceof Error) {
+        //                         throw new GraphQLError("Failed to connect database. Make sure your database are running.", {
+        //                             extensions: {
+        //                                 code: "FAILED_RECONNECTION_DB"  
+        //                             },
+        //                         });
+        //                     }
+        //                     throw new GraphQLError("Database is unreachable. Make sure your database are running.", {
+        //                         extensions: {
+        //                           code: "NO_DATABASE_FOUND"
+        //                         },
+        //                     });
+        //                 }
+        //             }
+        //             //expect error from input / code logi
+        //             throw new GraphQLError("Something went wrong. Please contact your administrator.", {
+        //                 extensions: {
+        //                 code: "INTERNAL_SERVER_ERROR"
+        //                 }
+        //             });
+        //         }
+        //         throw new GraphQLError("An unknown error occured while voiding an order. Please contact your administrator.", {
+        //             extensions: {
+        //                 code: "UNKNOWN_VOID_ERROR"
+        //             }
+        //         });
+        //     };
+        // },
 
         updateOrderStatus: async (
             _: unknown,

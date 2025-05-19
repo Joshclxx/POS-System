@@ -27,10 +27,10 @@ model User {
   password    String 
   role       Role  
   shift      Shift[]
-  cashpick Cashpick[]
+  // cashpick Cashpick[]
   orders Order[]
   spotCheck Spotcheck[]
-  voidOrder VoidedOrder[]
+  // voidOrder VoidedOrder[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime?
 
@@ -43,22 +43,22 @@ model Shift {
   shiftIn   DateTime @default(now())
   shiftOut  DateTime?
   startingCash Float
-  cashpickAmount Cashpick[]
-  voidedAmount VoidedOrder[]
+  cashpickAmount Float
+  voidedAmount Float
   totalCash Float
   userId String 
   user User @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }
 
-model Cashpick{
-  id Int @id @default(autoincrement())
-  shiftId Int 
-  shift Shift @relation(fields: [shiftId], references: [id])
-  userId String 
-  user User @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-}
+// model Cashpick{
+//   id Int @id @default(autoincrement())
+//   shiftId Int 
+//   shift Shift @relation(fields: [shiftId], references: [id])
+//   userId String 
+//   user User @relation(fields: [userId], references: [id])
+//   createdAt DateTime @default(now())
+// }
 
 model Spotcheck {
   id Int @id @default(autoincrement())
@@ -124,11 +124,12 @@ model Order {
   id         Int          @id @default(autoincrement())
   items      OrderItem[] //One to Many (One order have Many Order Items)
   total      Float
+  type TYPE
   status     STATUS       @default(queue) 
   userId String //Foreign Key
   user User @relation(fields: [userId], references: [id])
-  voidedOrderId Int?
-  voidedOrder VoidedOrder? @relation("OrderToVoidOrder")
+  // voidedOrderId Int?
+  // voidedOrder VoidedOrder? @relation("OrderToVoidOrder")
   createdAt  DateTime     @default(now())
 }
 
@@ -144,15 +145,20 @@ model OrderItem {
   createdAt  DateTime     @default(now())    
 }
 
-model VoidedOrder {
-  id Int @id @default(autoincrement())
-  orderId Int @unique
-  order Order @relation("OrderToVoidOrder", fields: [orderId], references: [id]) 
-  shiftId Int
-  shift Shift @relation(fields: [shiftId], references: [id])
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+// model VoidedOrder {
+//   id Int @id @default(autoincrement())
+//   orderId Int @unique
+//   order Order @relation("OrderToVoidOrder", fields: [orderId], references: [id]) 
+//   shiftId Int
+//   shift Shift @relation(fields: [shiftId], references: [id])
+//   userId String
+//   user User @relation(fields: [userId], references: [id])
+//   createdAt DateTime @default(now())
+// }
+
+enum TYPE {
+  dine_in
+  take_out
 }
 
 enum STATUS {

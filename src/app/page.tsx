@@ -18,7 +18,7 @@ export default function Home() {
   const [total, setTotal] = useState(0);
   const [hydrated, setHydrated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { userRole, loggedIn, logout } = useUserStore();
+  const { userRole, loggedIn} = useUserStore();
 
   // .getState --> useUserStore.getState();
 
@@ -53,7 +53,7 @@ export default function Home() {
 
   // Wait for Zustand to hydrate from localStorage
   useEffect(() => {
-    setHydrated(true);
+    setHydrated(true);  
   }, []);
 
   // Redirect only after Zustand state is hydrated
@@ -61,13 +61,13 @@ export default function Home() {
     if (!hydrated) return;
 
     if (!loggedIn || userRole !== "cashier") {
-      logout(); // logout just in case of stale or invalid session
       router.replace("/login?redirect=/");
     }
-  }, [hydrated, loggedIn, userRole]);
+
+  }, [hydrated, loggedIn, userRole, router]);
 
   const handleConfirmPayment = () => {
-    useOrderStore.getState().clearProducts();
+    useOrderStore.getState().clearProducts(); 
     setIsPaying(false);
   };
 
@@ -76,6 +76,8 @@ export default function Home() {
     return <div>Loading...</div>;
   }
 
+  //simple loading if aready logIn
+  if(userRole !== "cashier") return <div>Loading...</div>
   return (
     <SectionContainer background="w-full h-[914px] flex items-center">
       <div className="flex gap-4 w-full max-w-[1280px]">

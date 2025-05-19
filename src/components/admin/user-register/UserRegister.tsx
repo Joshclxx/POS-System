@@ -10,6 +10,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 import { DELETE_USER } from "@/app/graphql/mutations";
+import { capitalize } from "@/app/utils/capitalized";
 
 // Initial form state
 const initialForm = {
@@ -24,10 +25,7 @@ const initialForm = {
   retypePassword: "",
 };
 
-const capitalize = (str: string) => {
-  if (!str) return "";
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
+
 
 type User = typeof initialForm;
 
