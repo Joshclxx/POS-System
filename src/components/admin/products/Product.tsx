@@ -318,7 +318,7 @@ const Product: React.FC = () => {
                       <span className="menu-title font-bold text-lg">
                         {menuName}
                       </span>
-                      <div className="gap-2">
+                      <div className="gap-2 flex">
                         <button
                           onClick={() => {
                             setSelectedMenu(menuName);
