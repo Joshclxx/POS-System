@@ -29,6 +29,11 @@ export const typeDefs = gql`
     gr
   }
 
+  enum Type {
+    dine_in
+    take_out
+  }
+
   type User {
     id: ID!
     firstname: String!
@@ -88,6 +93,7 @@ export const typeDefs = gql`
     id: Int!
     items: [OrderItem!]!
     total: Float!
+    type: Type!
     status: STATUS!
     userId: String!
     user: User!
@@ -140,7 +146,8 @@ export const typeDefs = gql`
     deleteCategory(name: String!): Category
     # deleteAllOrder: [Order!]!
 
-    updateProduct(name: String!): Product
+    updateProduct(id: Int!, edits: EditProductInput!): Product
+    updateCategory(id: Int!, name: String!): Category
     updateOrderStatus(data: UpdateOrderStatusInput!): Order
   }
 
@@ -174,6 +181,7 @@ export const typeDefs = gql`
   input CreateOrderInput {
     items: [CreateOrderItemInput!]!
     total: Float!
+    type: Type!
     userId: String!
   }
   input CreateOrderItemInput {

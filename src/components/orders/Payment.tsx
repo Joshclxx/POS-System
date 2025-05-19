@@ -12,6 +12,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 
+
 type PaymentProps = {
   amountType: string;
   setAmountType: React.Dispatch<React.SetStateAction<string>>;
@@ -72,6 +73,9 @@ const Payment = ({
         return "bg-primaryGray text-primary text-xl";
     }
   };
+
+  const orderType = useOrderStore((state) => state.orderType);
+ 
 
   //mutatation
   const [createOrder] = useMutation(CREATE_ORDER);
@@ -171,7 +175,6 @@ const Payment = ({
                 onClick={async () => {
                   if (label === "CONFIRM") {
                     if (!okPressed) return;
-
                     const itemInputs = await Promise.all(
                       selectedProducts.map(async (item) => {
                         const price = item.price[item.size];
@@ -200,6 +203,7 @@ const Payment = ({
                           data: {
                             items: itemInputs,
                             total: totalAmount,
+                            type: orderType,
                             userId: userId,
                           },
                         },
@@ -213,7 +217,6 @@ const Payment = ({
                       });
                       onBackToOrders();
                     } catch (error) {
-                      console.error("Caught error:", error);
                       handleGraphQLError(error);
                     }
                     //NOT NEEDED for now

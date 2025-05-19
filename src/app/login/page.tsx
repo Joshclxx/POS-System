@@ -26,12 +26,26 @@ export default function LoginPage() {
   const [lockEndTime, setLockEndTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    if(useUserStore.getState().loggedIn) {
+
+    }
     if (
       useUserStore.getState().loggedIn &&
       useUserStore.getState().userRole === "cashier"
     ) {
-      router.push("/");
+      router.replace("/");
+    } else if (
+      useUserStore.getState().loggedIn &&
+      useUserStore.getState().userRole === "admin"
+    ) {
+      router.replace("/admin/user-register")
+    } else if ( 
+      useUserStore.getState().loggedIn &&
+      useUserStore.getState().userRole === "manager"
+    ) {
+      router.replace("/admin/products")
     }
+
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -110,6 +124,7 @@ export default function LoginPage() {
       });
     }
   };
+
 
   return (
     <SectionContainer background="mt-1 w-full max-w-[1280px] h-auto">
