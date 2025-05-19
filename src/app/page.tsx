@@ -16,38 +16,64 @@ export default function Home() {
   const [isPaying, setIsPaying] = useState(false);
   const [amountType, setAmountType] = useState("");
   const [total, setTotal] = useState(0);
+  const [hydrated, setHydrated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { userRole, loggedIn } = useUserStore.getState();
+  const { userRole, loggedIn, logout } = useUserStore();
+
+  // .getState --> useUserStore.getState();
 
   const router = useRouter();
 
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     if (!loggedIn) {
+  //       router.replace("/login?redirect=/");
+  //     } else {
+  //       setLoading(false);
+  //     }
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (userRole !== "cashier" || !useUserStore.getState().loggedIn) {
+  //     useUserStore.getState().logout();
+  //     router.push("/login");
+  //   }
+  // }, []);
+
+  // const handleConfirmPayment = () => {
+  //   // useOrderStore.getState().addOrderToQueue(Date.now()); //Connent for now
+  //   useOrderStore.getState().clearProducts();
+  //   setIsPaying(false);
+  // };
+
+  // if (loading) {
+  //   return <div>Loading...</div>; // Show when checking login
+  // }
+
+  // Wait for Zustand to hydrate from localStorage
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      
-      if (!loggedIn) {
-        router.replace("/login?redirect=/");
-      } else {
-        setLoading(false);
-      }
-    }
+    setHydrated(true);
   }, []);
 
-  //check if the userRole is cashier if not it will go to login
+  // Redirect only after Zustand state is hydrated
   useEffect(() => {
-    if (userRole !== "cashier" || !useUserStore.getState().loggedIn) {
-      useUserStore.getState().logout();
-      router.push("/login");
+    if (!hydrated) return;
+
+    if (!loggedIn || userRole !== "cashier") {
+      logout(); // logout just in case of stale or invalid session
+      router.replace("/login?redirect=/");
     }
-  }, []);
+  }, [hydrated, loggedIn, userRole]);
 
   const handleConfirmPayment = () => {
-    // useOrderStore.getState().addOrderToQueue(Date.now()); //Connent for now
     useOrderStore.getState().clearProducts();
     setIsPaying(false);
   };
 
-  if (loading) {
-    return <div>Loading...</div>; // Show when checking login
+  // Show loading until hydration is done
+  if (!hydrated) {
+    return <div>Loading...</div>;
   }
 
   return (

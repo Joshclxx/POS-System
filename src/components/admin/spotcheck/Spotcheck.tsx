@@ -120,8 +120,11 @@ const Spotcheck = () => {
   }
 
   const handleLoginSuccess = (email: string, password: string) => {
-    localStorage.setItem("userEmail", email);
+    console.log("Logging in:", email);
+    setUserEmail(email);
     login(email, password);
+    // localStorage.setItem("userEmail", email);
+    // login(email, password);
   };
 
   if (loading) return null;
@@ -166,7 +169,9 @@ const Spotcheck = () => {
                   onClick={() => {
                     logout();
                     router.replace("/");
-                    toast.success("Spotcheck Logged Out.");
+                    toast.success("Spotcheck Logged Out.", {
+                      id: "notif-message",
+                    });
                   }}
                   className="w-[172px] h-[44px] bg-colorBlue text-tertiary rounded-3xl text-[24px] font-regular ml-auto"
                 >
@@ -331,7 +336,9 @@ const Spotcheck = () => {
                   onClick={() => {
                     logout();
                     router.replace("/");
-                    toast.success("Spotcheck Logged Out.");
+                    toast.success("Spotcheck Logged Out.", {
+                      id: "notif-message",
+                    });
                   }}
                   className="w-[172px] h-[44px] bg-colorGreen text-tertiary rounded-3xl text-[24px] font-regular absolute right-4"
                 >

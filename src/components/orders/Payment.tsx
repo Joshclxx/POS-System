@@ -7,8 +7,8 @@ import { useOrderStore } from "@/hooks/useOrder";
 // import { useHistoryStore } from "@/hooks/useOrderHistory";
 import toast, { Toaster } from "react-hot-toast";
 import { CREATE_ORDER } from "@/app/graphql/mutations";
-import {GET_ALL_ORDERS} from "@/app/graphql/query";
-import {  useMutation, useQuery } from "@apollo/client";
+import { GET_ALL_ORDERS } from "@/app/graphql/query";
+import { useMutation, useQuery } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 
@@ -120,7 +120,7 @@ const Payment = ({
             onClick={() =>
               toast.error(
                 "DISCOUNT is not yet available. Developer is working on it.",
-                { id: "label-error" }
+                { id: "notif-message" }
               )
             }
             className="bg-secondary text-white rounded-lg w-[200px] h-[84px] font-semibold shadow hover:bg-primary-dark"
@@ -208,11 +208,13 @@ const Payment = ({
                       refetch();
                       clearProducts();
                       setOkPressed(false);
-                      toast.success(`Order #${orderId} Payment Confirmed.`);
+                      toast.success(`Order #${orderId} Payment Confirmed.`, {
+                        id: "notif-message",
+                      });
                       onBackToOrders();
                     } catch (error) {
                       console.error("Caught error:", error);
-                      handleGraphQLError(error)
+                      handleGraphQLError(error);
                     }
                     //NOT NEEDED for now
                     // const orderId = nextOrderNumber;
@@ -234,7 +236,7 @@ const Payment = ({
                   } else {
                     toast.error(
                       `${label} is not yet available. Developer is working on it.`,
-                      { id: "label-error" }
+                      { id: "notif-message" }
                     );
                   }
                 }}
