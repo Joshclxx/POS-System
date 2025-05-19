@@ -87,6 +87,7 @@ export const GET_ALL_ORDERS = gql`
       }
       createdAt
       total
+      type
       status
       userId
     }

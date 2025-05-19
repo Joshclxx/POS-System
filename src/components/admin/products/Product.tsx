@@ -16,6 +16,7 @@ import {
   CREATE_PRODUCT,
   DELETE_CATEGORY,
   DELETE_PRODUCT,
+  UPDATE_CATEGORY,
   UPDATE_PRODUCT,
 } from "@/app/graphql/mutations";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
@@ -25,9 +26,7 @@ import {
   GET_CATEGORY,
 } from "@/app/graphql/query";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
-// import ManagerLogin from "../ManagerLogin";
-// import { useManagerAuth } from "@/hooks/useManagerAuth";
-// import { useRouter } from "next/navigation";
+
 
 // Explicit type for menu items
 interface MenuItem {
@@ -66,24 +65,16 @@ const Product: React.FC = () => {
     RG: string;
     GR: string;
   }>({ PT: "", RG: "", GR: "" });
-
-  // Global state
-  // const removeMenu = useGlobal((state) => state.removeMenu);
-  // const removeMenuItemsByMenu = useGlobal(
-  //   (state) => state.removeMenuItemsByMenu
-  // );
-  // const addMenu = useGlobal((state) => state.addMenu);
-  // const removeMenuItem = useGlobal((state) => state.removeMenuItem);
-  // const addMenuItem = useGlobal((state) => state.addMenuItem);
-  // const { isVerified, login, logout } = useManagerAuth();
   const menus = useGlobal((state) => state.menus);
   const menuItems = useGlobal((state) => state.menuItems);
-  const { userRole, logout } = useUserStore.getState();
+  const { userRole, loggedIn, logout } = useUserStore.getState();
+  const router = useRouter();
 
   useEffect(() => {
+    console.log(menus)
     if (userRole !== "manager") {
       logout();
-      router.push("/login");
+      router.replace("/login");
     }
   }, []);
 
@@ -106,6 +97,7 @@ const Product: React.FC = () => {
   const [deleteCategory] = useMutation(DELETE_CATEGORY);
   const [deleteProduct] = useMutation(DELETE_PRODUCT);
   const [getCategory] = useLazyQuery(GET_CATEGORY);
+  const [updateCategory] = useMutation(UPDATE_CATEGORY)
   const { refetch: refetchProducts } = useQuery(GET_ALL_PRODUCTS);
   const { refetch: refetchCategories } = useQuery(GET_ALL_CATEGORIES);
 
@@ -116,7 +108,7 @@ const Product: React.FC = () => {
         try {
           await createCategory({
             variables: {
-              data: { name: newMenuName.trim() },
+              data: { name: newMenuName.trim()},
             },
           });
           // addMenu(newMenuName.trim());
@@ -125,18 +117,23 @@ const Product: React.FC = () => {
             id: "notif-message",
           });
         } catch (error) {
-          console.error(error);
+          handleGraphQLError(error)
         }
       } else {
         toast.error("Please enter a menu name.", { id: "notif-message" });
       }
     } else if (drawerMode === "editMenu" && selectedMenu) {
       try {
-        await deleteCategory({ variables: { name: selectedMenu } });
-        await createCategory({
-          variables: { data: { name: newMenuName.trim() } },
-        });
+        const {data} = await getCategory({variables: {name: selectedMenu}});
+        const categoryId = data?.getCategory?.id;
+        await updateCategory({
+          variables: {
+            id: categoryId,
+            name: newMenuName.trim()
+          }
+        })
         await refetchCategories();
+        await refetchProducts();
         toast.success(`Menu "${selectedMenu}" updated to "${newMenuName}"`, {
           id: "notif-message",
         });
@@ -172,7 +169,7 @@ const Product: React.FC = () => {
             id: "notif-message",
           });
         } catch (error) {
-          console.error(error);
+          handleGraphQLError(error)
         }
       } else {
         toast.error("All fields are required to fill out.", {
@@ -206,7 +203,7 @@ const Product: React.FC = () => {
             id: "notif-message",
           });
         } catch (error) {
-          console.log(error);
+          handleGraphQLError(error)
         }
       }
     } else if (drawerMode === "deleteMenu" && selectedMenu) {
@@ -227,8 +224,7 @@ const Product: React.FC = () => {
           id: "notif-message",
         });
       } catch (error) {
-        console.error("Error deleting product:", error);
-        console.error(error);
+        handleGraphQLError(error)
       }
     }
 
@@ -251,20 +247,8 @@ const Product: React.FC = () => {
       ? "Confirm Delete"
       : "";
 
-  // const handleLoginSuccess = (email: string, password: string) => {
-  //   login(email, password);
-  // };
-
-  // if (!isVerified) {
-  //   return (
-  //     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
-  //       <Toaster />
-  //       <ManagerLogin onLoginSuccess={handleLoginSuccess} />
-  //     </SectionContainer>
-  //   );
-  // }
-  const router = useRouter();
-
+  
+  if(userRole !== "manager" || !loggedIn) return <div>Loading...</div>
   return (
     <>
       {/* Toast container */}
@@ -441,7 +425,7 @@ const Product: React.FC = () => {
                               {item.prices.PT.toFixed(2)}
                             </td>
                             <td className="px-4 py-2">
-                              {item.prices.RG.toFixed(2)}
+                              {item.prices.RG.toFixed(2)  }
                             </td>
                             <td className="px-4 py-2">
                               {item.prices.GR.toFixed(2)}
@@ -615,8 +599,7 @@ const Product: React.FC = () => {
                     )}
                     {drawerMode === "deleteMenuItem" && selectedMenuItem && (
                       <p>
-                        Are you sure you want to delete the product
-                        {selectedMenuItem.name}?
+                        Are you sure you want to delete the product {selectedMenuItem.name}?
                       </p>
                     )}
                   </div>
