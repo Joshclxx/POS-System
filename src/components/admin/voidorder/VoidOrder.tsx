@@ -15,9 +15,9 @@ import Button from "@/components/Button";
 type OrderRawData = {
   id: number;
   items: {
-    productName: string,
-    productSize: "pt" | "rg" | "gr",
-    productPrice: number,
+    productName: string;
+    productSize: "pt" | "rg" | "gr";
+    productPrice: number;
     quantity: number;
   }[];
   total: number;
@@ -103,7 +103,7 @@ const VoidOrder = () => {
   console.log("Auth state ->", { isVerified, loading });
 
   const handleConfirm = () => {
-    toast.success("Cash Picked");
+    toast.success("Cash Picked", { id: "notif-message" });
     router.push("/");
     logout();
   };
@@ -174,7 +174,9 @@ const VoidOrder = () => {
     const statusToRevert = previousStatus[orderId];
 
     if (!statusToRevert) {
-      toast.error(`Revert failed: Order #${orderId}’s status has expired.`);
+      toast.error(`Revert failed: Order #${orderId}’s status has expired.`, {
+        id: "notif-message",
+      });
       setSelectedOrder(null);
       return;
     }
@@ -188,10 +190,12 @@ const VoidOrder = () => {
           },
         },
       });
-      toast.success(`Successfully reverted order #${orderId}.`);
+      toast.success(`Successfully reverted order #${orderId}.`, {
+        id: "notif-message",
+      });
       setSelectedOrder(null);
     } catch (error) {
-      toast.error(`${error}`);
+      toast.error(`${error}`, { id: "notif-message" });
     }
   };
 
@@ -211,7 +215,9 @@ const VoidOrder = () => {
     if (!selectedOrder) return;
 
     if (selectedOrder.status === "voided") {
-      toast.error(`Order #${selectedOrder.id} is already voided.`);
+      toast.error(`Order #${selectedOrder.id} is already voided.`, {
+        id: "notif-message",
+      });
       return;
     }
 
@@ -374,7 +380,7 @@ const VoidOrder = () => {
                       onClick={() => setSelectedOrder(null)}
                       className="bg-gray-300 hover:bg-gray-400 text-black py-1 px-4 rounded"
                     >
-                      Cancel
+                      Close
                     </button>
 
                     {selectedOrder.status === "voided" ? (

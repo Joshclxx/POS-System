@@ -9,6 +9,7 @@ import Button from "./Button";
 // import { useManagerAuth } from "@/hooks/useManagerAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserStore } from "@/hooks/useUserSession";
+import ImageLogoContainer from "./ImageLogoContainer";
 
 // Function to split an array into chunks of a given size
 function chunkArray<T>(arr: T[], size: number): T[][] {
@@ -47,18 +48,32 @@ export default function Navbar() {
     }
   }, []);
 
-  const [loginTime, setLoginTime] = useState<string>("");
+  const [loginTime, setLoginTime] = useState<string>(""); // LOGIN TIME
   if (isManager) return null;
 
   const chunkedMenu = chunkArray(MENU_FEATURE_LINKS, 2);
-
-
 
   const { userEmail } = useUserStore.getState();
 
   const handleNavigation = (href: string) => {
     router.push(href);
   };
+
+  const ImageLogo = [
+    { src: "/icon/nextjs.svg", alt: "Next JS", label: "Next.JS" },
+    { src: "/icon/ts.svg", alt: "Typescript", label: "Typescript" },
+    { src: "/icon/react.svg", alt: "React", label: "React" },
+    { src: "/icon/tailwind.svg", alt: "Tailwind", label: "Tailwind CSS" },
+    { src: "/icon/prisma.svg", alt: "Prisma", label: "Prisma" },
+    { src: "/icon/graphql.svg", alt: "GraphQL", label: "GraphQL" },
+    { src: "/icon/mysql.svg", alt: "MySQLl", label: "MySQL" },
+    { src: "/icon/apollo.svg", alt: "Apollo", label: "Apollo" },
+    { src: "/icon/electron.svg", alt: "Electron", label: "Electron" },
+    { src: "/icon/git.svg", alt: "Git", label: "Git" },
+    { src: "/icon/github.svg", alt: "GitHub", label: "GitHub" },
+    { src: "/icon/node.svg", alt: "NodeJs", label: "Node.JS" },
+    { src: "/icon/figma.svg", alt: "Figma", label: "Figma" },
+  ];
 
   return (
     <>
@@ -180,9 +195,13 @@ export default function Navbar() {
 
                 <hr className="border-gray-600 mb-4" />
 
-                <div className="flex justify-between">
-                  <span className="text-gray-300">CREATED AT</span>
-                  <span>march 2025</span>
+                <div className="flex flex-col items-center">
+                  <p className="text-gray-300">POWERED BY</p>
+                  <div className="mt-6 grid grid-cols-4 gap-6 justify-items-center text-center mx-auto">
+                    {ImageLogo.map((item, idx) => (
+                      <ImageLogoContainer key={idx} {...item} />
+                    ))}
+                  </div>
                 </div>
               </div>
 

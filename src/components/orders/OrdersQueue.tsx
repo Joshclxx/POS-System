@@ -10,8 +10,8 @@ import { UPDATE_ORDER_STATUS } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
 
 type OrderRawData = {
-  // type: "DINE IN" | "TAKE OUT";
   id: number;
+  type: "DINE IN" | "DINE OUT";
   items: {
     productName: string;
     productSize: "pt" | "rg" | "gr";
@@ -23,7 +23,7 @@ type OrderRawData = {
 
 type OrderQueuesItem = {
   id: number;
-  // type: "DINE IN" | "TAKE OUT";
+  type: "DINE IN" | "DINE OUT";
   items: {
     title: string;
     size: "pt" | "rg" | "gr";
@@ -48,18 +48,18 @@ const OrdersQueue = () => {
 
     if (orderdata?.getAllOrders) {
       const orderQueueFormat = orderdata.getAllOrders
-        .filter((order: OrderRawData) => order.status === "queue") //only show the order wth qeue
+        .filter((order: OrderRawData) => order.status === "queue")
         .map((order: OrderRawData) => {
           const items = order.items.map((item) => ({
             title: item.productName,
+            size: item.productSize,
             price: item.productPrice,
             quantity: item.quantity,
           }));
 
-          console.log(items);
-
           return {
             id: order.id,
+            type: order.type,
             items,
           };
         });
@@ -82,9 +82,11 @@ const OrdersQueue = () => {
           },
         });
         refetch();
-        toast.success(`Order #${selectedOrder} Served!`);
+        toast.success(`Order #${selectedOrder} Served!`, {
+          id: "notif-message",
+        });
       } catch (error) {
-        console.error(error); // simpl error for now
+        console.error(error); // simple error for now
       }
 
       setSelectedOrder(null);
@@ -95,7 +97,7 @@ const OrdersQueue = () => {
     <SectionContainer background="mt-1 w-[235px] h-[700px]">
       <Toaster position="top-center" />
       {/* ORDER QUEUE HEADER */}
-      <div className="bg-primary w- h-[60px] flex items-center justify-center menu-total text-[18px]">
+      <div className="bg-primary w-full h-[60px] flex items-center justify-center menu-total text-[18px]">
         ORDER QUEUE
       </div>
 
@@ -114,8 +116,10 @@ const OrdersQueue = () => {
                 )
               }
             >
-              <p className="primary-title">{order.id}</p>
-              {/* <p className="primary-title">{order.type}</p> */}
+              <div>
+                <p className="primary-title">{order.id}</p>
+                <p className="primary-title">{order.type}</p>
+              </div>
 
               {/* Conditionally show items only if this order is selected */}
               {selectedOrder === order.id && (

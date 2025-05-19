@@ -45,6 +45,7 @@ const Product: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [drawerMode, setDrawerMode] = useState<
     | "menu"
+    | "editMenu"
     | "menuItem"
     | "editMenuItem"
     | "deleteMenu"
@@ -121,13 +122,26 @@ const Product: React.FC = () => {
           // addMenu(newMenuName.trim());
           await refetchCategories();
           toast.success(`${newMenuName} added successfully!`, {
-            id: "menu-add",
+            id: "notif-message",
           });
         } catch (error) {
           console.error(error);
         }
       } else {
-        toast.error("Please enter a menu name.", { id: "menu-error" });
+        toast.error("Please enter a menu name.", { id: "notif-message" });
+      }
+    } else if (drawerMode === "editMenu" && selectedMenu) {
+      try {
+        await deleteCategory({ variables: { name: selectedMenu } });
+        await createCategory({
+          variables: { data: { name: newMenuName.trim() } },
+        });
+        await refetchCategories();
+        toast.success(`Menu "${selectedMenu}" updated to "${newMenuName}"`, {
+          id: "notif-message",
+        });
+      } catch (error) {
+        handleGraphQLError(error);
       }
     } else if (drawerMode === "menuItem") {
       if (
@@ -154,12 +168,16 @@ const Product: React.FC = () => {
             },
           });
           await refetchProducts();
-          toast.success(`${itemName} added successfully!`, { id: "item-add" });
+          toast.success(`${itemName} added successfully!`, {
+            id: "notif-message",
+          });
         } catch (error) {
           console.error(error);
         }
       } else {
-        toast.error("All fields are required to fill out.");
+        toast.error("All fields are required to fill out.", {
+          id: "notif-message",
+        });
       }
     } else if (drawerMode === "editMenuItem" && selectedMenuItem) {
       if (
@@ -185,7 +203,7 @@ const Product: React.FC = () => {
           });
           await refetchProducts();
           toast.success(`${itemName} updated successfully!`, {
-            id: "item-update",
+            id: "notif-message",
           });
         } catch (error) {
           console.log(error);
@@ -195,7 +213,9 @@ const Product: React.FC = () => {
       try {
         await deleteCategory({ variables: { name: selectedMenu } });
         await refetchCategories();
-        toast.success(`Menu "${selectedMenu}" deleted.`, { id: "menu-delete" });
+        toast.success(`Menu "${selectedMenu}" deleted.`, {
+          id: "notif-message",
+        });
       } catch (error) {
         handleGraphQLError(error);
       }
@@ -204,7 +224,7 @@ const Product: React.FC = () => {
         await deleteProduct({ variables: { id: selectedMenuItem.id } });
         await refetchProducts();
         toast.success(`"${selectedMenuItem.name}" deleted.`, {
-          id: "item-delete",
+          id: "notif-message",
         });
       } catch (error) {
         console.error("Error deleting product:", error);
@@ -221,6 +241,8 @@ const Product: React.FC = () => {
   const buttonText =
     drawerMode === "menu"
       ? "Add Menu"
+      : drawerMode === "editMenu"
+      ? "Update Menu"
       : drawerMode === "menuItem"
       ? "Add Menu Item"
       : drawerMode === "editMenuItem"
@@ -296,21 +318,37 @@ const Product: React.FC = () => {
                       <span className="menu-title font-bold text-lg">
                         {menuName}
                       </span>
-
-                      <button
-                        onClick={() => {
-                          setSelectedMenu(menuName);
-                          setDrawerMode("deleteMenu");
-                          setOpenDrawer(true);
-                        }}
-                      >
-                        <Image
-                          src="/icon/delete.png"
-                          alt="delete"
-                          width={24}
-                          height={24}
-                        />
-                      </button>
+                      <div className="gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedMenu(menuName);
+                            setNewMenuName(menuName);
+                            setDrawerMode("editMenu");
+                            setOpenDrawer(true);
+                          }}
+                        >
+                          <Image
+                            src="/icon/edit.svg"
+                            alt="edit"
+                            width={24}
+                            height={24}
+                          />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedMenu(menuName);
+                            setDrawerMode("deleteMenu");
+                            setOpenDrawer(true);
+                          }}
+                        >
+                          <Image
+                            src="/icon/delete.png"
+                            alt="delete"
+                            width={24}
+                            height={24}
+                          />
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 ))
@@ -342,17 +380,28 @@ const Product: React.FC = () => {
               </div>
             </div>
 
-            <div className="px-2">
-              <div className="border-1 borderprimary bg-colorDirtyWhite rounded-md p-1 mt-4">
+            <div className="px-2 mt-4 flex justify-between items-center gap-4">
+              <div className="flex-1">
                 <input
                   type="text"
                   placeholder="Search Product Name"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2"
+                  className="w-full px-4 py-2 rounded-md border"
                 />
               </div>
+              <Button
+                variant="universal"
+                onClick={() => {
+                  logout();
+                  router.replace("/login");
+                }}
+                className="w-[140px] h-auto bg-colorBlue text-tertiary rounded-3xl px-4 py-2 text-[18px] font-regular"
+              >
+                Logout
+              </Button>
             </div>
+
             <div className="flex-1 overflow-y-auto mt-4 px-2 hide-scrollbar">
               {menuItems.length === 0 ? (
                 <p className="text-primary text-center font-semibold italic">
@@ -443,18 +492,6 @@ const Product: React.FC = () => {
                   </tbody>
                 </table>
               )}
-              <div className="absolute bottom-[60px] right-4">
-                <Button
-                  variant="universal"
-                  onClick={() => {
-                    logout();
-                    router.replace("/login");
-                  }}
-                  className="z-10 w-[140px] h-auto bg-colorBlue text-tertiary rounded-3xl p-6 text-[18px] font-regular absolute right-4"
-                >
-                  Logout
-                </Button>
-              </div>
             </div>
           </div>
         </div>
@@ -467,6 +504,9 @@ const Product: React.FC = () => {
               <div className="text-center text-colorDirtyWhite">
                 {drawerMode === "menu" && (
                   <p className="text-lg font-semibold">Add Menu</p>
+                )}
+                {drawerMode === "editMenu" && (
+                  <p className="text-lg font-semibold">Edit Menu</p>
                 )}
                 {drawerMode === "menuItem" && (
                   <p className="text-lg font-semibold">Add Menu Item</p>
@@ -491,6 +531,17 @@ const Product: React.FC = () => {
                     className="w-full px-4 py-2 rounded border"
                   />
                 )}
+                {drawerMode === "editMenu" && (
+                  <input
+                    type="text"
+                    placeholder="Menu Name"
+                    value={newMenuName}
+                    onChange={(e) => setNewMenuName(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full px-4 py-2 rounded border"
+                  />
+                )}
+
                 {(drawerMode === "menuItem" ||
                   drawerMode === "editMenuItem") && (
                   <>

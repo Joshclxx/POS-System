@@ -103,7 +103,8 @@ const OrdersView: React.FC<OrdersViewProps> = ({
                     toast.success(
                       deletedItems.length === 1
                         ? `${deletedItems[0]} Removed`
-                        : `Removed ${deletedItems.length} items`
+                        : `Removed ${deletedItems.length} items`,
+                      { id: "notif-message" }
                     );
 
                     setSelectedIndexes([]);
