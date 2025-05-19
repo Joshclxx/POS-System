@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SectionContainer from "../../SectionContainer";
 import toast, { Toaster } from "react-hot-toast";
@@ -8,27 +8,45 @@ import { useTimer } from "@/hooks/useTimer";
 import { useShiftStore } from "@/hooks/useShiftStore";
 import ManagerLogin from "../ManagerLogin";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
+import { useUserStore } from "@/hooks/useUserSession"; // ADDED IMPORT
 
 const Shift = () => {
   const router = useRouter();
   const timer = useTimer();
   const { isVerified, login, logout } = useManagerAuth();
-  const [isManagerVerified, setIsManagerVerified] = useState(true); // for local control
+
+  // Zustand session (to prevent showing this page after logout)
+  const { loggedIn, userRole } = useUserStore();
+
+  // Prevent accessing Shift page if not logged in or role is not cashier
+  useEffect(() => {
+    if (!loggedIn || userRole !== "cashier") {
+      router.replace("/login");
+    }
+  }, [loggedIn, userRole]);
+
+  const [isManagerVerified, setIsManagerVerified] = useState(false); // Set to false by default
+
   const handleLoginSuccess = (email: string, password: string) => {
     login(email, password);
-    setIsManagerVerified(true); // mark verified
+    setIsManagerVerified(true);
   };
 
   const handleCloseShift = () => {
     if (!actualCash || parseFloat(actualCash) === 0) {
-      return toast.error("Enter Cash On Hand Before Closing Shift.");
+      return toast.error("Enter cash on hand before shift close.", {
+        id: "notif-message",
+      });
     }
 
-    toast.success("Shift Closed!");
+    toast.success("Shift Closed!", { id: "notif-message" });
     closeShift();
     timer.stop();
-    logout();
-    router.push("/login");
+    logout(); // manager logout
+    localStorage.removeItem("loginTime");
+
+    useUserStore.getState().logout(); // also log out user session
+    router.replace("/login"); // ensure full redirect to login
   };
 
   const {
@@ -36,7 +54,7 @@ const Shift = () => {
     startingCash,
     totalSales,
     totalPicked,
-    voidRefund, // <-- pull the refund amount from your store
+    voidRefund,
     openShift,
     closeShift,
   } = useShiftStore();
@@ -49,7 +67,6 @@ const Shift = () => {
     [totalSales, totalPicked, voidRefund]
   );
 
-  // subtract voidRefund when calculating expected drawer cash
   const expectedCash = useMemo(
     () => startingCash + posCashTotal - voidRefund,
     [startingCash, posCashTotal, voidRefund]
@@ -60,37 +77,19 @@ const Shift = () => {
     [actualCash, expectedCash]
   );
 
-  // const handleLoginSuccess = (email: string, password: string) => {
-  //   login(email, password);
-  // };
-
   const handleOpenShift = () => {
     if (!startCashInput) {
-      return toast.error("Please enter the Starting Cash first.");
+      return toast.error("Please enter the Starting Cash first.", {
+        id: "notif-message",
+      });
     }
     openShift(parseFloat(startCashInput));
     timer.start();
     router.push("/");
-    toast.success("Shift Opened!");
+    toast.success("Shift Opened!", { id: "notif-message" });
   };
 
-  // const handleCloseShift = () => {
-  //   toast.success("Shift closed!");
-  //   closeShift();
-  //   timer.stop();
-  //   // logout();
-  //   router.push("/login");
-  // };
-
-  // if (!isVerified) {
-  //   return (
-  //     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
-  //       <Toaster />
-  //       <ManagerLogin onLoginSuccess={handleLoginSuccess} />
-  //     </SectionContainer>
-  //   );
-  // }
-
+  // Only show login screen if manager not yet verified
   if (!isShiftActive && !isManagerVerified) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
@@ -134,6 +133,7 @@ const Shift = () => {
                 CLOSE SHIFT
               </p>
               <div className="px-16 text-primary mt-12 space-y-4">
+                {/* Cash info blocks */}
                 <div>
                   <label className="block mb-1">Starting Cash</label>
                   <input
@@ -158,7 +158,7 @@ const Shift = () => {
                     type="number"
                     readOnly
                     className="w-full px-4 py-2 border border-gray-300 rounded text-gray-900"
-                    value={voidRefund} // <-- now dynamic
+                    value={voidRefund}
                   />
                 </div>
                 <div>
