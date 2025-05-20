@@ -27,6 +27,7 @@ import {
   GET_CATEGORY,
 } from "@/app/graphql/query";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
+import { capitalize } from "@/app/utils/capitalized";
 // import dynamic from "next/dynamic";
 // import ToasterProvider from "@/components/ToasterProvider";
 
@@ -114,7 +115,7 @@ const Product: React.FC = () => {
         try {
           await createCategory({
             variables: {
-              data: { name: newMenuName.trim() },
+              data: { name: newMenuName.trim().toLowerCase() },
             },
           });
           // addMenu(newMenuName.trim());
@@ -307,7 +308,7 @@ const Product: React.FC = () => {
                   >
                     <div className="flex items-center justify-between bg-secondaryGray p-2 rounded-lg">
                       <span className="menu-title font-bold text-lg">
-                        {menuName}
+                        {capitalize(menuName)}
                       </span>
                       <div className="gap-2 flex">
                         <button
@@ -426,8 +427,8 @@ const Product: React.FC = () => {
                             transition={{ delay: idx * 0.1, duration: 0.2 }}
                             className="border-b hover:bg-secondaryGray/50"
                           >
-                            <td className="px-4 py-2">{item.menu}</td>
-                            <td className="px-4 py-2">{item.name}</td>
+                            <td className="px-4 py-2">{capitalize(item.menu)}</td>
+                            <td className="px-4 py-2">{capitalize(item.name)}</td>
                             <td className="px-4 py-2">
                               {item.prices.PT.toFixed(2)}
                             </td>
