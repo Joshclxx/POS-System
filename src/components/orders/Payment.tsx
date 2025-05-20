@@ -12,7 +12,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 
-
 type PaymentProps = {
   amountType: string;
   setAmountType: React.Dispatch<React.SetStateAction<string>>;
@@ -33,7 +32,13 @@ const Payment = ({
   const [change, setChange] = useState<number>(0);
   const [okPressed, setOkPressed] = useState(false);
   // const { addOrder } = useHistoryStore();
-  const { selectedProducts, clearProducts, nextOrderNumber } = useOrderStore();
+
+  // const { selectedProducts, clearProducts, nextOrderNumber } = useOrderStore();
+
+  const selectedProducts = useOrderStore((state) => state.selectedProducts);
+  const clearProducts = useOrderStore((state) => state.clearProducts);
+  const nextOrderNumber = useOrderStore((state) => state.nextOrderNumber);
+
   const { userId } = useUserStore.getState();
 
   const handleKeyClick = (key: string) => {
@@ -75,7 +80,6 @@ const Payment = ({
   };
 
   const orderType = useOrderStore((state) => state.orderType);
- 
 
   //mutatation
   const [createOrder] = useMutation(CREATE_ORDER);
