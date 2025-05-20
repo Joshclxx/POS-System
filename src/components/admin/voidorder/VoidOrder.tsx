@@ -102,11 +102,11 @@ const VoidOrder = () => {
   const { isVerified, loading, login, logout } = useManagerAuth();
   console.log("Auth state ->", { isVerified, loading });
 
-  const handleConfirm = () => {
-    toast.success("Cash Picked", { id: "notif-message" });
-    router.push("/");
-    logout();
-  };
+  // const handleConfirm = () => {
+  //   toast.success("Cash Picked", { id: "notif-message" });
+  //   router.push("/");
+  //   logout();
+  // };
 
   const handleLoginSuccess = (email: string, password: string) => {
     localStorage.setItem("userEmail", email);

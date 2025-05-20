@@ -24,7 +24,7 @@ export default function Navbar() {
   const [isOpenMenu, setOpenMenu] = useState(false);
   const [isOpenPos, setOpenPos] = useState(false);
   const [isManager, setIsManager] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  // const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   // useManagerAuth(); // no need to destructure anything
   const { userRole } = useUserStore.getState();
@@ -33,9 +33,8 @@ export default function Navbar() {
   useEffect(() => {
     if (userRole === "manager" || userRole === "admin") {
       setIsManager(true);
-      setIsAdmin(true);
     }
-  }, []);
+  }, [userRole]);
 
   useEffect(() => {
     const storedTime = localStorage.getItem("loginTime");
