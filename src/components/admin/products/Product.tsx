@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import SectionContainer from "../../SectionContainer";
+import SectionContainer from "@/components/SectionContainer";
 import Image from "next/image";
 import { Drawer } from "vaul";
 import React from "react";
 import Button from "@/components/Button";
 import { motion, AnimatePresence } from "motion/react";
 import useGlobal from "@/hooks/useGlobal";
-import toast, { Toaster } from "react-hot-toast";
+// import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/hooks/useUserSession";
 import {
@@ -26,7 +27,8 @@ import {
   GET_CATEGORY,
 } from "@/app/graphql/query";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
-
+// import dynamic from "next/dynamic";
+// import ToasterProvider from "@/components/ToasterProvider";
 
 // Explicit type for menu items
 interface MenuItem {
@@ -40,6 +42,10 @@ interface MenuItem {
   };
 }
 
+// const Toaster = dynamic(
+//   () => import("react-hot-toast").then((mod) => mod.Toaster),
+//   { ssr: false }
+// );
 const Product: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [drawerMode, setDrawerMode] = useState<
@@ -71,7 +77,7 @@ const Product: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log(menus)
+    console.log(menus);
     if (userRole !== "manager") {
       logout();
       router.replace("/login");
@@ -97,7 +103,7 @@ const Product: React.FC = () => {
   const [deleteCategory] = useMutation(DELETE_CATEGORY);
   const [deleteProduct] = useMutation(DELETE_PRODUCT);
   const [getCategory] = useLazyQuery(GET_CATEGORY);
-  const [updateCategory] = useMutation(UPDATE_CATEGORY)
+  const [updateCategory] = useMutation(UPDATE_CATEGORY);
   const { refetch: refetchProducts } = useQuery(GET_ALL_PRODUCTS);
   const { refetch: refetchCategories } = useQuery(GET_ALL_CATEGORIES);
 
@@ -108,7 +114,7 @@ const Product: React.FC = () => {
         try {
           await createCategory({
             variables: {
-              data: { name: newMenuName.trim()},
+              data: { name: newMenuName.trim() },
             },
           });
           // addMenu(newMenuName.trim());
@@ -117,21 +123,23 @@ const Product: React.FC = () => {
             id: "notif-message",
           });
         } catch (error) {
-          handleGraphQLError(error)
+          handleGraphQLError(error);
         }
       } else {
         toast.error("Please enter a menu name.", { id: "notif-message" });
       }
     } else if (drawerMode === "editMenu" && selectedMenu) {
       try {
-        const {data} = await getCategory({variables: {name: selectedMenu}});
+        const { data } = await getCategory({
+          variables: { name: selectedMenu },
+        });
         const categoryId = data?.getCategory?.id;
         await updateCategory({
           variables: {
             id: categoryId,
-            name: newMenuName.trim()
-          }
-        })
+            name: newMenuName.trim(),
+          },
+        });
         await refetchCategories();
         await refetchProducts();
         toast.success(`Menu "${selectedMenu}" updated to "${newMenuName}"`, {
@@ -169,7 +177,7 @@ const Product: React.FC = () => {
             id: "notif-message",
           });
         } catch (error) {
-          handleGraphQLError(error)
+          handleGraphQLError(error);
         }
       } else {
         toast.error("All fields are required to fill out.", {
@@ -203,7 +211,7 @@ const Product: React.FC = () => {
             id: "notif-message",
           });
         } catch (error) {
-          handleGraphQLError(error)
+          handleGraphQLError(error);
         }
       }
     } else if (drawerMode === "deleteMenu" && selectedMenu) {
@@ -224,7 +232,7 @@ const Product: React.FC = () => {
           id: "notif-message",
         });
       } catch (error) {
-        handleGraphQLError(error)
+        handleGraphQLError(error);
       }
     }
 
@@ -247,12 +255,11 @@ const Product: React.FC = () => {
       ? "Confirm Delete"
       : "";
 
-  
-  if(userRole !== "manager" || !loggedIn) return <div>Loading...</div>
+  if (userRole !== "manager" || !loggedIn) return <div>Loading...</div>;
   return (
     <>
       {/* Toast container */}
-      <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
+      {/* <ToasterProvider /> */}
 
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
         <div className="grid grid-cols-12 gap-5 mt-4">
@@ -425,7 +432,7 @@ const Product: React.FC = () => {
                               {item.prices.PT.toFixed(2)}
                             </td>
                             <td className="px-4 py-2">
-                              {item.prices.RG.toFixed(2)  }
+                              {item.prices.RG.toFixed(2)}
                             </td>
                             <td className="px-4 py-2">
                               {item.prices.GR.toFixed(2)}
@@ -485,24 +492,26 @@ const Product: React.FC = () => {
           <Drawer.Portal>
             <Drawer.Overlay className="fixed inset-0 bg-black/40" />
             <Drawer.Content className="z-[50] fixed bottom-0 left-1/2 transform -translate-x-1/2 items-center bg-secondary rounded-t-xl p-6 transition-all duration-300 w-[1024px] max-h-[80vh]">
-              <div className="text-center text-colorDirtyWhite">
-                {drawerMode === "menu" && (
-                  <p className="text-lg font-semibold">Add Menu</p>
-                )}
-                {drawerMode === "editMenu" && (
-                  <p className="text-lg font-semibold">Edit Menu</p>
-                )}
-                {drawerMode === "menuItem" && (
-                  <p className="text-lg font-semibold">Add Menu Item</p>
-                )}
-                {drawerMode === "editMenuItem" && (
-                  <p className="text-lg font-semibold">Edit Menu Item</p>
-                )}
-                {(drawerMode === "deleteMenu" ||
-                  drawerMode === "deleteMenuItem") && (
-                  <p className="text-lg font-semibold">Confirm Delete</p>
-                )}
-              </div>
+              <Drawer.Title asChild>
+                <div className="text-center text-colorDirtyWhite">
+                  {drawerMode === "menu" && (
+                    <p className="text-lg font-semibold">Add Menu</p>
+                  )}
+                  {drawerMode === "editMenu" && (
+                    <p className="text-lg font-semibold">Edit Menu</p>
+                  )}
+                  {drawerMode === "menuItem" && (
+                    <p className="text-lg font-semibold">Add Menu Item</p>
+                  )}
+                  {drawerMode === "editMenuItem" && (
+                    <p className="text-lg font-semibold">Edit Menu Item</p>
+                  )}
+                  {(drawerMode === "deleteMenu" ||
+                    drawerMode === "deleteMenuItem") && (
+                    <p className="text-lg font-semibold">Confirm Delete</p>
+                  )}
+                </div>
+              </Drawer.Title>
 
               <div className="mt-6 space-y-4 w-[600px] mx-auto">
                 {drawerMode === "menu" && (
@@ -599,7 +608,8 @@ const Product: React.FC = () => {
                     )}
                     {drawerMode === "deleteMenuItem" && selectedMenuItem && (
                       <p>
-                        Are you sure you want to delete the product {selectedMenuItem.name}?
+                        Are you sure you want to delete the product{" "}
+                        {selectedMenuItem.name}?
                       </p>
                     )}
                   </div>

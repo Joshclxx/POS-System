@@ -13,7 +13,7 @@ import { useUserStore } from "@/hooks/useUserSession"; // ADDED IMPORT
 const Shift = () => {
   const router = useRouter();
   const timer = useTimer();
-  const { isVerified, login, logout } = useManagerAuth();
+  const { login, logout } = useManagerAuth();
 
   // Zustand session (to prevent showing this page after logout)
   const { loggedIn, userRole } = useUserStore();

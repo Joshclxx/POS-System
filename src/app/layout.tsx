@@ -3,6 +3,8 @@ import "./globals.css";
 import NavbarWrapper from "@/components/NavbarWrapper";
 import ApolloWrapper from "./ApolloWrapper";
 import DataLoader from "@/components/admin/products/LoadAllData";
+import ClientOnlyWrapper from "@/components/ClientOnlyWrapper";
+import ToasterProvider from "@/components/ToasterProvider";
 
 export const metadata: Metadata = {
   title: "POS SYSTEM",
@@ -22,8 +24,13 @@ export default function RootLayout({
       <body className="!bg-bgWhite min-h-screen w-full mx-auto max-w-[1280px]">
         <ApolloWrapper>
           <NavbarWrapper />
+
+          <ClientOnlyWrapper>
+            <ToasterProvider />
+          </ClientOnlyWrapper>
+
           <main className="relative overflow-hidden">{children}</main>
-          <DataLoader/>
+          <DataLoader />
         </ApolloWrapper>
       </body>
     </html>
