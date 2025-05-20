@@ -8,8 +8,6 @@ type Props = {
 };
 
 const SectionContainer = ({ background, children, container }: Props) => {
-  console.log("Rendering SectionContainer");
-
   return (
     <section
       className={classNames(
