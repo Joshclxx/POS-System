@@ -42,7 +42,6 @@ const OrdersQueue = () => {
 
   // LOAD ALL ORDERS WITH STATUS QUEUE
   useEffect(() => {
-
     if (orderdata?.getAllOrders) {
       const orderQueueFormat = orderdata.getAllOrders
         .filter((order: OrderRawData) => order.status === "queue")
@@ -112,7 +111,7 @@ const OrdersQueue = () => {
                 )
               }
             >
-              <div>
+              <div className="flex justify-between px-14">
                 <p className="primary-title">{order.id}</p>
                 <p className="primary-title">{formatType(order.type)}</p>
               </div>
@@ -122,7 +121,7 @@ const OrdersQueue = () => {
                 <div className="text-[12px] mt-1 text-primary font-medium">
                   {order.items.map((item, idx) => (
                     <p key={idx}>
-                      {item.title} - {item.price} x {item.quantity}
+                      {item.title} {item.size} - {item.price} x {item.quantity}
                     </p>
                   ))}
                 </div>

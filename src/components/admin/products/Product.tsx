@@ -265,7 +265,7 @@ const Product: React.FC = () => {
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
         <div className="grid grid-cols-12 gap-5 mt-4">
           {/* ADD MENU Section */}
-          <div className="col-span-3 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[700px] relative flex flex-col">
+          <div className="col-span-3 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[800px] relative flex flex-col">
             <div className="bg-primary w-full h-[52px] flex items-center justify-center rounded-lg">
               <div className="flex justify-between w-full items-center px-2">
                 <p className="text-colorDirtyWhite font-bold text-[24px]">
@@ -349,7 +349,7 @@ const Product: React.FC = () => {
           </div>
 
           {/* ADD MENU ITEM SECTION */}
-          <div className="col-span-9 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[700px] relative flex flex-col">
+          <div className="col-span-9 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[800px] relative flex flex-col">
             <div className="bg-primary w-full h-[52px] flex items-center justify-center rounded-lg">
               <div className="flex justify-between w-full items-center px-2">
                 <p className="text-colorDirtyWhite font-bold text-[24px]">
@@ -427,8 +427,12 @@ const Product: React.FC = () => {
                             transition={{ delay: idx * 0.1, duration: 0.2 }}
                             className="border-b hover:bg-secondaryGray/50"
                           >
-                            <td className="px-4 py-2">{capitalize(item.menu)}</td>
-                            <td className="px-4 py-2">{capitalize(item.name)}</td>
+                            <td className="px-4 py-2">
+                              {capitalize(item.menu)}
+                            </td>
+                            <td className="px-4 py-2">
+                              {capitalize(item.name)}
+                            </td>
                             <td className="px-4 py-2">
                               {item.prices.PT.toFixed(2)}
                             </td>

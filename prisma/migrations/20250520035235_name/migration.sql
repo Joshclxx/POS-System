@@ -23,17 +23,9 @@ CREATE TABLE `Shift` (
     `shiftIn` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `shiftOut` DATETIME(3) NULL,
     `startingCash` DOUBLE NOT NULL,
+    `cashpickAmount` DOUBLE NOT NULL,
+    `voidedAmount` DOUBLE NOT NULL,
     `totalCash` DOUBLE NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `Cashpick` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `shiftId` INTEGER NOT NULL,
     `userId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -90,9 +82,9 @@ CREATE TABLE `Category` (
 CREATE TABLE `Order` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `total` DOUBLE NOT NULL,
+    `type` ENUM('dine_in', 'take_out') NOT NULL,
     `status` ENUM('queue', 'completed', 'voided') NOT NULL DEFAULT 'queue',
     `userId` VARCHAR(191) NOT NULL,
-    `voidedOrderId` INTEGER NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
@@ -112,26 +104,8 @@ CREATE TABLE `OrderItem` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
-CREATE TABLE `VoidedOrder` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `orderId` INTEGER NOT NULL,
-    `shiftId` INTEGER NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-
-    UNIQUE INDEX `VoidedOrder_orderId_key`(`orderId`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- AddForeignKey
 ALTER TABLE `Shift` ADD CONSTRAINT `Shift_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Cashpick` ADD CONSTRAINT `Cashpick_shiftId_fkey` FOREIGN KEY (`shiftId`) REFERENCES `Shift`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Cashpick` ADD CONSTRAINT `Cashpick_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Spotcheck` ADD CONSTRAINT `Spotcheck_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -147,12 +121,3 @@ ALTER TABLE `Order` ADD CONSTRAINT `Order_userId_fkey` FOREIGN KEY (`userId`) RE
 
 -- AddForeignKey
 ALTER TABLE `OrderItem` ADD CONSTRAINT `OrderItem_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `VoidedOrder` ADD CONSTRAINT `VoidedOrder_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `VoidedOrder` ADD CONSTRAINT `VoidedOrder_shiftId_fkey` FOREIGN KEY (`shiftId`) REFERENCES `Shift`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `VoidedOrder` ADD CONSTRAINT `VoidedOrder_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
