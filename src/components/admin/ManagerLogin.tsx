@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { useManagerAuth } from "@/hooks/useManagerAuth"; // Adjust path as needed
 
 interface Props {
@@ -11,7 +11,7 @@ const ManagerLogin = ({ onLoginSuccess }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useManagerAuth();
-  const router = useRouter();
+  // const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
