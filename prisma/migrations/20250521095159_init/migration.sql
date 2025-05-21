@@ -4,7 +4,7 @@ CREATE TABLE `User` (
     `firstname` VARCHAR(191) NOT NULL,
     `middlename` VARCHAR(191) NOT NULL,
     `lastname` VARCHAR(191) NOT NULL,
-    `suffix` VARCHAR(191) NULL,
+    `suffix` VARCHAR(191) NOT NULL,
     `gender` ENUM('male', 'female') NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,

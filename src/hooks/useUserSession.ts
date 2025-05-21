@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+
 type UserStore = {
   userId: string | null;
   userRole: 'admin' | 'cashier' | 'manager' | null;
@@ -11,6 +12,7 @@ type UserStore = {
   logout: () => void;
 };
 
+
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
@@ -19,8 +21,8 @@ export const useUserStore = create<UserStore>()(
       userEmail: null,  
       loggedIn: false,
 
-      setUser: (id, role, email) => {
-        set({ userId: id, userRole: role, userEmail: email, loggedIn: true });
+      setUser: async (id, role, email) => {
+        set({ userId: id, userRole: role, userEmail: email, loggedIn: true }); 
       },
 
       logout: () => {

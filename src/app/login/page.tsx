@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import SectionContainer from "@/components/SectionContainer";
 import { USER_LOGIN } from "../graphql/query";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
+import { LOGIN_SESSION } from "../graphql/mutations";
+import { handleGraphQLError } from "../utils/handleGraphqlError";
 
 type UserData = {
   id: string;
@@ -24,28 +26,20 @@ export default function LoginPage() {
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const [lockEndTime, setLockEndTime] = useState<Date | null>(null);
+  const [recordLogin] = useMutation(LOGIN_SESSION)
 
   useEffect(() => {
-    if(useUserStore.getState().loggedIn) {
+    const { loggedIn, userRole } = useUserStore.getState();
 
-    }
-    if (
-      useUserStore.getState().loggedIn &&
-      useUserStore.getState().userRole === "cashier"
-    ) {
+    if (!loggedIn) return;
+
+    if (userRole === "cashier") {
       router.replace("/");
-    } else if (
-      useUserStore.getState().loggedIn &&
-      useUserStore.getState().userRole === "admin"
-    ) {
-      router.replace("/admin/user-register")
-    } else if ( 
-      useUserStore.getState().loggedIn &&
-      useUserStore.getState().userRole === "manager"
-    ) {
-      router.replace("/admin/products")
+    } else if (userRole === "admin") {
+      router.replace("/admin/user-register");
+    } else if (userRole === "manager") {
+      router.replace("/admin/products");
     }
-
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -81,16 +75,21 @@ export default function LoginPage() {
       if (data && data.userLogin) {
         const userData: UserData = data.userLogin;
         useUserStore.getState().setUser(userData.id, userData.role, email);
-        localStorage.setItem("loginTime", new Date().toISOString());
+        // localStorage.setItem("loginTime", new Date().toISOString());
+        try {
+          await recordLogin({ variables: { userId: userData.id } });
+        } catch (error) {
+          handleGraphQLError(error)
+        }
         toast.success("Logged in successfully!");
 
         setLoginAttempts(0);
         setIsLocked(false);
 
         if (userData.role === "manager") {
-          router.push("/admin/products");
+          router.replace("/admin/products");
         } else if (userData.role === "cashier") {
-          router.push("/admin/shift");
+          router.replace("/admin/shift");
         }
 
         return;

@@ -104,9 +104,9 @@ export const VOID_ORDER = gql`
 `;
 
 export const DELETE_USER = gql`
-  mutation deleteUser($email: String!) {
-    deleteUser(email: $email) {
-      email
+  mutation deleteUser($id: String!) {
+    deleteUser(id: $id) {
+      id
     }
   }
 `;
@@ -116,6 +116,31 @@ export const UPDATE_CATEGORY = gql`
     updateCategory(id: $id, name: $name){
       id
       name
+    }
+  }
+`
+export const UPDATE_USER = gql`
+  mutation updateUser($id: String!, $edits: EditUserInput!){
+    updateUser(id: $id, edits: $edits) {
+      id
+      firstname
+      middlename
+      lastname
+      suffix
+      gender
+      email
+      password
+      role
+    }
+    
+  }
+`
+
+export const LOGIN_SESSION = gql`
+  mutation recordLogin($userId: ID!){
+    recordLogin(userId: $userId){
+      userId
+      timeIn
     }
   }
 `

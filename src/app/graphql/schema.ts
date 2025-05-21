@@ -39,22 +39,31 @@ export const typeDefs = gql`
     firstname: String!
     middlename: String!
     lastname: String!
-    suffix: String
+    suffix: String!
     gender: Gender!
     email: String!
     password: String!
     role: Role!
+    loginHistory: [LoginHistory!]!
     orders: [Order!]!
     shift: [Shift!]!
     createdAt: String!
     updatedAt: String!
   }
 
+  type LoginHistory {
+    id: Int!
+    userId: ID!
+    timeIn: String!
+    timeOut: String
+  }
+
   type Shift {
-    id: ID!
+    id: Int!
     shiftType: ShiftType!
-    shiftIn: String!
-    shiftOut: String
+    loginHistoryId: Int!
+    loginHistory: LoginHistory!
+    userId: String!
     user: User!
     createdAt: String!
     updatedAt: String!
@@ -140,6 +149,7 @@ export const typeDefs = gql`
     createProduct(data: CreateProductInput!): Product
     createOrder(data: CreateOrderInput!): Order
     createVoidOrder(data: CreateVoidOrderInput!): VoidOrder
+    recordLogin(userId: ID!): LoginHistory
 
     deleteUser(id: String!): User
     deleteProduct(id: Int!): Product
@@ -149,6 +159,7 @@ export const typeDefs = gql`
     updateProduct(id: Int!, edits: EditProductInput!): Product
     updateCategory(id: Int!, name: String!): Category
     updateOrderStatus(data: UpdateOrderStatusInput!): Order
+    updateUser(id: String!, edits: EditUserInput!) : User
   }
 
   #Products related mutations ------------------------------------------------------------------
@@ -217,5 +228,16 @@ export const typeDefs = gql`
   input UserLoginInput {
     email: String!
     password: String!
+  }
+
+  input EditUserInput {
+    firstname: String
+    middlename: String
+    lastname: String
+    suffix: String
+    gender: Gender
+    email: String
+    password: String
+    role: Role
   }
 `;
