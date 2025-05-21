@@ -21,7 +21,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="!bg-bgWhite min-h-screen w-full mx-auto max-w-[1280px]">
+      {/* <body className="!bg-bgWhite min-h-screen w-full mx-auto max-w-[1280px]"> */}
+      <body className="!bg-bgWhite w-full mx-auto max-w-[1280px] max-h-screen overflow-y-auto">
         <ApolloWrapper>
           <NavbarWrapper />
 
@@ -29,7 +30,11 @@ export default function RootLayout({
             <ToasterProvider />
           </ClientOnlyWrapper>
 
-          <main className="relative overflow-hidden">{children}</main>
+          {/* <main className="relative overflow-hidden">{children}</main> */}
+          <main className="relative overflow-y-auto max-h-screen hide-scrollbar">
+            {children}
+          </main>
+
           <DataLoader />
         </ApolloWrapper>
       </body>
