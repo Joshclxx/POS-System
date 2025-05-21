@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron electron.js\"",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "prod": "concurrently \"next start\" \"wait-on http://localhost:3000 && electron .\"",
     "lint": "next lint",
@@ -56,5 +56,5 @@
     "tailwindcss": "^4.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
-
+  }
 }
