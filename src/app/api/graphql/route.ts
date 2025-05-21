@@ -38,7 +38,6 @@
 
 // export { handler as GET, handler as POST };
 
-// src/app/api/graphql/route.ts
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { NextRequest } from "next/server";
