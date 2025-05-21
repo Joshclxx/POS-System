@@ -13,6 +13,7 @@ export const USER_LOGIN = gql`
 export const GET_ALL_USERS = gql`
   query getAllUsers {
     getAllUsers {
+      id
       firstname
       middlename
       lastname

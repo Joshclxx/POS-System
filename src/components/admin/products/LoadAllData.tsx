@@ -51,7 +51,7 @@ const DataLoader = () => {
           return {
             // MenuItem format
             id: product.id,
-            name: product.name,
+            name: (product.name),
             menu: product.category.name,
             prices,
           };

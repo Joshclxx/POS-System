@@ -12,8 +12,11 @@ import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 import { DELETE_USER } from "@/app/graphql/mutations";
 import { capitalize } from "@/app/utils/capitalized";
 
+import { UPDATE_USER } from "@/app/graphql/mutations";
+
 // Initial form state
 const initialForm = {
+  id: "",
   firstname: "",
   middlename: "",
   lastname: "",
@@ -24,8 +27,6 @@ const initialForm = {
   password: "",
   retypePassword: "",
 };
-
-
 
 type User = typeof initialForm;
 
@@ -38,11 +39,12 @@ const UserRegister = () => {
   const [showOverlay, setShowOverlay] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
+  
   const router = useRouter();
   const [createUser] = useMutation(CREATE_USER);
   const [deleteUser] = useMutation(DELETE_USER);
   const { data: usersData, refetch } = useQuery(GET_ALL_USERS);
+  const [updateUser] = useMutation(UPDATE_USER);
 
   useEffect(() => {
     if (usersData?.getAllUsers) {
@@ -140,18 +142,30 @@ const UserRegister = () => {
     if (!isFormValid()) return;
 
     try {
-      // Add your UPDATE mutation here
-      // Example: await updateUser({ variables: { id: selectedUser.id, data: form } });
-
+      await updateUser({
+        variables: {
+          id: selectedUser?.id,
+          edits: {
+            firstname: form.firstname,
+            middlename: form.middlename,
+            lastname: form.lastname,
+            suffix: form.suffix,
+            gender: form.gender.toLowerCase(),
+            email: form.email,
+            password: form.password,
+            role: form.role.toLowerCase(),
+          }
+        }
+      });
       await refetch();
       setForm(initialForm);
       setSelectedUser(null);
       setIsEditing(false);
       setError("");
     } catch (error) {
-      handleGraphQLError(error);
+      handleGraphQLError(error)
     }
-  };
+  };  
 
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
@@ -179,7 +193,7 @@ const UserRegister = () => {
                     type="text"
                     required={!field.optional}
                     placeholder={`e.g ${field.label}`}
-                    value={form[field.name as keyof User]}
+                    value={capitalize(form[field.name as keyof User])}
                     onChange={handleChange}
                     className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
                   />
@@ -232,7 +246,7 @@ const UserRegister = () => {
                   type="email"
                   name="email"
                   placeholder="e.g joshua@heebrew.employee"
-                  value={form.email}
+                  value={capitalize(form.email)}
                   required
                   onChange={handleChange}
                   className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
@@ -391,7 +405,7 @@ const UserRegister = () => {
                   Close
                 </Button>
                 <Button
-                  onClick={() => {
+                  onClick={async () => {
                     setForm(selectedUser);
                     setIsEditing(true);
                     setShowOverlay(false);
@@ -434,7 +448,7 @@ const UserRegister = () => {
                   onClick={async () => {
                     try {
                       await deleteUser({
-                        variables: { email: selectedUser.email },
+                        variables: { id: selectedUser.id},
                       });
                       await refetch();
                       setSelectedUser(null);

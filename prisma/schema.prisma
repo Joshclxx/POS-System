@@ -21,9 +21,9 @@ model User {
   firstname  String
   middlename String
   lastname   String
-  suffix String?
+  suffix String
   gender        Gender
-  email      String   
+  email      String   @unique
   password    String
   role       Role  
   shift      Shift[]
@@ -31,17 +31,18 @@ model User {
   orders Order[]
   spotCheck Spotcheck[]
   // voidOrder VoidedOrder[]
+  loginHistory LoginHistory[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime?
 
-  @@unique([email, password])
+  @@unique([email, password]) // unique for now :> I will change this later
 }
 
 model Shift {
   id        Int      @id @default(autoincrement())
   shiftType shiftType  @default(opening)
-  shiftIn   DateTime @default(now())
-  shiftOut  DateTime?
+  loginHistoryId Int @unique
+  loginHistory LoginHistory @relation("ShiftToLoginHistory", fields: [loginHistoryId], references: [id])
   startingCash Float
   cashpickAmount Float
   voidedAmount Float
@@ -51,6 +52,14 @@ model Shift {
   createdAt DateTime @default(now())
 }
 
+model LoginHistory {
+  id Int @id @default(autoincrement())
+  userId String 
+  shift Shift? @relation("ShiftToLoginHistory")
+  user User @relation(fields: [userId], references: [id])
+  timeIn DateTime @default(now())
+  timeOut DateTime?
+}
 // model Cashpick{
 //   id Int @id @default(autoincrement())
 //   shiftId Int 
@@ -128,7 +137,6 @@ model Order {
   status     STATUS       @default(queue) 
   userId String //Foreign Key
   user User @relation(fields: [userId], references: [id])
-  // voidedOrderId Int?
   // voidedOrder VoidedOrder? @relation("OrderToVoidOrder")
   createdAt  DateTime     @default(now())
 }
