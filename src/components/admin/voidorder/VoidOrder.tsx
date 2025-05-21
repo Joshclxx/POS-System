@@ -257,23 +257,22 @@ const VoidOrder = () => {
             logout();
             router.replace("/");
           }}
-          className="w-[140px] h-auto bg-colorBlue text-tertiary rounded-3xl p-6 text-[18px] font-regular absolute right-4"
+          className="w-[140px] h-auto bg-colorBlue text-tertiary rounded-full p-4 text-lg font-regular shadow-md hover:opacity-90 transition"
         >
           Logout
         </Button>
       </div>
 
       <div className="grid grid-cols-12 mt-4">
-        <div className="container bg-colorDirtyWhite w-[1280px] h-[700px] flex flex-row p-[10px]">
-          <div className="order-history-panel flex flex-col basis-[100%] h-[600px]">
-            <div className="heading flex h-[52px] items-center bg-primary border rounded-[8px] mb-[5px]">
-              <p className="text-colorDirtyWhite font-bold text-[24px] px-[10px]">
+        <div className="container bg-colorDirtyWhite w-[1280px] h-[700px] flex flex-row p-2.5 rounded-xl shadow">
+          <div className="order-history-panel flex flex-col basis-full h-[600px]">
+            <div className="heading flex h-[52px] items-center bg-primary border rounded-lg mb-1.5 shadow-sm px-4">
+              <p className="text-colorDirtyWhite font-bold text-2xl">
                 VOID ORDER
               </p>
             </div>
 
             <div className="grid grid-cols-9 gap-4">
-              {/* SEARCH ID */}
               <div className="col-span-5 mt-2">
                 <input
                   type="text"
@@ -282,40 +281,36 @@ const VoidOrder = () => {
                   value={searchId}
                   onChange={(e) => setSearchId(e.target.value)}
                   placeholder="Search Order ID..."
-                  className="border border-primary rounded-[6px] px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                  className="border border-primary rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition w-full"
                 />
               </div>
-
-              {/* START DATE & TIME */}
               <div className="col-span-2 mt-2">
                 <input
                   type="datetime-local"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="border border-primary rounded-[6px] px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                  className="border border-primary rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition w-full"
                 />
               </div>
-
-              {/* END DATE & TIME */}
               <div className="col-span-2 mt-2">
                 <input
                   type="datetime-local"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="border border-primary rounded-[6px] px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                  className="border border-primary rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition w-full"
                 />
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto hide-scrollbar mt-[5px] px-[10px]">
-              <table className="w-full table-auto border-separate border-spacing-0 shadow-[0_0_20px_rgba(0,0,0,0.15)]">
-                <thead className="bg-secondaryGray text-primary text-left sticky top-0 z-20 pr-[10px]">
+            <div className="flex-1 overflow-y-auto hide-scrollbar mt-1.5 px-2.5">
+              <table className="w-full table-auto border-separate border-spacing-0 shadow-md">
+                <thead className="bg-secondaryGray text-primary text-left sticky top-0 z-20">
                   <tr>
-                    <th className="px-[12px] py-[15px]">Order ID</th>
-                    <th className="px-[12px] py-[15px]">Items</th>
-                    <th className="px-[12px] py-[15px]">Total</th>
-                    <th className="px-[12px] py-[15px]">Date & Time</th>
-                    <th className="px-[12px] py-[15px]">Status</th>
+                    <th className="px-3 py-3">Order ID</th>
+                    <th className="px-3 py-3">Items</th>
+                    <th className="px-3 py-3">Total</th>
+                    <th className="px-3 py-3">Date & Time</th>
+                    <th className="px-3 py-3">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -323,26 +318,24 @@ const VoidOrder = () => {
                     <tr
                       key={order.id}
                       onClick={() => setSelectedOrder(order)}
-                      className="border-b hover:bg-secondaryGray/50 cursor-pointer "
+                      className="border-b hover:bg-secondaryGray/30 cursor-pointer transition"
                     >
-                      <td className="px-[12px] py-[12px]">{order.id}</td>
-                      <td className="px-[12px] py-[12px]">
+                      <td className="px-3 py-3">{order.id}</td>
+                      <td className="px-3 py-3">
                         {truncateItemName(
                           order.items.length > 0
                             ? order.items.map((item) => item.title).join(",")
                             : "No Items"
                         )}
                       </td>
-                      <td className="px-[12px] py-[12px]">
+                      <td className="px-3 py-3">
                         {new Intl.NumberFormat("en-PH", {
                           style: "currency",
                           currency: "PHP",
                         }).format(order.total)}
                       </td>
-                      <td className="px-[12px] py-[12px]">{order.createdAt}</td>
-                      <td className="px-[12px] py-[12px]">
-                        {capitalized(order.status)}
-                      </td>
+                      <td className="px-3 py-3">{order.createdAt}</td>
+                      <td className="px-3 py-3">{capitalized(order.status)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -351,7 +344,7 @@ const VoidOrder = () => {
 
             {selectedOrder && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-secondaryGray p-6 rounded-lg shadow-lg w-[400px]">
+                <div className="bg-secondaryGray p-6 rounded-2xl shadow-xl w-[400px]">
                   <h2 className="text-xl font-bold mb-4 text-primary">
                     Order Details
                   </h2>
@@ -378,22 +371,21 @@ const VoidOrder = () => {
                   <div className="flex justify-end gap-2 mt-6">
                     <button
                       onClick={() => setSelectedOrder(null)}
-                      className="bg-gray-300 hover:bg-gray-400 text-black py-1 px-4 rounded"
+                      className="bg-gray-300 hover:bg-gray-400 text-black py-1 px-4 rounded-md transition"
                     >
                       Close
                     </button>
-
                     {selectedOrder.status === "voided" ? (
                       <button
                         onClick={() => revertOrder(selectedOrder.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white py-1 px-4 rounded"
+                        className="bg-green-600 hover:bg-green-700 text-white py-1 px-4 rounded-md transition"
                       >
                         Revert Void
                       </button>
                     ) : (
                       <button
                         onClick={handleVoidClick}
-                        className="bg-red-600 hover:bg-red-700 text-white py-1 px-4 rounded"
+                        className="bg-red-600 hover:bg-red-700 text-white py-1 px-4 rounded-md transition"
                       >
                         Void Order
                       </button>
