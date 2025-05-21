@@ -41,7 +41,45 @@ const OrdersQueue = () => {
   const [updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
 
   // LOAD ALL ORDERS WITH STATUS QUEUE
+  useEffect(() => {
+    if (orderdata?.getAllOrders) {
+      const orderQueueFormat = orderdata.getAllOrders
+        .filter((order: OrderRawData) => order.status === "queue")
+        .map((order: OrderRawData) => {
+          const items = order.items.map((item) => ({
+            title: item.productName,
+            size: item.productSize,
+            price: item.productPrice,
+            quantity: item.quantity,
+          }));
 
+          return {
+            id: order.id,
+            type: order.type,
+            items,
+          };
+        });
+      setOrdersQueue(orderQueueFormat);
+    }
+  }, [orderdata]);
+
+  const bumpSelectedOrder = async () => {
+    const orderToBump = ordersQueue.find((order) => order.id === selectedOrder);
+
+    if (selectedOrder !== null) {
+      try {
+        await updateOrderStatus({
+          variables: {
+            data: {
+              id: orderToBump?.id,
+              status: "completed",
+            },
+          },
+        });
+        refetch();
+        toast.success(`Order #${selectedOrder} Served!`, {
+          id: "notif-message",
+        });
       } catch (error) {
         handleGraphQLError(error);
       }
@@ -73,7 +111,7 @@ const OrdersQueue = () => {
                 )
               }
             >
-
+              <div className="flex justify-between px-14">
                 <p className="primary-title">{order.id}</p>
                 <p className="primary-title">{formatType(order.type)}</p>
               </div>
@@ -83,7 +121,7 @@ const OrdersQueue = () => {
                 <div className="text-[12px] mt-1 text-primary font-medium">
                   {order.items.map((item, idx) => (
                     <p key={idx}>
-                      {item.title} {item.size} - {item.price} x {item.quantity}
+                      {item.title} - {item.price} x {item.quantity}
                     </p>
                   ))}
                 </div>
