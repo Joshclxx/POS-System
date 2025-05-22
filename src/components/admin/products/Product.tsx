@@ -28,6 +28,8 @@ import {
 } from "@/app/graphql/query";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 import { capitalize } from "@/app/utils/capitalized";
+import { useLogout } from "@/app/utils/handleLogout";
+
 // import dynamic from "next/dynamic";
 // import ToasterProvider from "@/components/ToasterProvider";
 
@@ -74,13 +76,14 @@ const Product: React.FC = () => {
   }>({ PT: "", RG: "", GR: "" });
   const menus = useGlobal((state) => state.menus);
   const menuItems = useGlobal((state) => state.menuItems);
-  const { userRole, loggedIn, logout } = useUserStore.getState();
+  const { userRole, loggedIn } = useUserStore.getState();
+  const {handleLogout} = useLogout();
   const router = useRouter();
 
   useEffect(() => {
     console.log(menus);
     if (userRole !== "manager") {
-      logout();
+      handleLogout();
       router.replace("/login");
     }
   }, []);
@@ -385,7 +388,7 @@ const Product: React.FC = () => {
               <Button
                 variant="universal"
                 onClick={() => {
-                  logout();
+                  handleLogout();
                   router.replace("/login");
                 }}
                 className="w-[140px] h-auto bg-colorBlue text-tertiary rounded-3xl px-4 py-2 text-[18px] font-regular"

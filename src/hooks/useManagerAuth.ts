@@ -1,20 +1,20 @@
 "use client";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { USER_LOGIN } from "@/app/graphql/query";
-import { useLazyQuery } from "@apollo/client";
+import { LOGIN_SESSION, UPDATE_LOGIN_SESSION } from "@/app/graphql/mutations";
+import { useMutation } from "@apollo/client";
+import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 
 type UserData = {
   id: string;
-  email: string;
-  password: string;
   role: "cashier" | "manager" | "admin";
 };
 
 export function useManagerAuth() {
   const [isVerified, setIsVerified] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [userLogin] = useLazyQuery(USER_LOGIN)
+  const [updateLoginRecord] = useMutation(UPDATE_LOGIN_SESSION)
+  const [loginAndRecord] = useMutation(LOGIN_SESSION)
 
   useEffect(() => {
     const stored = localStorage.getItem("isManagerVerified") === "true";
@@ -24,7 +24,7 @@ export function useManagerAuth() {
 
   const login = async (email: string, password: string) => {
     try {
-      const {data} = await userLogin({
+      const {data} = await loginAndRecord({
         variables: {
           data: {
             email,
@@ -33,50 +33,33 @@ export function useManagerAuth() {
         }
       });
 
-      if(data && data.userLogin) {
-        const userData: UserData = data.userLogin;
+      if(data && data.loginAndRecord) {
+        const userData: UserData = data.loginAndRecord;
         const role  = userData.role; 
 
 
         if (role === "manager") {
           localStorage.setItem("isManagerVerified", "true");
           localStorage.setItem("userEmail", email);
+          localStorage.setItem("userId", userData.id);
           setIsVerified(true);
           toast.success("Manager verified!", { id: "manager-verified" });
           return true;
         }
-        //if mag try mag login gamit cashier account
-        toast.error("Access denied: You're not authorized to use this feature.", { id: "manager-denied" });
 
+        toast.error("Access denied: You're not authorized to use this feature.", { id: "manager-denied" });
         return false;
 
       }
     } catch (error) {
-      console.error(error) //simple error for now
-      toast.error("Invalid email or password.", { id: "manager-denied" });
+      handleGraphQLError(error);
     }
 
-    //Ginamit ko sila sa taas
-    // const manager = users.find(
-    //   (user: any) =>
-    //     user.email.toLowerCase() === email.toLowerCase() &&
-    //     user.password === password &&
-    //     user.position === "Manager"
-    // );
-
-    // if (manager) {
-    //   localStorage.setItem("isManagerVerified", "true");
-    //   localStorage.setItem("userEmail", email);
-    //   setIsVerified(true);
-    //   toast.success("Manager verified!", { id: "manager-verified" });
-    //   return true;
-    // }
-
-    // toast.error("Invalid email or password.", { id: "manager-denied" });
-    // return false;
   };
 
   const logout = () => {
+    updateLoginRecord({variables: {userId: localStorage.getItem("userId")}})
+    localStorage.removeItem("userId")
     localStorage.removeItem("isManagerVerified");
     localStorage.removeItem("userEmail");
     setIsVerified(false);

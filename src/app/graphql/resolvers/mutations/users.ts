@@ -141,5 +141,42 @@ export const usersMutation = {
                 console.error(error) //temporary error
             }
         },
+
+        createUserShift: async (
+            _: unknown, 
+            args: {
+                data: {
+                    loginHistoryId: number,
+                    startingCash: number,
+                    cashpickAmount: number,
+                    voidedAmount: number,
+                    totalCash: number,
+                    userId: string
+                }
+            }, 
+            context: GraphQLContext
+        ) => {
+            const {loginHistoryId, startingCash, cashpickAmount, voidedAmount, totalCash, userId} = args.data;
+            const getShiftType = (): "opening" | "closing" => {
+                const hour = new Date().getHours();
+                return hour >= 8 && hour < 20 ? "opening" : "closing";
+            }
+            const shiftType = getShiftType();
+            const shiftData = {
+                shiftType,
+                loginHistoryId,
+                startingCash,
+                cashpickAmount,
+                voidedAmount,
+                totalCash,
+                userId,
+            }
+
+            try {
+                return await context.prisma.shift.create({data: shiftData})
+            } catch (error) {
+                console.error(error)
+            }
+        },
     }
 }

@@ -10,6 +10,8 @@ import SectionContainer from "@/components/SectionContainer";
 import Payment from "@/components/orders/Payment";
 import { useOrderStore } from "@/hooks/useOrder";
 import { useUserStore } from "@/hooks/useUserSession";
+import { GET_ALL_USERS } from "./graphql/query";
+import { useQuery } from "@apollo/client";
 
 export default function Home() {
   const [activeKey, setActiveKey] = useState("espresso");
@@ -19,7 +21,7 @@ export default function Home() {
   const [hydrated, setHydrated] = useState(false);
   // const [loading, setLoading] = useState(true);
   const { userRole, loggedIn } = useUserStore();
-
+  const {data} = useQuery(GET_ALL_USERS)
   // .getState --> useUserStore.getState();
 
   const router = useRouter();
@@ -59,6 +61,11 @@ export default function Home() {
   // Redirect only after Zustand state is hydrated
   useEffect(() => {
     if (!hydrated) return;
+
+    if(!data || !data.getAllUsers) {
+      useUserStore.getState().logout();
+      router.replace("/login?redirect=/");
+    }
 
     if (!loggedIn || userRole !== "cashier") {
       router.replace("/login?redirect=/");

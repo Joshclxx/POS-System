@@ -35,7 +35,6 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime?
 
-  @@unique([email, password]) // unique for now :> I will change this later
 }
 
 model Shift {
@@ -44,12 +43,11 @@ model Shift {
   loginHistoryId Int @unique
   loginHistory LoginHistory @relation("ShiftToLoginHistory", fields: [loginHistoryId], references: [id])
   startingCash Float
-  cashpickAmount Float
-  voidedAmount Float
-  totalCash Float
+  cashpickAmount Float?
+  voidedAmount Float?
+  totalCash Float?
   userId String 
   user User @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
 }
 
 model LoginHistory {

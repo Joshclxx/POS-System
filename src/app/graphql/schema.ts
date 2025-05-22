@@ -34,6 +34,7 @@ export const typeDefs = gql`
     take_out
   }
 
+
   type User {
     id: ID!
     firstname: String!
@@ -62,11 +63,11 @@ export const typeDefs = gql`
     id: Int!
     shiftType: ShiftType!
     loginHistoryId: Int!
-    loginHistory: LoginHistory!
+    startingCash: Float!
+    cashpickAmount: Float
+    voidedAmount: Float
+    totalCash: Float
     userId: String!
-    user: User!
-    createdAt: String!
-    updatedAt: String!
   }
 
   type Product {
@@ -85,7 +86,6 @@ export const typeDefs = gql`
     price: Float
     productId: Int!
     product: Product!
-    orders: [OrderItem!]!
     createdAt: String!
     updatedAt: String!
   }
@@ -133,7 +133,6 @@ export const typeDefs = gql`
   type Query {
     getAllUsers: [User!]!
     getUser(id: String!): User
-    userLogin(data: UserLoginInput!): User
     getAllProducts: [Product!]!
     getProduct(name: String): Product
     getAllOrders: [Order!]!
@@ -149,7 +148,8 @@ export const typeDefs = gql`
     createProduct(data: CreateProductInput!): Product
     createOrder(data: CreateOrderInput!): Order
     createVoidOrder(data: CreateVoidOrderInput!): VoidOrder
-    recordLogin(userId: ID!): LoginHistory
+    loginAndRecord(data: loginAndRecordInput!): LoginResponse
+    createUserShift(data: UserShiftInput!): Shift
 
     deleteUser(id: String!): User
     deleteProduct(id: Int!): Product
@@ -160,6 +160,7 @@ export const typeDefs = gql`
     updateCategory(id: Int!, name: String!): Category
     updateOrderStatus(data: UpdateOrderStatusInput!): Order
     updateUser(id: String!, edits: EditUserInput!) : User
+    updateLoginRecord(userId: String!): LoginHistory
   }
 
   #Products related mutations ------------------------------------------------------------------
@@ -225,7 +226,7 @@ export const typeDefs = gql`
     role: Role!
   }
 
-  input UserLoginInput {
+  input loginAndRecordInput {
     email: String!
     password: String!
   }
@@ -239,5 +240,21 @@ export const typeDefs = gql`
     email: String
     password: String
     role: Role
+  }
+
+  input UserShiftInput {
+    loginHistoryId: Int!
+    startingCash: Float!
+    cashpickAmount: Float
+    voidedAmount: Float
+    totalCash: Float
+    userId: String!
+  }
+
+  #Custom ------------------------------------------------------------------------------------
+  type LoginResponse {
+    id: ID!
+    role: Role!
+    sessionId: Int!
   }
 `;
