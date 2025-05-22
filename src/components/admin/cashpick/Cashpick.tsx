@@ -8,25 +8,35 @@ import SectionContainer from "../../SectionContainer";
 import ManagerLogin from "../ManagerLogin";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
 import { useShiftStore } from "@/hooks/useShiftStore";
+import { useMutation } from "@apollo/client";
+import { UPDATE_LOGIN_SESSION } from "@/app/graphql/mutations";
+import { useUserStore } from "@/hooks/useUserSession";
 
 const Cashpick = () => {
   const pickCash = useShiftStore((s) => s.pickCash);
   const [amount, setAmount] = useState("");
   const router = useRouter();
-
+  const [updateLoginRecord] = useMutation(UPDATE_LOGIN_SESSION)
   const { isVerified, loading, login, logout } = useManagerAuth();
   console.log("Auth state ->", { isVerified, loading });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setAmount(e.target.value);
 
-  const handleConfirm = () => {
-    const num = parseFloat(amount.replace(/[^\d.]/g, "")) || 0;
-    pickCash(num);
-    setAmount("");
-    toast.success("Cash Picked", { id: "notif-message" });
-    router.push("/");
-    logout();
+  const handleConfirm = async () => {
+    try {
+
+      const num = parseFloat(amount.replace(/[^\d.]/g, "")) || 0;
+      pickCash(num);
+      setAmount("");
+      toast.success("Cash Picked", { id: "notif-message" });
+      await updateLoginRecord({variables: {userId: useUserStore.getState().userId}})
+      router.push("/");
+      logout();
+    } catch (error) {
+      console.error(error) //simple error for now
+    }
+
   };
 
   const handleReset = () => setAmount("");

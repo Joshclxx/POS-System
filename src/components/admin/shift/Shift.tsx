@@ -9,14 +9,20 @@ import { useShiftStore } from "@/hooks/useShiftStore";
 import ManagerLogin from "../ManagerLogin";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
 import { useUserStore } from "@/hooks/useUserSession"; // ADDED IMPORT
+import { useLogout } from "@/app/utils/handleLogout";
+import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
+import { CREATE_USER_SHIFT } from "@/app/graphql/mutations";
+import { useMutation } from "@apollo/client";
+
 
 const Shift = () => {
   const router = useRouter();
   const timer = useTimer();
   const { login, logout } = useManagerAuth();
-
+  const {handleLogout} = useLogout()
+  const [createUserShift] = useMutation(CREATE_USER_SHIFT)
   // Zustand session (to prevent showing this page after logout)
-  const { loggedIn, userRole } = useUserStore();
+  const { loggedIn, userRole, sessionId, userId} = useUserStore();
 
   // Prevent accessing Shift page if not logged in or role is not cashier
   useEffect(() => {
@@ -45,7 +51,7 @@ const Shift = () => {
     logout(); // manager logout
     localStorage.removeItem("loginTime");
 
-    useUserStore.getState().logout(); // also log out user session
+    handleLogout(); // also log out user session
     router.replace("/login"); // ensure full redirect to login
   };
 
@@ -77,16 +83,32 @@ const Shift = () => {
     [actualCash, expectedCash]
   );
 
-  const handleOpenShift = () => {
+  const handleOpenShift = async () => {
     if (!startCashInput) {
       return toast.error("Please enter the Starting Cash first.", {
         id: "notif-message",
       });
     }
-    openShift(parseFloat(startCashInput));
-    timer.start();
-    router.push("/");
-    toast.success("Shift Opened!", { id: "notif-message" });
+    console.log({ sessionId, userId, startCashInput });
+    try{
+      await createUserShift({
+        variables: {
+          data: {
+            loginHistoryId: sessionId,
+            startingCash: parseFloat(startCashInput),
+            totalCash: parseFloat(startCashInput),
+            userId: userId
+          }
+        }
+      });
+      openShift(parseFloat(startCashInput));
+      // timer.start();
+      router.push("/");
+      toast.success("Shift Opened!", { id: "notif-message" });
+    } catch (error) {
+      console.error(error)
+      handleGraphQLError(error)
+    }
   };
 
   // Only show login screen if manager not yet verified

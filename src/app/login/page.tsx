@@ -4,34 +4,33 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import SectionContainer from "@/components/SectionContainer";
-import { USER_LOGIN } from "../graphql/query";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
 import { LOGIN_SESSION } from "../graphql/mutations";
 import { handleGraphQLError } from "../utils/handleGraphqlError";
+// import { useLogout } from "../utils/handleLogout";
 
 type UserData = {
   id: string;
-  email: string;
-  password: string;
   role: "cashier" | "manager" | "admin";
+  sessionId: number;
 };
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const [userLogin] = useLazyQuery(USER_LOGIN);
   const [showPassword, setShowPassword] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const [lockEndTime, setLockEndTime] = useState<Date | null>(null);
-  const [recordLogin] = useMutation(LOGIN_SESSION)
+  const [loginAndRecord] = useMutation(LOGIN_SESSION)
+  // const {handleLogout} = useLogout();
 
   useEffect(() => {
-    const { loggedIn, userRole } = useUserStore.getState();
+    const { loggedIn, userRole, logout } = useUserStore.getState();
 
-    if (!loggedIn) return;
+    if (!loggedIn) logout();
 
     if (userRole === "cashier") {
       router.replace("/");
@@ -55,7 +54,7 @@ export default function LoginPage() {
     if (email === "heebrew@cafe.admin" && password === "Admin01") {
       setLoginAttempts(0);
       setIsLocked(false);
-      useUserStore.getState().setUser("testingId", "admin", email);
+      useUserStore.getState().setUser("testingId", "admin", email, null);
       localStorage.setItem("loginTime", new Date().toISOString());
       toast.success("Logged in successfully!", { id: "notif-message" });
       router.push("/admin/user-register");
@@ -63,7 +62,7 @@ export default function LoginPage() {
     }
 
     try {
-      const { data } = await userLogin({
+      const { data } = await loginAndRecord({
         variables: {
           data: {
             email: email,
@@ -72,17 +71,11 @@ export default function LoginPage() {
         },
       });
 
-      if (data && data.userLogin) {
-        const userData: UserData = data.userLogin;
-        useUserStore.getState().setUser(userData.id, userData.role, email);
+      if (data && data.loginAndRecord) {
+        const userData: UserData = data.loginAndRecord;
+        useUserStore.getState().setUser(userData.id, userData.role, email, userData.sessionId);
         // localStorage.setItem("loginTime", new Date().toISOString());
-        try {
-          await recordLogin({ variables: { userId: userData.id } });
-        } catch (error) {
-          handleGraphQLError(error)
-        }
         toast.success("Logged in successfully!");
-
         setLoginAttempts(0);
         setIsLocked(false);
 
@@ -117,10 +110,7 @@ export default function LoginPage() {
         });
       }
     } catch (error) {
-      console.error(error);
-      toast.error("An error occurred. Please try again.", {
-        id: "notif-message",
-      });
+      handleGraphQLError(error)
     }
   };
 

@@ -12,6 +12,7 @@ CREATE TABLE `User` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NULL,
 
+    UNIQUE INDEX `User_email_key`(`email`),
     UNIQUE INDEX `User_email_password_key`(`email`, `password`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -20,14 +21,24 @@ CREATE TABLE `User` (
 CREATE TABLE `Shift` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `shiftType` ENUM('opening', 'closing') NOT NULL DEFAULT 'opening',
-    `shiftIn` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `shiftOut` DATETIME(3) NULL,
+    `loginHistoryId` INTEGER NOT NULL,
     `startingCash` DOUBLE NOT NULL,
-    `cashpickAmount` DOUBLE NOT NULL,
-    `voidedAmount` DOUBLE NOT NULL,
-    `totalCash` DOUBLE NOT NULL,
+    `cashpickAmount` DOUBLE NULL,
+    `voidedAmount` DOUBLE NULL,
+    `totalCash` DOUBLE NULL,
     `userId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `Shift_loginHistoryId_key`(`loginHistoryId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `LoginHistory` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` VARCHAR(191) NOT NULL,
+    `timeIn` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `timeOut` DATETIME(3) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -105,7 +116,13 @@ CREATE TABLE `OrderItem` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
+ALTER TABLE `Shift` ADD CONSTRAINT `Shift_loginHistoryId_fkey` FOREIGN KEY (`loginHistoryId`) REFERENCES `LoginHistory`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `Shift` ADD CONSTRAINT `Shift_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `LoginHistory` ADD CONSTRAINT `LoginHistory_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Spotcheck` ADD CONSTRAINT `Spotcheck_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

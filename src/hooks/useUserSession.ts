@@ -7,8 +7,9 @@ type UserStore = {
   userRole: 'admin' | 'cashier' | 'manager' | null;
   userEmail: string | null;
   loggedIn: boolean;
+  sessionId: number | null;
 
-  setUser: (id: string, role: UserStore['userRole'], email: string) => void;
+  setUser: (id: string, role: UserStore['userRole'], email: string, sessionId: number | null) => void; //sessionId null forr default accunts
   logout: () => void;
 };
 
@@ -20,13 +21,14 @@ export const useUserStore = create<UserStore>()(
       userRole: null,
       userEmail: null,  
       loggedIn: false,
+      sessionId: null,
 
-      setUser: async (id, role, email) => {
-        set({ userId: id, userRole: role, userEmail: email, loggedIn: true }); 
+      setUser: async (id, role, email, sessionId) => {
+        set({ userId: id, userRole: role, userEmail: email, loggedIn: true, sessionId: sessionId}); 
       },
 
       logout: () => {
-        set({ userId: null, userRole: null, userEmail: null, loggedIn: false });
+        set({ userId: null, userRole: null, userEmail: null, loggedIn: false, sessionId: null });
       },
     }),
     {
@@ -36,6 +38,7 @@ export const useUserStore = create<UserStore>()(
         userRole: state.userRole,
         userEmail: state.userEmail,
         loggedIn: state.loggedIn,
+        sessionId: state.sessionId,
       }),
     }
   )

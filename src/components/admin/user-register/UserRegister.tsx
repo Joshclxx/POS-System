@@ -7,12 +7,12 @@ import { useRouter } from "next/navigation";
 import { GET_ALL_USERS } from "@/app/graphql/query";
 import { CREATE_USER } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
-import { useUserStore } from "@/hooks/useUserSession";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 import { DELETE_USER } from "@/app/graphql/mutations";
 import { capitalize } from "@/app/utils/capitalized";
 
 import { UPDATE_USER } from "@/app/graphql/mutations";
+import { useUserStore } from "@/hooks/useUserSession";
 
 // Initial form state
 const initialForm = {
@@ -45,7 +45,7 @@ const UserRegister = () => {
   const [deleteUser] = useMutation(DELETE_USER);
   const { data: usersData, refetch } = useQuery(GET_ALL_USERS);
   const [updateUser] = useMutation(UPDATE_USER);
-
+  
   useEffect(() => {
     if (usersData?.getAllUsers) {
       setUsers(usersData.getAllUsers);

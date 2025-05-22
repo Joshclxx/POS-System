@@ -136,11 +136,31 @@ export const UPDATE_USER = gql`
   }
 `
 
+export const UPDATE_LOGIN_SESSION = gql`
+  mutation updateLoginRecord($userId: String!){
+    updateLoginRecord(userId: $userId){
+      id
+    }
+  }
+`
+
 export const LOGIN_SESSION = gql`
-  mutation recordLogin($userId: ID!){
-    recordLogin(userId: $userId){
+  mutation loginAndRecord($data: loginAndRecordInput!) {
+    loginAndRecord(data: $data) {
+      id
+      role
+      sessionId
+    }
+  }
+`;
+
+export const CREATE_USER_SHIFT = gql`
+  mutation createUserShift($data: UserShiftInput!){
+    createUserShift(data: $data) {
+      id
+      shiftType
+      loginHistoryId
       userId
-      timeIn
     }
   }
 `
