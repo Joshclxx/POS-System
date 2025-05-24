@@ -13,6 +13,7 @@ import { useUserStore } from "@/hooks/useUserSession";
 import { GET_ALL_USERS } from "./graphql/query";
 import { useQuery } from "@apollo/client";
 
+
 export default function Home() {
   const [activeKey, setActiveKey] = useState("espresso");
   const [isPaying, setIsPaying] = useState(false);
@@ -23,7 +24,6 @@ export default function Home() {
   const { userRole, loggedIn } = useUserStore();
   const {data} = useQuery(GET_ALL_USERS)
   // .getState --> useUserStore.getState();
-
   const router = useRouter();
 
   // useEffect(() => {

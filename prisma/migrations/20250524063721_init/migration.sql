@@ -13,7 +13,6 @@ CREATE TABLE `User` (
     `updatedAt` DATETIME(3) NULL,
 
     UNIQUE INDEX `User_email_key`(`email`),
-    UNIQUE INDEX `User_email_password_key`(`email`, `password`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -25,9 +24,8 @@ CREATE TABLE `Shift` (
     `startingCash` DOUBLE NOT NULL,
     `cashpickAmount` DOUBLE NULL,
     `voidedAmount` DOUBLE NULL,
-    `totalCash` DOUBLE NULL,
+    `totalSales` DOUBLE NULL,
     `userId` VARCHAR(191) NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `Shift_loginHistoryId_key`(`loginHistoryId`),
     PRIMARY KEY (`id`)
