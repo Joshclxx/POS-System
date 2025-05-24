@@ -66,7 +66,7 @@ export const typeDefs = gql`
     startingCash: Float!
     cashpickAmount: Float
     voidedAmount: Float
-    totalCash: Float
+    totalSales: Float
     userId: String!
   }
 
@@ -161,6 +161,7 @@ export const typeDefs = gql`
     updateOrderStatus(data: UpdateOrderStatusInput!): Order
     updateUser(id: String!, edits: EditUserInput!) : User
     updateLoginRecord(userId: String!): LoginHistory
+    updateUserShift(data: UpdateUserShiftInput!): Shift
   }
 
   #Products related mutations ------------------------------------------------------------------
@@ -245,10 +246,14 @@ export const typeDefs = gql`
   input UserShiftInput {
     loginHistoryId: Int!
     startingCash: Float!
-    cashpickAmount: Float
-    voidedAmount: Float
-    totalCash: Float
     userId: String!
+  }
+
+  input UpdateUserShiftInput {
+    loginHistoryId: Int!
+    cashpickAmount: Float!
+    voidedAmount: Float!
+    totalSales: Float!
   }
 
   #Custom ------------------------------------------------------------------------------------

@@ -4,7 +4,6 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SectionContainer from "../../SectionContainer";
 import toast, { Toaster } from "react-hot-toast";
-import { useTimer } from "@/hooks/useTimer";
 import { useShiftStore } from "@/hooks/useShiftStore";
 import ManagerLogin from "../ManagerLogin";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
@@ -13,16 +12,17 @@ import { useLogout } from "@/app/utils/handleLogout";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 import { CREATE_USER_SHIFT } from "@/app/graphql/mutations";
 import { useMutation } from "@apollo/client";
+import { UPDATE_USER_SHIFT } from "@/app/graphql/mutations";
 
 
 const Shift = () => {
   const router = useRouter();
-  const timer = useTimer();
   const { login, logout } = useManagerAuth();
-  const {handleLogout} = useLogout()
-  const [createUserShift] = useMutation(CREATE_USER_SHIFT)
+  const {handleLogout} = useLogout();
+  const [createUserShift] = useMutation(CREATE_USER_SHIFT);
   // Zustand session (to prevent showing this page after logout)
   const { loggedIn, userRole, sessionId, userId} = useUserStore();
+  const [updateUserShift] = useMutation(UPDATE_USER_SHIFT);
 
   // Prevent accessing Shift page if not logged in or role is not cashier
   useEffect(() => {
@@ -38,21 +38,38 @@ const Shift = () => {
     setIsManagerVerified(true);
   };
 
-  const handleCloseShift = () => {
+  const handleCloseShift = async () => {
     if (!actualCash || parseFloat(actualCash) === 0) {
       return toast.error("Enter cash on hand before shift close.", {
         id: "notif-message",
       });
+    }else {
+    
+      try {
+      await updateUserShift({
+        variables: {  
+          data: {
+            loginHistoryId: sessionId,
+            cashpickAmount: totalPicked,
+            voidedAmount: voidRefund,
+            totalSales: expectedCash
+          }
+        }
+      });
+      toast.success("Shift Closed!", { id: "notif-message" });
+      closeShift();
+      logout(); // manager logout
+      localStorage.removeItem("loginTime");
+
+      handleLogout(); // also log out user session
+      router.replace("/login"); // ensure full redirect to login
+
+      } catch (error) {
+        handleGraphQLError(error)
+      }
     }
 
-    toast.success("Shift Closed!", { id: "notif-message" });
-    closeShift();
-    timer.stop();
-    logout(); // manager logout
-    localStorage.removeItem("loginTime");
 
-    handleLogout(); // also log out user session
-    router.replace("/login"); // ensure full redirect to login
   };
 
   const {
@@ -96,7 +113,6 @@ const Shift = () => {
           data: {
             loginHistoryId: sessionId,
             startingCash: parseFloat(startCashInput),
-            totalCash: parseFloat(startCashInput),
             userId: userId
           }
         }

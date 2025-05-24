@@ -148,15 +148,12 @@ export const usersMutation = {
                 data: {
                     loginHistoryId: number,
                     startingCash: number,
-                    cashpickAmount: number,
-                    voidedAmount: number,
-                    totalCash: number,
                     userId: string
                 }
             }, 
             context: GraphQLContext
         ) => {
-            const {loginHistoryId, startingCash, cashpickAmount, voidedAmount, totalCash, userId} = args.data;
+            const {loginHistoryId, startingCash, userId} = args.data;
             const getShiftType = (): "opening" | "closing" => {
                 const hour = new Date().getHours();
                 return hour >= 8 && hour < 20 ? "opening" : "closing";
@@ -166,9 +163,6 @@ export const usersMutation = {
                 shiftType,
                 loginHistoryId,
                 startingCash,
-                cashpickAmount,
-                voidedAmount,
-                totalCash,
                 userId,
             }
 
@@ -178,5 +172,34 @@ export const usersMutation = {
                 console.error(error)
             }
         },
+
+        updateUserShift: async (
+            _: unknown,
+            args: {
+                data: {
+                    loginHistoryId: number,
+                    cashpickAmount: number,
+                    voidedAmount: number,
+                    totalSales: number
+                }
+            },
+            context: GraphQLContext
+        ) => {
+            const {loginHistoryId, cashpickAmount, voidedAmount, totalSales} = args.data;
+            try {
+                return context.prisma.shift.update({
+                where: {loginHistoryId},
+                data: {
+                    cashpickAmount,
+                    voidedAmount,
+                    totalSales
+                }
+            })
+
+            } catch (error) {
+                console.error(error) // simple error for now
+            }
+
+        }
     }
 }

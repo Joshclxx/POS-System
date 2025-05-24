@@ -45,7 +45,7 @@ model Shift {
   startingCash Float
   cashpickAmount Float?
   voidedAmount Float?
-  totalCash Float?
+  totalSales Float?
   userId String 
   user User @relation(fields: [userId], references: [id])
 }

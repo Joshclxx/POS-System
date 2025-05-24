@@ -164,3 +164,11 @@ export const CREATE_USER_SHIFT = gql`
     }
   }
 `
+
+export const UPDATE_USER_SHIFT = gql`
+  mutation updateUserShift($data: UpdateUserShiftInput!){
+    updateUserShift(data: $data){
+      loginHistoryId
+    }
+  }
+`
