@@ -200,6 +200,23 @@ export const usersMutation = {
                 console.error(error) // simple error for now
             }
 
-        }
+        },
+
+        createSpotCheck: async (_: unknown, args: {data: {userId: string, currentCash: number, actualCash: number}}, context: GraphQLContext) => {
+            const {userId, currentCash, actualCash} = args.data;
+
+            try {
+                return await context.prisma.spotcheck.create({data: {
+                    userId,
+                    currentCash,
+                    actualCash
+                }});
+                
+            } catch (error) {
+                console.error(error) // simple error for now
+            }
+        },
+
+
     }
 }

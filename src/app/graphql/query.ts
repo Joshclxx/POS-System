@@ -85,3 +85,17 @@ export const GET_ALL_ORDERS = gql`
     }
   }
 `;
+
+export const FETCH_SPOTCHECK_HISTORY = gql`
+  query getSpotCheckHistory {
+    getSpotCheckHistory {
+      id
+      user {
+        email
+      }
+      currentCash
+      actualCash
+      createdAt
+    }
+  }
+`;

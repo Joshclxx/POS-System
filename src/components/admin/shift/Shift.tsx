@@ -15,6 +15,9 @@ import { useMutation } from "@apollo/client";
 import { UPDATE_USER_SHIFT } from "@/app/graphql/mutations";
 
 
+
+
+
 const Shift = () => {
   const router = useRouter();
   const { login, logout } = useManagerAuth();
@@ -24,12 +27,14 @@ const Shift = () => {
   const { loggedIn, userRole, sessionId, userId} = useUserStore();
   const [updateUserShift] = useMutation(UPDATE_USER_SHIFT);
 
+  
   // Prevent accessing Shift page if not logged in or role is not cashier
   useEffect(() => {
     if (!loggedIn || userRole !== "cashier") {
       router.replace("/login");
     }
   }, [loggedIn, userRole]);
+
 
   const [isManagerVerified, setIsManagerVerified] = useState(false); // Set to false by default
 

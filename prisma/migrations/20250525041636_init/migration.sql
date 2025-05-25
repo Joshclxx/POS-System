@@ -45,7 +45,7 @@ CREATE TABLE `LoginHistory` (
 CREATE TABLE `Spotcheck` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` VARCHAR(191) NOT NULL,
-    `posCash` DOUBLE NOT NULL,
+    `currentCash` DOUBLE NOT NULL,
     `actualCash` DOUBLE NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
