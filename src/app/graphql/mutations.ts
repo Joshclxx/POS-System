@@ -172,3 +172,11 @@ export const UPDATE_USER_SHIFT = gql`
     }
   }
 `
+
+export const CREATE_SPOTCHECK = gql`
+  mutation createSpotCheck($data: SpotCheckInput!){
+    createSpotCheck(data: $data){
+      id
+    }
+  }
+`

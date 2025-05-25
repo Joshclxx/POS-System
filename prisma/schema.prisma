@@ -58,6 +58,7 @@ model LoginHistory {
   timeIn DateTime @default(now())
   timeOut DateTime?
 }
+
 // model Cashpick{
 //   id Int @id @default(autoincrement())
 //   shiftId Int 
@@ -71,7 +72,7 @@ model Spotcheck {
   id Int @id @default(autoincrement())
   userId String 
   user User @relation(fields: [userId], references: [id])
-  posCash Float
+  currentCash Float
   actualCash Float
   createdAt DateTime @default(now())
 }

@@ -6,12 +6,14 @@ import SectionContainer from "@/components/SectionContainer";
 import AdminDrawer from "../AdminDrawer";
 import useGlobal from "@/hooks/useGlobal";
 import { useShiftStore } from "@/hooks/useShiftStore";
-
+import { FETCH_SPOTCHECK_HISTORY } from "@/app/graphql/query";
 import ManagerLogin from "../ManagerLogin";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
+import { useMutation, useQuery } from "@apollo/client";
+import { CREATE_SPOTCHECK } from "@/app/graphql/mutations";
+import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 const denominations = [1, 5, 10, 20, 50, 100, 200, 500, 1000];
 
 type SpotcheckEntry = {
@@ -23,6 +25,17 @@ type SpotcheckEntry = {
   difference: number;
 };
 
+type RawSpotCheckData = {
+  id: number;
+  user: {
+    email: string
+  }
+  currentCash: number;
+  actualCash: number;
+  createdAt: String
+}
+
+//testing
 const Spotcheck = () => {
   const { startingCash, totalSales, totalPicked } = useShiftStore();
   const expectedCash = startingCash + totalSales - totalPicked;
@@ -38,50 +51,85 @@ const Spotcheck = () => {
   const [selectedDifference, setSelectedDifference] = useState<number | null>(
     null
   );
-
   const { isVerified, loading, login, logout } = useManagerAuth();
   console.log("Auth state ->", { isVerified, loading });
-
+  const {data, refetch} = useQuery(FETCH_SPOTCHECK_HISTORY);
+  const [createSpotCheck] = useMutation(CREATE_SPOTCHECK);
   const router = useRouter();
 
   useEffect(() => {
-    setUserEmail(localStorage.getItem("userEmail") || "Unknown");
-    const saved = localStorage.getItem("spotcheckHistory");
-    if (saved) setHistory(JSON.parse(saved));
-    setShowDrawer(false);
-  }, [setShowDrawer]);
+    console.log("Fetched history data", data);
+    if(!data) return
+
+    if(data.getSpotCheckHistory){
+      const formattedHistory = data.getSpotCheckHistory.map((data: RawSpotCheckData) => ({
+        id: data.id,
+        employee: data.user?.email, 
+        actual: data.actualCash,
+        timestamp: data.createdAt,
+        pos: data.currentCash,
+        difference: data.actualCash - data.currentCash,
+      }));
+
+      setHistory(formattedHistory);
+      // setShowDrawer(true); not needed for now it can cause bug
+
+    }
+
+    // setUserEmail(localStorage.getItem("userEmail") || "Unknown");
+    // const saved = localStorage.getItem("spotcheckHistory");
+    // if (saved) setHistory(JSON.parse(saved));
+    
+  }, [setShowDrawer, data]);
 
   const total = useMemo(
     () =>
-      denominations.reduce(
+      denominations.reduce( 
         (acc, val, idx) => acc + val * (parseInt(counts[idx]) || 0),
         0
       ),
     [counts]
   );
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (counts.some((c) => c === "")) {
       setInputError(true);
       setShowDrawer(false);
       return;
     }
-    const id = 3000 + history.length;
-    const entry: SpotcheckEntry = {
-      id,
-      employee: userEmail,
-      actual: total,
-      pos: expectedCash,
-      timestamp: new Date().toLocaleString(),
-      difference: total - expectedCash,
-    };
-    const updated = [...history, entry];
-    setHistory(updated);
-    localStorage.setItem("spotcheckHistory", JSON.stringify(updated));
-    setSelectedRowId(id);
-    setSelectedDifference(entry.difference);
-    setShowDrawer(true);
-    setInputError(false);
+    try {
+      await createSpotCheck({
+        variables: {
+          data: {
+            userId: localStorage.getItem("userId"),
+            currentCash: expectedCash,
+            actualCash: total,
+          }
+        }
+      });
+
+      refetch();
+      // setSelectedRowId(id);
+      setSelectedDifference(total - expectedCash);
+      setShowDrawer(true);
+      setInputError(false);
+
+    } catch (error) {
+      handleGraphQLError(error)
+    }
+    // const id = 3000 + history.length;
+    // const entry: SpotcheckEntry = {
+    //   id,
+    //   employee: userEmail,
+    //   actual: total,
+    //   pos: expectedCash,
+    //   timestamp: new Date().toLocaleString(),
+    //   difference: total - expectedCash,
+    // };
+    // const updated = [...history, entry];
+    // setHistory(updated);
+    // localStorage.setItem("spotcheckHistory", JSON.stringify(updated));
+
   };
 
   const filteredHistory = useMemo(

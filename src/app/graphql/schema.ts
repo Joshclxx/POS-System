@@ -48,6 +48,7 @@ export const typeDefs = gql`
     loginHistory: [LoginHistory!]!
     orders: [Order!]!
     shift: [Shift!]!
+    spotCheck: [SpotCheck!]!
     createdAt: String!
     updatedAt: String!
   }
@@ -68,6 +69,16 @@ export const typeDefs = gql`
     voidedAmount: Float
     totalSales: Float
     userId: String!
+  }
+
+  type SpotCheck {
+    id: Int!
+    userId: String!
+    user: User
+    currentCash: Float!
+    actualCash: Float!
+    createdAt: String!
+    
   }
 
   type Product {
@@ -140,6 +151,7 @@ export const typeDefs = gql`
     getCategory(name: String!): Category
     getAllCategories: [Category!]!
     getProductVariant(data: SearchProductVariantInput!): ProductVariant
+    getSpotCheckHistory: [SpotCheck!]!
   }
 
   type Mutation {
@@ -150,6 +162,7 @@ export const typeDefs = gql`
     createVoidOrder(data: CreateVoidOrderInput!): VoidOrder
     loginAndRecord(data: loginAndRecordInput!): LoginResponse
     createUserShift(data: UserShiftInput!): Shift
+    createSpotCheck(data: SpotCheckInput!): SpotCheck
 
     deleteUser(id: String!): User
     deleteProduct(id: Int!): Product
@@ -254,6 +267,12 @@ export const typeDefs = gql`
     cashpickAmount: Float!
     voidedAmount: Float!
     totalSales: Float!
+  }
+
+  input SpotCheckInput {
+    userId: String!
+    currentCash: Float!
+    actualCash: Float!
   }
 
   #Custom ------------------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 import { GraphQLContext } from "@/app/lib/context";
+import {format} from "date-fns"
 import { GraphQLError } from "graphql";
 
 export const usersQuery = {
@@ -90,6 +91,21 @@ export const usersQuery = {
             }
         },
 
-        
+        getSpotCheckHistory: async (_: unknown, __: unknown, context: GraphQLContext) => {
+            try {
+                const spotCheckHistory = await context.prisma.spotcheck.findMany({
+                    include: { user: true },
+                });
+
+                return spotCheckHistory.map((item) => ({
+                    ...item,
+                    createdAt: item.createdAt ? format(item.createdAt, "MM/dd/yyyy hh:mm:ss a") : null,
+                }));
+
+            } catch (error) {
+                console.error(error) // simple error fow now
+            }
+        },
+
     }
 }
