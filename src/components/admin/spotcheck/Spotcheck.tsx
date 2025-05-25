@@ -63,7 +63,7 @@ const Spotcheck = () => {
     if(data.getSpotCheckHistory){
       const formattedHistory = data.getSpotCheckHistory.map((data: RawSpotCheckData) => ({
         id: data.id,
-        employee: data.user?.email, // safely access email or fallback to 'Unknown'
+        employee: data.user?.email, 
         actual: data.actualCash,
         timestamp: data.createdAt,
         pos: data.currentCash,
