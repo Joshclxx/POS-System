@@ -35,6 +35,7 @@ type RawSpotCheckData = {
   createdAt: String
 }
 
+//testing
 const Spotcheck = () => {
   const { startingCash, totalSales, totalPicked } = useShiftStore();
   const expectedCash = startingCash + totalSales - totalPicked;
