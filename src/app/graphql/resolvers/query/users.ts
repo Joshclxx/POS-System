@@ -107,5 +107,13 @@ export const usersQuery = {
             }
         },
 
+        getAllUserShift: async (_: unknown, __: unknown, context: GraphQLContext) => {
+            try {
+                return await context.prisma.shift.findMany();
+            } catch (error) {
+                console.error(error) //simple error for now
+            }
+        }
+
     }
 }
