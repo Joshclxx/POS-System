@@ -152,6 +152,7 @@ export const typeDefs = gql`
     getAllCategories: [Category!]!
     getProductVariant(data: SearchProductVariantInput!): ProductVariant
     getSpotCheckHistory: [SpotCheck!]!
+    getAllUserShift: [Shift!]!
   }
 
   type Mutation {

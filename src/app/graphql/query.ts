@@ -99,3 +99,11 @@ export const FETCH_SPOTCHECK_HISTORY = gql`
     }
   }
 `;
+
+export const FETCH_ALL_USER_SHIFT = gql`
+  query getAllUserShift{
+    getAllUserShift{
+      id
+    }
+  }
+`

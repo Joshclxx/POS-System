@@ -32,7 +32,7 @@ type RawSpotCheckData = {
   }
   currentCash: number;
   actualCash: number;
-  createdAt: String
+  createdAt: string
 }
 
 //testing
@@ -42,7 +42,6 @@ const Spotcheck = () => {
   const [counts, setCounts] = useState<string[]>(
     Array(denominations.length).fill("")
   );
-  const [userEmail, setUserEmail] = useState("");
   const { setShowDrawer } = useGlobal();
   const [history, setHistory] = useState<SpotcheckEntry[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -167,12 +166,9 @@ const Spotcheck = () => {
     setInputError(false);
   }
 
-  const handleLoginSuccess = (email: string, password: string) => {
+  const handleLoginSuccess = async (email: string, password: string) => {
     console.log("Logging in:", email);
-    setUserEmail(email);
-    login(email, password);
-    // localStorage.setItem("userEmail", email);
-    // login(email, password);
+    await login(email, password);
   };
 
   if (loading) return null;
