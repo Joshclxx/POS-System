@@ -99,8 +99,11 @@ const VoidOrder = () => {
   const router = useRouter();
 
   // MANAGERS LOGIN
-  const { isVerified, loading, login, logout } = useManagerAuth();
-  console.log("Auth state ->", { isVerified, loading });
+  // const { isVerified, loading, login, logout } = useManagerAuth();
+  // console.log("Auth state ->", { isVerified, loading });
+
+  const { login, logout } = useManagerAuth();
+  const [isManagerVerified, setIsManagerVerified] = useState(false);
 
   // const handleConfirm = () => {
   //   toast.success("Cash Picked", { id: "notif-message" });
@@ -108,9 +111,14 @@ const VoidOrder = () => {
   //   logout();
   // };
 
+  // const handleLoginSuccess = (email: string, password: string) => {
+  //   localStorage.setItem("userEmail", email);
+  //   login(email, password);
+  // };
+
   const handleLoginSuccess = (email: string, password: string) => {
-    localStorage.setItem("userEmail", email);
     login(email, password);
+    setIsManagerVerified(true);
   };
 
   //LOAD THE ORDERS DATA
@@ -233,7 +241,16 @@ const VoidOrder = () => {
       : itemName;
   };
 
-  if (!isVerified) {
+  // if (!isVerified) {
+  //   return (
+  //     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
+  //       <Toaster />
+  //       <ManagerLogin onLoginSuccess={handleLoginSuccess} />
+  //     </SectionContainer>
+  //   );
+  // }
+
+  if (!isManagerVerified) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
         <Toaster />
