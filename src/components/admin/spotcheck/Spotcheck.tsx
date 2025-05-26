@@ -28,12 +28,12 @@ type SpotcheckEntry = {
 type RawSpotCheckData = {
   id: number;
   user: {
-    email: string
-  }
+    email: string;
+  };
   currentCash: number;
   actualCash: number;
-  createdAt: string
-}
+  createdAt: String;
+};
 
 //testing
 const Spotcheck = () => {
@@ -42,6 +42,7 @@ const Spotcheck = () => {
   const [counts, setCounts] = useState<string[]>(
     Array(denominations.length).fill("")
   );
+  const [userEmail, setUserEmail] = useState("");
   const { setShowDrawer } = useGlobal();
   const [history, setHistory] = useState<SpotcheckEntry[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -50,40 +51,44 @@ const Spotcheck = () => {
   const [selectedDifference, setSelectedDifference] = useState<number | null>(
     null
   );
-  const { isVerified, loading, login, logout } = useManagerAuth();
-  console.log("Auth state ->", { isVerified, loading });
-  const {data, refetch} = useQuery(FETCH_SPOTCHECK_HISTORY);
+  // const { isVerified, loading, login, logout } = useManagerAuth();
+  // console.log("Auth state ->", { isVerified, loading });
+
+  const { login, logout } = useManagerAuth();
+  const [isManagerVerified, setIsManagerVerified] = useState(false);
+
+  const { data, refetch } = useQuery(FETCH_SPOTCHECK_HISTORY);
   const [createSpotCheck] = useMutation(CREATE_SPOTCHECK);
   const router = useRouter();
 
   useEffect(() => {
     console.log("Fetched history data", data);
-    if(!data) return
+    if (!data) return;
 
-    if(data.getSpotCheckHistory){
-      const formattedHistory = data.getSpotCheckHistory.map((data: RawSpotCheckData) => ({
-        id: data.id,
-        employee: data.user?.email, 
-        actual: data.actualCash,
-        timestamp: data.createdAt,
-        pos: data.currentCash,
-        difference: data.actualCash - data.currentCash,
-      }));
+    if (data.getSpotCheckHistory) {
+      const formattedHistory = data.getSpotCheckHistory.map(
+        (data: RawSpotCheckData) => ({
+          id: data.id,
+          employee: data.user?.email,
+          actual: data.actualCash,
+          timestamp: data.createdAt,
+          pos: data.currentCash,
+          difference: data.actualCash - data.currentCash,
+        })
+      );
 
       setHistory(formattedHistory);
       // setShowDrawer(true); not needed for now it can cause bug
-
     }
 
     // setUserEmail(localStorage.getItem("userEmail") || "Unknown");
     // const saved = localStorage.getItem("spotcheckHistory");
     // if (saved) setHistory(JSON.parse(saved));
-    
   }, [setShowDrawer, data]);
 
   const total = useMemo(
     () =>
-      denominations.reduce( 
+      denominations.reduce(
         (acc, val, idx) => acc + val * (parseInt(counts[idx]) || 0),
         0
       ),
@@ -103,8 +108,8 @@ const Spotcheck = () => {
             userId: localStorage.getItem("userId"),
             currentCash: expectedCash,
             actualCash: total,
-          }
-        }
+          },
+        },
       });
 
       refetch();
@@ -112,9 +117,8 @@ const Spotcheck = () => {
       setSelectedDifference(total - expectedCash);
       setShowDrawer(true);
       setInputError(false);
-
     } catch (error) {
-      handleGraphQLError(error)
+      handleGraphQLError(error);
     }
     // const id = 3000 + history.length;
     // const entry: SpotcheckEntry = {
@@ -128,7 +132,6 @@ const Spotcheck = () => {
     // const updated = [...history, entry];
     // setHistory(updated);
     // localStorage.setItem("spotcheckHistory", JSON.stringify(updated));
-
   };
 
   const filteredHistory = useMemo(
@@ -166,14 +169,31 @@ const Spotcheck = () => {
     setInputError(false);
   }
 
-  const handleLoginSuccess = async (email: string, password: string) => {
-    console.log("Logging in:", email);
-    await login(email, password);
+  // const handleLoginSuccess = (email: string, password: string) => {
+  //   console.log("Logging in:", email);
+  //   setUserEmail(email);
+  //   login(email, password);
+  //   // localStorage.setItem("userEmail", email);
+  //   // login(email, password);
+  // };
+
+  const handleLoginSuccess = (email: string, password: string) => {
+    login(email, password);
+    setIsManagerVerified(true);
   };
 
-  if (loading) return null;
+  // if (loading) return null;
 
-  if (!isVerified) {
+  // if (!isVerified) {
+  //   return (
+  //     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
+  //       <Toaster />
+  //       <ManagerLogin onLoginSuccess={handleLoginSuccess} />
+  //     </SectionContainer>
+  //   );
+  // }
+
+  if (!isManagerVerified) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
         <Toaster />

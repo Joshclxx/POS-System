@@ -9,14 +9,16 @@ import ManagerLogin from "../ManagerLogin";
 import { useManagerAuth } from "@/hooks/useManagerAuth";
 import { useShiftStore } from "@/hooks/useShiftStore";
 
-
 const Cashpick = () => {
   const pickCash = useShiftStore((s) => s.pickCash);
   const [amount, setAmount] = useState("");
   const router = useRouter();
 
-  const { isVerified, loading, login, logout } = useManagerAuth();
-  console.log("Auth state ->", { isVerified, loading });
+  // const { isVerified, loading, login, logout } = useManagerAuth();
+  // console.log("Auth state ->", { isVerified, loading });
+
+  const { login, logout } = useManagerAuth();
+  const [isManagerVerified, setIsManagerVerified] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setAmount(e.target.value);
@@ -28,7 +30,6 @@ const Cashpick = () => {
     toast.success("Cash Picked", { id: "notif-message" });
     router.push("/");
     logout();
-
   };
 
   const handleReset = () => setAmount("");
@@ -37,12 +38,26 @@ const Cashpick = () => {
     ? parseFloat(amount.replace(/[^\d.]/g, "")).toFixed(2)
     : "0.00";
 
+  // const handleLoginSuccess = (email: string, password: string) => {
+  //   localStorage.setItem("userEmail", email);
+  //   login(email, password);
+  // };
+
   const handleLoginSuccess = (email: string, password: string) => {
-    localStorage.setItem("userEmail", email);
     login(email, password);
+    setIsManagerVerified(true);
   };
 
-  if (!isVerified) {
+  // if (!isVerified) {
+  //   return (
+  //     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
+  //       <Toaster />
+  //       <ManagerLogin onLoginSuccess={handleLoginSuccess} />
+  //     </SectionContainer>
+  //   );
+  // }
+
+  if (!isManagerVerified) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
         <Toaster />
