@@ -13,8 +13,8 @@ type UserData = {
 export function useManagerAuth() {
   const [isVerified, setIsVerified] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [updateLoginRecord] = useMutation(UPDATE_LOGIN_SESSION)
-  const [loginAndRecord] = useMutation(LOGIN_SESSION)
+  const [updateLoginRecord] = useMutation(UPDATE_LOGIN_SESSION);
+  const [loginAndRecord] = useMutation(LOGIN_SESSION);
 
   useEffect(() => {
     const stored = localStorage.getItem("isManagerVerified") === "true";
@@ -24,19 +24,18 @@ export function useManagerAuth() {
 
   const login = async (email: string, password: string) => {
     try {
-      const {data} = await loginAndRecord({
+      const { data } = await loginAndRecord({
         variables: {
           data: {
             email,
-            password
-          }
-        }
+            password,
+          },
+        },
       });
 
-      if(data && data.loginAndRecord) {
+      if (data && data.loginAndRecord) {
         const userData: UserData = data.loginAndRecord;
-        const role  = userData.role; 
-
+        const role = userData.role;
 
         if (role === "manager") {
           localStorage.setItem("isManagerVerified", "true");
@@ -47,19 +46,22 @@ export function useManagerAuth() {
           return true;
         }
 
-        toast.error("Access denied: You're not authorized to use this feature.", { id: "manager-denied" });
+        toast.error(
+          "Access denied: You're not authorized to use this feature.",
+          { id: "manager-denied" }
+        );
         return false;
-
       }
     } catch (error) {
       handleGraphQLError(error);
     }
-
   };
 
   const logout = () => {
-    updateLoginRecord({variables: {userId: localStorage.getItem("userId")}})
-    localStorage.removeItem("userId")
+    updateLoginRecord({
+      variables: { userId: localStorage.getItem("userId") },
+    });
+    localStorage.removeItem("userId");
     localStorage.removeItem("isManagerVerified");
     localStorage.removeItem("userEmail");
     setIsVerified(false);

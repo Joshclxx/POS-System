@@ -24,7 +24,7 @@ export default function LoginPage() {
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const [lockEndTime, setLockEndTime] = useState<Date | null>(null);
-  const [loginAndRecord] = useMutation(LOGIN_SESSION)
+  const [loginAndRecord] = useMutation(LOGIN_SESSION);
   // const {handleLogout} = useLogout();
 
   useEffect(() => {
@@ -73,9 +73,11 @@ export default function LoginPage() {
 
       if (data && data.loginAndRecord) {
         const userData: UserData = data.loginAndRecord;
-        useUserStore.getState().setUser(userData.id, userData.role, email, userData.sessionId);
+        useUserStore
+          .getState()
+          .setUser(userData.id, userData.role, email, userData.sessionId);
         // localStorage.setItem("loginTime", new Date().toISOString());
-        toast.success("Logged in successfully!");
+        toast.success("Logged in successfully!", { id: "notif-message" });
         setLoginAttempts(0);
         setIsLocked(false);
 
@@ -110,10 +112,9 @@ export default function LoginPage() {
         });
       }
     } catch (error) {
-      handleGraphQLError(error)
+      handleGraphQLError(error);
     }
   };
-
 
   return (
     <SectionContainer background="mt-1 w-full max-w-[1280px] h-auto">
