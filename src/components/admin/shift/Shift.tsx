@@ -37,7 +37,11 @@ const Shift = () => {
     closeShift,
   } = useShiftStore();
 
+  // const { hasHydrated } = useUserStore();
+
   useEffect(() => {
+    // if (!hasHydrated) return;
+
     if (!loggedIn || userRole !== "cashier") {
       router.replace("/login");
     }
@@ -122,7 +126,8 @@ const Shift = () => {
     }
   };
 
-  if (!isShiftActive && !isManagerVerified) {
+  // try to remove managers login
+  if (!isManagerVerified && !isShiftActive) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
         <Toaster />
