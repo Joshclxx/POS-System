@@ -177,8 +177,7 @@ const Spotcheck = () => {
   //   // login(email, password);
   // };
 
-  const handleLoginSuccess = (email: string, password: string) => {
-    login(email, password);
+  const handleLoginSuccess = () => {
     setIsManagerVerified(true);
   };
 
