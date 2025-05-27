@@ -10,17 +10,17 @@ interface Props {
 const ManagerLogin = ({ onLoginSuccess }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useManagerAuth();
+  // const { login } = useManagerAuth();
   // const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const success = await login(email, password);
-    if (success) {
-      onLoginSuccess?.(email, password);
-    }
-  };
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   const success = await login(email, password);
+  //   if (success) {
+  //     onLoginSuccess?.(email, password);
+  //   }
+  // };
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">
