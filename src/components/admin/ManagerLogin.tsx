@@ -1,26 +1,26 @@
 "use client";
 import React, { useState } from "react";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useManagerAuth } from "@/hooks/useManagerAuth"; // Adjust path as needed
 
 interface Props {
-  onLoginSuccess?: (email: string, password: string) => void;
+  onLoginSuccess?: () => void;
 }
 
 const ManagerLogin = ({ onLoginSuccess }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const { login } = useManagerAuth();
-  // const router = useRouter();
+  const { login } = useManagerAuth();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   const success = await login(email, password);
-  //   if (success) {
-  //     onLoginSuccess?.(email, password);
-  //   }
-  // };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await login(email, password);
+    if (success) {
+      onLoginSuccess?.();
+    }
+  };
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">
