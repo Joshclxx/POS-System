@@ -47,7 +47,8 @@ const Shift = () => {
     }
   }, [loggedIn, userRole, router]);
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (email: string, password: string) => {
+    login(email, password);
     setIsManagerVerified(true);
   };
 
@@ -125,7 +126,7 @@ const Shift = () => {
     }
   };
 
-  // try to remove managers login
+  // MANAGER VERIFICATION LOGIN
   if (!isManagerVerified && !isShiftActive) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
