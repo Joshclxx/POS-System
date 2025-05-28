@@ -13,18 +13,21 @@ import { useUserStore } from "@/hooks/useUserSession";
 import { GET_ALL_USERS } from "./graphql/query";
 import { useQuery } from "@apollo/client";
 
-
 export default function Home() {
   const [activeKey, setActiveKey] = useState("espresso");
   const [isPaying, setIsPaying] = useState(false);
   const [amountType, setAmountType] = useState("");
   const [total, setTotal] = useState(0);
-  const [hydrated, setHydrated] = useState(false);
+  // const [hydrated, setHydrated] = useState(false);
   // const [loading, setLoading] = useState(true);
-  const { userRole, loggedIn } = useUserStore();
-  const {data} = useQuery(GET_ALL_USERS)
+  const { userRole, loggedIn, hasHydrated } = useUserStore();
+  const { loading, data } = useQuery(GET_ALL_USERS);
   // .getState --> useUserStore.getState();
   const router = useRouter();
+
+  console.log("Hydrated:", hasHydrated);
+  console.log("Logged In:", loggedIn);
+  console.log("Role:", userRole);
 
   // useEffect(() => {
   //   if (typeof window !== "undefined") {
@@ -54,23 +57,36 @@ export default function Home() {
   // }
 
   // Wait for Zustand to hydrate from localStorage
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
+  // useEffect(() => {
+  //   setHydrated(true);
+  // }, []);
 
   // Redirect only after Zustand state is hydrated
-  useEffect(() => {
-    if (!hydrated) return;
+  // useEffect(() => {
+  //   if (!hydrated) return;
 
-    if(!data || !data.getAllUsers) {
-      useUserStore.getState().logout();
-      router.replace("/login?redirect=/");
-    }
+  //   if(!data || !data.getAllUsers) {
+  //     useUserStore.getState().logout();
+  //     router.replace("/login?redirect=/");
+  //   }
+
+  //   if (!loggedIn || userRole !== "cashier") {
+  //     router.replace("/login?redirect=/");
+  //   }
+  // }, [hydrated, loggedIn, userRole, router]);
+
+  useEffect(() => {
+    if (!hasHydrated) return;
+
+    // if (!data || !data.getAllUsers) {
+    //   useUserStore.getState().logout();
+    //   router.replace("/login?redirect=/");
+    // }
 
     if (!loggedIn || userRole !== "cashier") {
       router.replace("/login?redirect=/");
     }
-  }, [hydrated, loggedIn, userRole, router]);
+  }, [hasHydrated, loggedIn, userRole, router, data]);
 
   const handleConfirmPayment = () => {
     useOrderStore.getState().clearProducts();
@@ -78,7 +94,7 @@ export default function Home() {
   };
 
   // Show loading until hydration is done
-  if (!hydrated) {
+  if (!hasHydrated) {
     return <div>Loading...</div>;
   }
 
