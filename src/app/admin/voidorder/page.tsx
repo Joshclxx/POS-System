@@ -280,22 +280,12 @@ const VoidOrder = () => {
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
       <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
-      <div className="absolute bottom-[200px] right-4">
-        <Button
-          variant="universal"
-          onClick={() => {
-            logout();
-            router.replace("/");
-          }}
-          className="w-[140px] h-auto bg-colorBlue text-tertiary rounded-full p-4 text-lg font-regular shadow-md hover:opacity-90 transition"
-        >
-          Logout
-        </Button>
-      </div>
 
       <div className="grid grid-cols-12 mt-4">
-        <div className="container bg-colorDirtyWhite w-[1280px] h-[700px] flex flex-row p-2.5 rounded-xl shadow">
-          <div className="order-history-panel flex flex-col basis-full h-[600px]">
+        {/* <div className="container bg-colorDirtyWhite w-[1280px] h-[700px] flex flex-row p-2.5 rounded-xl shadow"> */}
+        <div className="container bg-colorDirtyWhite w-[1280px] min-h-[700px] p-2.5 rounded-xl shadow flex flex-col">
+          {/* <div className="order-history-panel flex flex-col basis-full h-[600px]"> */}
+          <div className="order-history-panel flex flex-col basis-full h-full">
             <div className="heading flex h-[52px] items-center bg-primary border rounded-lg mb-1.5 shadow-sm px-4">
               <p className="text-colorDirtyWhite font-bold text-2xl">
                 VOID ORDER
@@ -424,6 +414,18 @@ const VoidOrder = () => {
                 </div>
               </div>
             )}
+          </div>
+          <div className="pt-4 px-2 mt-auto flex justify-end">
+            <Button
+              variant="universal"
+              onClick={() => {
+                logout();
+                router.replace("/");
+              }}
+              className="w-[140px] h-auto bg-colorBlue text-tertiary rounded-full p-4 text-lg font-regular shadow-md hover:opacity-90 transition"
+            >
+              Logout
+            </Button>
           </div>
         </div>
       </div>
