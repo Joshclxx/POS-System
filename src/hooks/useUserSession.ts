@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { StateCreator } from "zustand";
 
 // type UserStore = {
 //   userId: string | null;
@@ -75,7 +76,7 @@ type UserStore = {
   logout: () => void;
 };
 
-let _set: any;
+let _set: Parameters<StateCreator<UserStore>>[0];
 
 export const useUserStore = create<UserStore>()(
   persist(
