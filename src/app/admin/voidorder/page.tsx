@@ -1,15 +1,5 @@
-// import VoidOrder from "@/components/admin/voidorder/VoidOrder";
-// import React from "react";
-
-// const page = () => {
-//   return (
-//     <div>
-//       <VoidOrder />
-//     </div>
-//   );
-// };
-
-// export default page;
+// This component allows verified managers to void or revert voided orders.
+// Managers can search orders by ID and filter by date range. Once voided, orders can only be reverted during the session.
 
 "use client";
 
@@ -25,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useShiftStore } from "@/hooks/useShiftStore";
 import Button from "@/components/Button";
 
+// Define order data types
 type OrderRawData = {
   id: number;
   items: {
@@ -50,6 +41,7 @@ type Orders = {
   createdAt: string;
 };
 
+// Modal to confirm voiding an order
 const ConfirmationModal = ({
   onConfirm,
   onCancel,
@@ -72,7 +64,7 @@ const ConfirmationModal = ({
           <span className="font-semibold">Important:</span>
           <br />
           Once you void this order, it can only be reverted here. If you
-          navigate away from this page, you wont be able to undo the action.
+          navigate away from this page, you won’t be able to undo the action.
         </p>
         <div className="flex justify-end gap-2 mt-6">
           <button
@@ -94,47 +86,33 @@ const ConfirmationModal = ({
 };
 
 const VoidOrder = () => {
+  // States for search, selection, filtering, and login
   const [searchId, setSearchId] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Orders | null>(null);
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
   const [previousStatus, setPreviousStatus] = useState<
     Record<number, "queue" | "completed" | "voided">
   >({});
-
-  const [updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
-  const [orders, setOrders] = useState<Orders[]>([]);
-  const { data: orderData, refetch } = useQuery(GET_ALL_ORDERS);
-  const { recordVoidRefund } = useShiftStore();
-
   const [startDate, setStartDate] = useState<string>();
   const [endDate, setEndDate] = useState<string>();
+  const [orders, setOrders] = useState<Orders[]>([]);
 
+  // GraphQL & store hooks
+  const [updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
+  const { data: orderData, refetch } = useQuery(GET_ALL_ORDERS);
+  const { recordVoidRefund } = useShiftStore();
   const router = useRouter();
 
-  // MANAGERS LOGIN
-  // const { isVerified, loading, login, logout } = useManagerAuth();
-  // console.log("Auth state ->", { isVerified, loading });
-
-  //  login, ---> removed for a while
+  // Manager login check
+  // login, ---> removed for a while
   const { logout } = useManagerAuth();
   const [isManagerVerified, setIsManagerVerified] = useState(false);
-
-  // const handleConfirm = () => {
-  //   toast.success("Cash Picked", { id: "notif-message" });
-  //   router.push("/");
-  //   logout();
-  // };
-
-  // const handleLoginSuccess = (email: string, password: string) => {
-  //   localStorage.setItem("userEmail", email);
-  //   login(email, password);
-  // };
 
   const handleLoginSuccess = () => {
     setIsManagerVerified(true);
   };
 
-  //LOAD THE ORDERS DATA
+  // Transform raw order data into usable format
   useEffect(() => {
     if (orderData?.getAllOrders) {
       const ordersFormat = orderData.getAllOrders.map((order: OrderRawData) => {
@@ -157,10 +135,9 @@ const VoidOrder = () => {
     }
   }, [orderData]);
 
-  //VOID ORDER
+  // Void selected order and record refund
   const voidOrder = async (orderId: number) => {
     const orderToVoid = orders.find((order) => order.id === orderId);
-
     if (!orderToVoid) {
       console.log(`Order with Id ${orderId} not found.`);
       return;
@@ -169,31 +146,26 @@ const VoidOrder = () => {
     try {
       setPreviousStatus((prev) => ({
         ...prev,
-        [orderId]: orderToVoid?.status,
+        [orderId]: orderToVoid.status,
       }));
 
       await updateOrderStatus({
         variables: {
-          data: {
-            id: orderToVoid?.id,
-            status: "voided",
-          },
+          data: { id: orderId, status: "voided" },
         },
       });
 
       recordVoidRefund(orderToVoid.total);
-
       refetch();
     } catch (error) {
-      console.error(error); //simple error for
+      console.error(error);
     }
     setIsConfirmationVisible(false);
   };
 
-  //REVERT ORDER
+  // Revert voided order to previous status
   const revertOrder = (orderId: number) => {
     const statusToRevert = previousStatus[orderId];
-
     if (!statusToRevert) {
       toast.error(`Revert failed: Order #${orderId}’s status has expired.`, {
         id: "notif-message",
@@ -205,10 +177,7 @@ const VoidOrder = () => {
     try {
       updateOrderStatus({
         variables: {
-          data: {
-            id: orderId,
-            status: statusToRevert,
-          },
+          data: { id: orderId, status: statusToRevert },
         },
       });
       toast.success(`Successfully reverted order #${orderId}.`, {
@@ -220,6 +189,7 @@ const VoidOrder = () => {
     }
   };
 
+  // Filter orders by ID and date range
   const filteredOrders = orders.filter((order) => {
     const matchesId = order.id.toString().includes(searchId);
     const orderDate = new Date(order.createdAt);
@@ -234,14 +204,12 @@ const VoidOrder = () => {
 
   const handleVoidClick = () => {
     if (!selectedOrder) return;
-
     if (selectedOrder.status === "voided") {
       toast.error(`Order #${selectedOrder.id} is already voided.`, {
         id: "notif-message",
       });
       return;
     }
-
     setIsConfirmationVisible(true);
   };
 
@@ -254,15 +222,13 @@ const VoidOrder = () => {
       : itemName;
   };
 
-  // if (!isVerified) {
-  //   return (
-  //     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
-  //       <Toaster />
-  //       <ManagerLogin onLoginSuccess={handleLoginSuccess} />
-  //     </SectionContainer>
-  //   );
-  // }
+  // Capitalize status label
+  const capitalized = (str: string) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
 
+  // If manager not verified, show login screen
   if (!isManagerVerified) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
@@ -272,19 +238,14 @@ const VoidOrder = () => {
     );
   }
 
-  const capitalized = (str: string) => {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  };
-
+  // Main UI: Void Order Panel
   return (
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
       <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
 
       <div className="grid grid-cols-12 mt-4">
-        {/* <div className="container bg-colorDirtyWhite w-[1280px] h-[700px] flex flex-row p-2.5 rounded-xl shadow"> */}
         <div className="container bg-colorDirtyWhite w-[1280px] min-h-[700px] p-2.5 rounded-xl shadow flex flex-col">
-          {/* <div className="order-history-panel flex flex-col basis-full h-[600px]"> */}
+          {/* Header */}
           <div className="order-history-panel flex flex-col basis-full h-full">
             <div className="heading flex h-[52px] items-center bg-primary border rounded-lg mb-1.5 shadow-sm px-4">
               <p className="text-colorDirtyWhite font-bold text-2xl">
@@ -292,6 +253,7 @@ const VoidOrder = () => {
               </p>
             </div>
 
+            {/* Search Filters */}
             <div className="grid grid-cols-9 gap-4">
               <div className="col-span-5 mt-2">
                 <input
@@ -322,6 +284,7 @@ const VoidOrder = () => {
               </div>
             </div>
 
+            {/* Orders Table */}
             <div className="flex-1 overflow-y-auto hide-scrollbar mt-1.5 px-2.5">
               <table className="w-full table-auto border-separate border-spacing-0 shadow-md">
                 <thead className="bg-secondaryGray text-primary text-left sticky top-0 z-20">
@@ -362,6 +325,7 @@ const VoidOrder = () => {
               </table>
             </div>
 
+            {/* Order Detail Modal */}
             {selectedOrder && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-secondaryGray p-6 rounded-2xl shadow-xl w-[400px]">
@@ -415,6 +379,8 @@ const VoidOrder = () => {
               </div>
             )}
           </div>
+
+          {/* Logout Button */}
           <div className="pt-4 px-2 mt-auto flex justify-end">
             <Button
               variant="universal"
@@ -430,6 +396,7 @@ const VoidOrder = () => {
         </div>
       </div>
 
+      {/* Confirmation Modal for Voiding */}
       {isConfirmationVisible && selectedOrder && (
         <ConfirmationModal
           orderId={selectedOrder.id}
