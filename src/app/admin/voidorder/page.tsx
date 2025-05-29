@@ -285,7 +285,7 @@ const VoidOrder = () => {
             </div>
 
             {/* Orders Table */}
-            <div className="flex-1 overflow-y-auto hide-scrollbar mt-1.5 px-2.5">
+            <div className="mt-1.5 px-2.5 h-[650px] overflow-y-auto hide-scrollbar">
               <table className="w-full table-auto border-separate border-spacing-0 shadow-md">
                 <thead className="bg-secondaryGray text-primary text-left sticky top-0 z-20">
                   <tr>

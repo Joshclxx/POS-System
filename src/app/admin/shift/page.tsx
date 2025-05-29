@@ -181,7 +181,9 @@ const Shift = () => {
                 />
               </div>
               <div>
-                <label className="block mb-1">POS Cash Total</label>
+                <label className="block mb-1">
+                  POS Cash Total (Punched Items)
+                </label>
                 <input
                   type="number"
                   readOnly
@@ -212,7 +214,7 @@ const Shift = () => {
 
               <div>
                 <label className="block mb-1 font-semibold">
-                  POS Expected Cash Amount
+                  POS Total Sales
                   {difference > 0 && (
                     <span className="ml-2 text-green-600">
                       (Over ₱{Math.abs(difference).toFixed(2)})
