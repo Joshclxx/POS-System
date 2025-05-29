@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { useManagerAuth } from "@/hooks/useManagerAuth"; // Adjust path as needed
 
 interface Props {
-  onLoginSuccess?: () => void;
+  onLoginSuccess: (email: string, password: string) => void;
 }
 
 const ManagerLogin = ({ onLoginSuccess }: Props) => {
@@ -22,7 +22,7 @@ const ManagerLogin = ({ onLoginSuccess }: Props) => {
     e.preventDefault();
     const success = await login(email, password);
     if (success) {
-      onLoginSuccess?.();
+      onLoginSuccess(email, password);
     }
   };
 
