@@ -1,3 +1,8 @@
+// SectionContainer provides a consistent layout structure with
+// customizable background and container styles.
+// It helps maintain uniform spacing and alignment across sections,
+// making it easier to manage page layout and content organization.
+
 import React from "react";
 import classNames from "classnames";
 

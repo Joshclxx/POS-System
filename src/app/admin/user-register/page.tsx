@@ -1,15 +1,5 @@
-// import React from "react";
-// import UserRegister from "@/components/admin/user-register/UserRegister";
-
-// const page = () => {
-//   return (
-//     <div>
-//       <UserRegister />
-//     </div>
-//   );
-// };
-
-// export default page;
+// This component allows registering, updating, and deleting users (Cashier/Manager).
+// It displays a form on the left for input and a user list on the right. Clicking a user opens a modal for edit/delete actions.
 
 "use client";
 
@@ -18,16 +8,13 @@ import SectionContainer from "@/components/SectionContainer";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
 import { GET_ALL_USERS } from "@/app/graphql/query";
-import { CREATE_USER } from "@/app/graphql/mutations";
+import { CREATE_USER, UPDATE_USER, DELETE_USER } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
-import { DELETE_USER } from "@/app/graphql/mutations";
 import { capitalize } from "@/app/utils/capitalized";
-
-import { UPDATE_USER } from "@/app/graphql/mutations";
 import { useUserStore } from "@/hooks/useUserSession";
 
-// Initial form state
+// Default initial form values
 const initialForm = {
   id: "",
   firstname: "",
@@ -44,6 +31,7 @@ const initialForm = {
 type User = typeof initialForm;
 
 const UserRegister = () => {
+  // States for form, user list, modal visibility, and error handling
   const [form, setForm] = useState<User>(initialForm);
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState("");
@@ -53,24 +41,28 @@ const UserRegister = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // Apollo client hooks and router
   const router = useRouter();
   const [createUser] = useMutation(CREATE_USER);
   const [deleteUser] = useMutation(DELETE_USER);
-  const { data: usersData, refetch } = useQuery(GET_ALL_USERS);
   const [updateUser] = useMutation(UPDATE_USER);
+  const { data: usersData, refetch } = useQuery(GET_ALL_USERS);
 
+  // Fetch users from server
   useEffect(() => {
     if (usersData?.getAllUsers) {
       setUsers(usersData.getAllUsers);
     }
   }, [usersData]);
 
+  // Handle input changes for both text and select fields
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Validate form inputs
   const isFormValid = () => {
     const {
       firstname,
@@ -106,6 +98,7 @@ const UserRegister = () => {
     return true;
   };
 
+  // Register new user
   const handleRegister = async () => {
     if (!isFormValid()) return;
 
@@ -145,12 +138,14 @@ const UserRegister = () => {
     }
   };
 
+  // Reset form state
   const handleReset = () => {
     setForm(initialForm);
     setError("");
     setIsEditing(false);
   };
 
+  // Update existing user
   const handleUpdate = async () => {
     if (!isFormValid()) return;
 
@@ -184,10 +179,10 @@ const UserRegister = () => {
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
       <div className="container bg-colorDirtyWhite w-full h-[914px]">
         <div className="grid grid-cols-12 gap-4 p-4">
-          {/* LEFT FORM PANEL */}
+          {/* LEFT PANEL: User form */}
           <div className="container bg-secondaryGray w-full h-[882px] col-span-4 p-4 flex flex-col justify-between">
             <div className="flex flex-col gap-4">
-              {/* Inputs */}
+              {/* Name fields */}
               {[
                 { name: "firstname", label: "First Name" },
                 { name: "middlename", label: "Middle Name" },
@@ -213,7 +208,7 @@ const UserRegister = () => {
                 </div>
               ))}
 
-              {/* Gender */}
+              {/* Gender select */}
               <div>
                 <p className="text-primary font-semibold">
                   Gender <span className="text-colorRed">*</span>
@@ -232,7 +227,7 @@ const UserRegister = () => {
                 </select>
               </div>
 
-              {/* Role */}
+              {/* Role select */}
               <div>
                 <p className="text-primary font-semibold">
                   Position <span className="text-colorRed">*</span>
@@ -250,7 +245,7 @@ const UserRegister = () => {
                 </select>
               </div>
 
-              {/* Email */}
+              {/* Email field */}
               <div>
                 <p className="text-primary font-semibold">
                   Email <span className="text-colorRed">*</span>
@@ -266,7 +261,7 @@ const UserRegister = () => {
                 />
               </div>
 
-              {/* Password */}
+              {/* Password & Re-type */}
               {["password", "retypePassword"].map((name) => (
                 <div key={name}>
                   <p className="text-primary font-semibold">
@@ -288,6 +283,7 @@ const UserRegister = () => {
                 </div>
               ))}
 
+              {/* Show password toggle */}
               <div className="flex items-center gap-2 mt-[-8px]">
                 <input
                   type="checkbox"
@@ -304,6 +300,7 @@ const UserRegister = () => {
               {error && <p className="text-colorRed text-sm">{error}</p>}
             </div>
 
+            {/* Form action buttons */}
             <div className="flex gap-4 pt-6">
               <Button
                 variant="universal"
@@ -322,7 +319,7 @@ const UserRegister = () => {
             </div>
           </div>
 
-          {/* RIGHT TABLE PANEL */}
+          {/* RIGHT PANEL: User table */}
           <div className="container bg-secondaryGray w-full h-[882px] col-span-8 p-4 overflow-auto">
             <div className="flex justify-between">
               <h2 className="text-lg font-bold text-primary mb-4">
@@ -339,6 +336,8 @@ const UserRegister = () => {
                 Logout
               </Button>
             </div>
+
+            {/* User data table */}
             <table className="min-w-full table-auto text-primary rounded-md overflow-hidden">
               <thead className="bg-primaryGray">
                 <tr>
@@ -402,7 +401,7 @@ const UserRegister = () => {
           </div>
         </div>
 
-        {/* OVERLAY MODAL */}
+        {/* MODAL: Overlay with Close, Edit, Delete */}
         {showOverlay && selectedUser && (
           <div className="fixed inset-0 bg-primary/25 flex items-center justify-center z-50">
             <div className="bg-secondary p-6 rounded-lg shadow-lg w-[300px]">
@@ -412,18 +411,18 @@ const UserRegister = () => {
               <div className="flex justify-between gap-2">
                 <Button
                   onClick={() => setShowOverlay(false)}
-                  variant={"universal"}
-                  className=" text-tertiary p-4 rounded-md "
+                  variant="universal"
+                  className="text-tertiary p-4 rounded-md"
                 >
                   Close
                 </Button>
                 <Button
-                  onClick={async () => {
+                  onClick={() => {
                     setForm(selectedUser);
                     setIsEditing(true);
                     setShowOverlay(false);
                   }}
-                  variant={"universal"}
+                  variant="universal"
                   className="container text-tertiary p-4 rounded-md bg-colorGreen"
                 >
                   Edit
@@ -443,6 +442,7 @@ const UserRegister = () => {
           </div>
         )}
 
+        {/* MODAL: Confirm delete user */}
         {showDeleteConfirm && selectedUser && (
           <div className="fixed inset-0 bg-primary/25 flex items-center justify-center z-50">
             <div className="bg-secondary p-6 rounded-lg shadow-lg w-[300px]">
@@ -460,9 +460,7 @@ const UserRegister = () => {
                 <Button
                   onClick={async () => {
                     try {
-                      await deleteUser({
-                        variables: { id: selectedUser.id },
-                      });
+                      await deleteUser({ variables: { id: selectedUser.id } });
                       await refetch();
                       setSelectedUser(null);
                       setShowDeleteConfirm(false);

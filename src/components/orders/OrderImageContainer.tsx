@@ -1,3 +1,7 @@
+// ImageContainer is a reusable component designed for simplicity and flexibility.
+// It can be easily imported and integrated into other components,
+// allowing customization through props for dynamic rendering and consistent styling.
+
 "use client";
 
 import Image from "next/image";

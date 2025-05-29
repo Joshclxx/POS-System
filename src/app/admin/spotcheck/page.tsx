@@ -1,15 +1,5 @@
-// import Spotcheck from "@/components/admin/spotcheck/Spotcheck";
-// import React from "react";
-
-// const page = () => {
-//   return (
-//     <div>
-//       <Spotcheck />
-//     </div>
-//   );
-// };
-
-// export default page;
+// This component allows a verified manager to perform a spotcheck by inputting cash counts for various denominations,
+// calculating the total, comparing it against expected cash, submitting it to the server, and viewing history records.
 
 "use client";
 
@@ -27,8 +17,11 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@apollo/client";
 import { CREATE_SPOTCHECK } from "@/app/graphql/mutations";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
+
+// Define available denominations
 const denominations = [1, 5, 10, 20, 50, 100, 200, 500, 1000];
 
+// Data structure for spotcheck table entries
 type SpotcheckEntry = {
   id: number;
   employee: string;
@@ -38,6 +31,7 @@ type SpotcheckEntry = {
   difference: number;
 };
 
+// GraphQL response data shape
 type RawSpotCheckData = {
   id: number;
   user: {
@@ -48,14 +42,15 @@ type RawSpotCheckData = {
   createdAt: string;
 };
 
-//testing
 const Spotcheck = () => {
+  // Fetch expected cash values from global shift store
   const { startingCash, totalSales, totalPicked } = useShiftStore();
   const expectedCash = startingCash + totalSales - totalPicked;
+
+  // Local states for counts, input errors, verification, etc.
   const [counts, setCounts] = useState<string[]>(
     Array(denominations.length).fill("")
   );
-  // const [userEmail, setUserEmail] = useState(""); ---> removed for a while
   const { setShowDrawer } = useGlobal();
   const [history, setHistory] = useState<SpotcheckEntry[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,19 +59,18 @@ const Spotcheck = () => {
   const [selectedDifference, setSelectedDifference] = useState<number | null>(
     null
   );
-  // const { isVerified, loading, login, logout } = useManagerAuth();
-  // console.log("Auth state ->", { isVerified, loading });
 
   // login, ---> removed for a while
   const { logout } = useManagerAuth();
   const [isManagerVerified, setIsManagerVerified] = useState(false);
 
+  // GraphQL hooks for fetching and submitting spotcheck data
   const { data, refetch } = useQuery(FETCH_SPOTCHECK_HISTORY);
   const [createSpotCheck] = useMutation(CREATE_SPOTCHECK);
   const router = useRouter();
 
+  // On data load, format and save history
   useEffect(() => {
-    console.log("Fetched history data", data);
     if (!data) return;
 
     if (data.getSpotCheckHistory) {
@@ -90,16 +84,11 @@ const Spotcheck = () => {
           difference: data.actualCash - data.currentCash,
         })
       );
-
       setHistory(formattedHistory);
-      // setShowDrawer(true); not needed for now it can cause bug
     }
-
-    // setUserEmail(localStorage.getItem("userEmail") || "Unknown");
-    // const saved = localStorage.getItem("spotcheckHistory");
-    // if (saved) setHistory(JSON.parse(saved));
   }, [setShowDrawer, data]);
 
+  // Compute total cash from counts
   const total = useMemo(
     () =>
       denominations.reduce(
@@ -109,6 +98,7 @@ const Spotcheck = () => {
     [counts]
   );
 
+  // Submit spotcheck and update history
   const handleConfirm = async () => {
     if (counts.some((c) => c === "")) {
       setInputError(true);
@@ -127,27 +117,15 @@ const Spotcheck = () => {
       });
 
       refetch();
-      // setSelectedRowId(id);
       setSelectedDifference(total - expectedCash);
       setShowDrawer(true);
       setInputError(false);
     } catch (error) {
       handleGraphQLError(error);
     }
-    // const id = 3000 + history.length;
-    // const entry: SpotcheckEntry = {
-    //   id,
-    //   employee: userEmail,
-    //   actual: total,
-    //   pos: expectedCash,
-    //   timestamp: new Date().toLocaleString(),
-    //   difference: total - expectedCash,
-    // };
-    // const updated = [...history, entry];
-    // setHistory(updated);
-    // localStorage.setItem("spotcheckHistory", JSON.stringify(updated));
   };
 
+  // Filter history table based on search input
   const filteredHistory = useMemo(
     () =>
       !searchQuery
@@ -155,6 +133,8 @@ const Spotcheck = () => {
         : history.filter((e) => e.id.toString().includes(searchQuery)),
     [history, searchQuery]
   );
+
+  // Update table selection based on search results
   useEffect(() => {
     if (filteredHistory.length) {
       const latest = filteredHistory[filteredHistory.length - 1];
@@ -166,46 +146,29 @@ const Spotcheck = () => {
     }
   }, [filteredHistory]);
 
+  // Update count for a specific denomination
   function handleInputChange(value: string, index: number): void {
-    // Allow only numeric input
     if (!/^\d*$/.test(value)) return;
     const updatedCounts = [...counts];
     updatedCounts[index] = value;
     setCounts(updatedCounts);
-    // Clear error state if any field now has a value
     if (inputError && value !== "") {
       setInputError(false);
     }
   }
 
+  // Reset all inputs
   function handleReset(): void {
     setCounts(Array(denominations.length).fill(""));
     setInputError(false);
   }
 
-  // const handleLoginSuccess = (email: string, password: string) => {
-  //   console.log("Logging in:", email);
-  //   setUserEmail(email);
-  //   login(email, password);
-  //   // localStorage.setItem("userEmail", email);
-  //   // login(email, password);
-  // };
-
+  // Callback to mark manager as verified after login
   const handleLoginSuccess = () => {
     setIsManagerVerified(true);
   };
 
-  // if (loading) return null;
-
-  // if (!isVerified) {
-  //   return (
-  //     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
-  //       <Toaster />
-  //       <ManagerLogin onLoginSuccess={handleLoginSuccess} />
-  //     </SectionContainer>
-  //   );
-  // }
-
+  // Show login page if manager not verified
   if (!isManagerVerified) {
     return (
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
@@ -217,11 +180,12 @@ const Spotcheck = () => {
 
   return (
     <>
+      {/* Spotcheck Main UI */}
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
         <Toaster />
         <div className="grid grid-cols-12 mt-4">
           <div className="bg-colorDirtyWhite w-[1280px] h-[700px] relative">
-            {/* TITLE */}
+            {/* Page Title & Action Buttons */}
             <div className="relative flex items-center justify-between w-full max-w-[1280px] px-6 mt-[20px]">
               <div className="absolute left-1/2 transform -translate-x-1/2">
                 <div className="flex items-center justify-center w-[414px] h-[52px] bg-secondary rounded-lg">
@@ -232,12 +196,12 @@ const Spotcheck = () => {
               </div>
 
               <div className="w-[414px]" />
-              {/* HISTORY and LOGOUT BUTTON */}
+              {/* History and Logout */}
               <div className="flex justify-between gap-4">
                 <Button
                   variant="universal"
                   onClick={() => setShowDrawer(true)}
-                  className="w-[172px] h-[44px] bg-colorBlue text-tertiary rounded-3xl text-[24px] font-regular ml-auto"
+                  className="w-[172px] h-[44px] bg-colorBlue text-tertiary rounded-3xl text-[24px]"
                 >
                   History
                 </Button>
@@ -250,13 +214,14 @@ const Spotcheck = () => {
                       id: "notif-message",
                     });
                   }}
-                  className="w-[172px] h-[44px] bg-colorBlue text-tertiary rounded-3xl text-[24px] font-regular ml-auto"
+                  className="w-[172px] h-[44px] bg-colorBlue text-tertiary rounded-3xl text-[24px]"
                 >
                   Logout
                 </Button>
               </div>
             </div>
-            {/* AMOUNT DISPLAY */}
+
+            {/* Amount Display */}
             <div className="flex items-center justify-center container border-1 border-primary bg-tertiary w-[610px] h-[72px] rounded-lg mx-auto mt-[20px]">
               <div className="flex justify-between items-center w-full px-4">
                 <p className="text-left text-primary font-semibold text-[24px]">
@@ -270,7 +235,7 @@ const Spotcheck = () => {
               </div>
             </div>
 
-            {/* INPUTS */}
+            {/* Denomination Inputs */}
             <div className="grid grid-cols-3 gap-4 w-full px-3 mt-9">
               {denominations.map((item, index) => (
                 <div
@@ -293,24 +258,27 @@ const Spotcheck = () => {
                 </div>
               ))}
             </div>
+
+            {/* Error message for empty inputs */}
             {inputError && (
               <div className="text-center text-colorRed italic mt-2">
                 Please fill in all fields before confirming.
               </div>
             )}
-            {/* RESET & CONFIRM BUTTON */}
+
+            {/* Reset & Confirm Buttons */}
             <div className="flex gap-4 absolute bottom-4 right-4">
               <Button
                 variant="universal"
                 onClick={handleReset}
-                className="w-[172px] h-[44px] bg-colorRed text-tertiary rounded-3xl text-[24px] font-regular"
+                className="w-[172px] h-[44px] bg-colorRed text-tertiary rounded-3xl text-[24px]"
               >
                 Reset
               </Button>
               <Button
                 variant="universal"
                 onClick={handleConfirm}
-                className="w-[172px] h-[44px] bg-colorGreen text-tertiary rounded-3xl text-[24px] font-regular"
+                className="w-[172px] h-[44px] bg-colorGreen text-tertiary rounded-3xl text-[24px]"
               >
                 Confirm
               </Button>
@@ -319,12 +287,13 @@ const Spotcheck = () => {
         </div>
       </SectionContainer>
 
-      {/* SPOTCHECK DRAWER */}
+      {/* Spotcheck History Drawer */}
       <AdminDrawer onClose={() => setShowDrawer(false)}>
         <div
           onClick={(e) => e.stopPropagation()}
           className="container relative bg-primary w-full h-full"
         >
+          {/* Close Drawer Button */}
           <button
             onClick={() => setShowDrawer(false)}
             className="absolute top-4 right-4 text-tertiary text-xl font-bold bg-colorRed w-[36px] h-[36px] rounded-full"
@@ -332,7 +301,7 @@ const Spotcheck = () => {
             X
           </button>
 
-          {/* SEARCH INPUT */}
+          {/* Search Spotcheck by ID */}
           <div className="p-4">
             <input
               type="text"
@@ -343,7 +312,7 @@ const Spotcheck = () => {
             />
           </div>
 
-          {/* HISTORY TABLE */}
+          {/* Spotcheck History Table */}
           <div
             className="px-4 overflow-y-auto hide-scrollbar"
             style={{ maxHeight: "50vh" }}
@@ -385,7 +354,7 @@ const Spotcheck = () => {
             </table>
           </div>
 
-          {/* DIFFERENCE DISPLAY */}
+          {/* Difference Result */}
           {selectedDifference !== null && (
             <div className="px-4">
               <div className="container w-full h-[54px] bg-primaryGray rounded-lg mt-8 flex items-center justify-between px-4">
@@ -406,7 +375,7 @@ const Spotcheck = () => {
                 </div>
               </div>
 
-              {/* AUTO LOGOUT */}
+              {/* Logout After Reviewing Difference */}
               <div className="mt-12">
                 <Button
                   variant="universal"
