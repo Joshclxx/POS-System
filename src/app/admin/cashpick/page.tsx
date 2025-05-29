@@ -30,7 +30,8 @@ const Cashpick = () => {
   // const { isVerified, loading, login, logout } = useManagerAuth();
   // console.log("Auth state ->", { isVerified, loading });
 
-  const { login, logout } = useManagerAuth();
+  // login, ---> removed for a while
+  const { logout } = useManagerAuth();
   const [isManagerVerified, setIsManagerVerified] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>

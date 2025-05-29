@@ -21,7 +21,9 @@ export default function Home() {
   // const [hydrated, setHydrated] = useState(false);
   // const [loading, setLoading] = useState(true);
   const { userRole, loggedIn, hasHydrated } = useUserStore();
-  const { loading, data } = useQuery(GET_ALL_USERS);
+
+  //  loading, ---> removed for a while
+  const { data } = useQuery(GET_ALL_USERS);
   // .getState --> useUserStore.getState();
   const router = useRouter();
 
@@ -77,6 +79,8 @@ export default function Home() {
 
   useEffect(() => {
     if (!hasHydrated) return;
+
+    // COMMENT KO MUNA, ITO REASON NG AUTO LOGOUT PAG NA REFRESH EH...
 
     // if (!data || !data.getAllUsers) {
     //   useUserStore.getState().logout();

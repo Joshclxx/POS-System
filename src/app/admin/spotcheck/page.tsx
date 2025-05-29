@@ -45,7 +45,7 @@ type RawSpotCheckData = {
   };
   currentCash: number;
   actualCash: number;
-  createdAt: String;
+  createdAt: string;
 };
 
 //testing
@@ -55,7 +55,7 @@ const Spotcheck = () => {
   const [counts, setCounts] = useState<string[]>(
     Array(denominations.length).fill("")
   );
-  const [userEmail, setUserEmail] = useState("");
+  // const [userEmail, setUserEmail] = useState(""); ---> removed for a while
   const { setShowDrawer } = useGlobal();
   const [history, setHistory] = useState<SpotcheckEntry[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -67,7 +67,8 @@ const Spotcheck = () => {
   // const { isVerified, loading, login, logout } = useManagerAuth();
   // console.log("Auth state ->", { isVerified, loading });
 
-  const { login, logout } = useManagerAuth();
+  // login, ---> removed for a while
+  const { logout } = useManagerAuth();
   const [isManagerVerified, setIsManagerVerified] = useState(false);
 
   const { data, refetch } = useQuery(FETCH_SPOTCHECK_HISTORY);
