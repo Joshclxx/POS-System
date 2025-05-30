@@ -1,13 +1,7 @@
-//only use for Names
-export const capitalize = (str: string): string => {
-  if (!str) return "";
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
-//use for order type
+//use for order type or products name with space
 export const formatType =(value: string): string  => {
   return value
-  .split("_")
+  .split(" ")
   .map((string) => string.charAt(0).toUpperCase() + string.slice(1))
   .join(" ")
 }

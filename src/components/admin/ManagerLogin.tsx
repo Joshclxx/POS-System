@@ -3,7 +3,6 @@ import React, { useState } from "react";
 
 // removed for a while
 // import { useRouter } from "next/navigation";
-import { useManagerAuth } from "@/hooks/useManagerAuth"; // Adjust path as needed
 
 interface Props {
   onLoginSuccess: (email: string, password: string) => void;
@@ -12,18 +11,14 @@ interface Props {
 const ManagerLogin = ({ onLoginSuccess }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useManagerAuth();
 
   // removed for a while
   // const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await login(email, password);
-    if (success) {
-      onLoginSuccess(email, password);
-    }
+    onLoginSuccess(email, password); //pass this to parent  for validation
   };
 
   return (

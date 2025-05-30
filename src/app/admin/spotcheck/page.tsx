@@ -18,6 +18,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { CREATE_SPOTCHECK } from "@/app/graphql/mutations";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 
+
 // Define available denominations
 const denominations = [1, 5, 10, 20, 50, 100, 200, 500, 1000];
 
@@ -61,7 +62,7 @@ const Spotcheck = () => {
   );
 
   // login, ---> removed for a while
-  const { logout } = useManagerAuth();
+  const { logout, login } = useManagerAuth();
   const [isManagerVerified, setIsManagerVerified] = useState(false);
 
   // GraphQL hooks for fetching and submitting spotcheck data
@@ -164,8 +165,15 @@ const Spotcheck = () => {
   }
 
   // Callback to mark manager as verified after login
-  const handleLoginSuccess = () => {
-    setIsManagerVerified(true);
+  //validates the manager account 
+  const handleLoginSuccess = async (email: string, password: string) => {
+    const loggedInAt = "spotcheck"
+
+    const success = await login(email, password, loggedInAt);
+
+    if (success) {
+      setIsManagerVerified(true);
+    }
   };
 
   // Show login page if manager not verified

@@ -20,7 +20,6 @@
     "@apollo/client": "^3.13.8",
     "@apollo/server": "^4.12.0",
     "@as-integrations/next": "^3.2.0",
-    "@prisma/client": "^6.7.0",
     "@radix-ui/react-checkbox": "^1.1.4",
     "@tailwindcss/postcss": "^4.0.15",
     "classnames": "^2.5.1",
@@ -43,6 +42,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@prisma/client": "^6.8.2",
     "@types/node": "^22.15.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -52,8 +52,10 @@
     "electron-builder": "^26.0.12",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
+    "i": "^0.3.7",
+    "npm": "^11.4.1",
     "postcss": "^8.5.3",
-    "prisma": "^6.7.0",
+    "prisma": "^6.8.2",
     "tailwindcss": "^4.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"

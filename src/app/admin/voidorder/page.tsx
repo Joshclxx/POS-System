@@ -14,6 +14,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useShiftStore } from "@/hooks/useShiftStore";
 import Button from "@/components/Button";
+import { formatType } from "@/app/utils/capitalized";
 
 // Define order data types
 type OrderRawData = {
@@ -105,11 +106,18 @@ const VoidOrder = () => {
 
   // Manager login check
   // login, ---> removed for a while
-  const { logout } = useManagerAuth();
+  const { logout, login } = useManagerAuth();
   const [isManagerVerified, setIsManagerVerified] = useState(false);
 
-  const handleLoginSuccess = () => {
-    setIsManagerVerified(true);
+  //validates the manager account 
+  const handleLoginSuccess = async (email: string, password: string) => {
+    const loggedInAt = "void order"
+
+    const success = await login(email, password, loggedInAt);
+
+    if (success) {
+      setIsManagerVerified(true);
+    }
   };
 
   // Transform raw order data into usable format
@@ -222,12 +230,6 @@ const VoidOrder = () => {
       : itemName;
   };
 
-  // Capitalize status label
-  const capitalized = (str: string) => {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  };
-
   // If manager not verified, show login screen
   if (!isManagerVerified) {
     return (
@@ -318,7 +320,7 @@ const VoidOrder = () => {
                         }).format(order.total)}
                       </td>
                       <td className="px-3 py-3">{order.createdAt}</td>
-                      <td className="px-3 py-3">{capitalized(order.status)}</td>
+                      <td className="px-3 py-3">{formatType(order.status)}</td>
                     </tr>
                   ))}
                 </tbody>

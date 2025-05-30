@@ -56,6 +56,7 @@ export const typeDefs = gql`
   type LoginHistory {
     id: Int!
     userId: ID!
+    loggedInAt: String!
     timeIn: String!
     timeOut: String
   }
@@ -244,6 +245,7 @@ export const typeDefs = gql`
   input loginAndRecordInput {
     email: String!
     password: String!
+    loggedInAt: String!
   }
 
   input EditUserInput {
