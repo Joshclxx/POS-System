@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { LOGIN_SESSION, UPDATE_LOGIN_SESSION } from "@/app/graphql/mutations";
 import { useMutation } from "@apollo/client";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
+import bcrypt from "bcrypt"
 
 type UserData = {
   id: string;
@@ -22,13 +23,15 @@ export function useManagerAuth() {
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, loggedInAt: string) => {
+    const hashedPassword = await bcrypt.hash(password, 10);
     try {
       const { data } = await loginAndRecord({
         variables: {
           data: {
             email,
-            password,
+            hashedPassword,
+            loggedInAt,
           },
         },
       });

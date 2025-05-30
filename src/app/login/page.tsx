@@ -9,6 +9,7 @@ import { useUserStore } from "@/hooks/useUserSession";
 import { LOGIN_SESSION } from "../graphql/mutations";
 import { handleGraphQLError } from "../utils/handleGraphqlError";
 // import { useLogout } from "../utils/handleLogout";
+import bcrypt from "bcrypt"
 
 type UserData = {
   id: string;
@@ -61,12 +62,14 @@ export default function LoginPage() {
       return;
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
     try {
       const { data } = await loginAndRecord({
         variables: {
           data: {
             email: email,
-            password: password,
+            password: hashedPassword,
+            loggedInAt: "login",
           },
         },
       });
@@ -76,7 +79,6 @@ export default function LoginPage() {
         useUserStore
           .getState()
           .setUser(userData.id, userData.role, email, userData.sessionId);
-        // localStorage.setItem("loginTime", new Date().toISOString());
         toast.success("Logged in successfully!", { id: "notif-message" });
         setLoginAttempts(0);
         setIsLocked(false);

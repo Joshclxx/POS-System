@@ -47,9 +47,15 @@ const Shift = () => {
     }
   }, [loggedIn, userRole, router]);
 
-  const handleLoginSuccess = (email: string, password: string) => {
-    login(email, password);
-    setIsManagerVerified(true);
+  //validates the manager account 
+  const handleLoginSuccess = async (email: string, password: string) => {
+    const loggedInAt = "shift"
+
+    const success = await login(email, password, loggedInAt);
+
+    if (success) {
+      setIsManagerVerified(true);
+    }
   };
 
   const posCashTotal = useMemo(

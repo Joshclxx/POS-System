@@ -25,7 +25,7 @@ const Cashpick = () => {
 
   // Auth hook for manager login/logout
   // login, ---> removed for a while
-  const { logout } = useManagerAuth();
+  const { logout, login } = useManagerAuth();
 
   // State to track if the manager is verified
   const [isManagerVerified, setIsManagerVerified] = useState(false);
@@ -56,8 +56,14 @@ const Cashpick = () => {
     : "0.00";
 
   // Callback when manager login is successful
-  const handleLoginSuccess = () => {
-    setIsManagerVerified(true);
+  const handleLoginSuccess = async (email: string, password: string) => {
+    const loggedInAt = "Cashpick"
+
+    const success = await login(email, password, loggedInAt);
+
+    if (success) {
+      setIsManagerVerified(true);
+    }
   };
 
   // If manager is not yet verified, show login screen

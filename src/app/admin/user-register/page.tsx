@@ -11,7 +11,7 @@ import { GET_ALL_USERS } from "@/app/graphql/query";
 import { CREATE_USER, UPDATE_USER, DELETE_USER } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
-import { capitalize } from "@/app/utils/capitalized";
+import { formatType } from "@/app/utils/capitalized";
 import { useUserStore } from "@/hooks/useUserSession";
 
 // Default initial form values
@@ -201,7 +201,7 @@ const UserRegister = () => {
                     type="text"
                     required={!field.optional}
                     placeholder={`e.g ${field.label}`}
-                    value={capitalize(form[field.name as keyof User])}
+                    value={formatType(form[field.name as keyof User])}
                     onChange={handleChange}
                     className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
                   />
@@ -254,7 +254,7 @@ const UserRegister = () => {
                   type="email"
                   name="email"
                   placeholder="e.g joshua@heebrew.employee"
-                  value={capitalize(form.email)}
+                  value={formatType(form.email)}
                   required
                   onChange={handleChange}
                   className="w-full bg-primaryGray border border-primary text-primary rounded-md p-2"
@@ -371,25 +371,25 @@ const UserRegister = () => {
                     }}
                   >
                     <td className="border border-primary px-4 py-2">
-                      {capitalize(user.firstname)}
+                      {formatType(user.firstname)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {capitalize(user.middlename)}
+                      {formatType(user.middlename)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {capitalize(user.lastname)}
+                      {formatType(user.lastname)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {capitalize(user.suffix)}
+                      {formatType(user.suffix)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {capitalize(user.gender)}
+                      {formatType(user.gender)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {capitalize(user.role)}
+                      {formatType(user.role)}
                     </td>
                     <td className="border border-primary px-4 py-2">
-                      {capitalize(user.email)}
+                      {formatType(user.email)}
                     </td>
                     <td className="border border-primary px-4 py-2">
                       ••••••••

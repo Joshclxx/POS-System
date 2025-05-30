@@ -27,7 +27,7 @@ import {
   GET_CATEGORY,
 } from "@/app/graphql/query";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
-import { capitalize } from "@/app/utils/capitalized";
+import { formatType } from "@/app/utils/capitalized";
 import { useLogout } from "@/app/utils/handleLogout";
 
 // import dynamic from "next/dynamic";
@@ -311,7 +311,7 @@ const Product: React.FC = () => {
                   >
                     <div className="flex items-center justify-between bg-secondaryGray p-2 rounded-lg">
                       <span className="menu-title font-bold text-lg">
-                        {capitalize(menuName)}
+                        {formatType(menuName)}
                       </span>
                       <div className="gap-2 flex">
                         <button
@@ -431,10 +431,10 @@ const Product: React.FC = () => {
                             className="border-b hover:bg-secondaryGray/50"
                           >
                             <td className="px-4 py-2">
-                              {capitalize(item.menu)}
+                              {formatType(item.menu)}
                             </td>
                             <td className="px-4 py-2">
-                              {capitalize(item.name)}
+                              {formatType(item.name)}
                             </td>
                             <td className="px-4 py-2">
                               {item.prices.PT.toFixed(2)}
