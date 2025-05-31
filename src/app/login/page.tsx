@@ -9,7 +9,7 @@ import { useUserStore } from "@/hooks/useUserSession";
 import { LOGIN_SESSION } from "../graphql/mutations";
 import { handleGraphQLError } from "../utils/handleGraphqlError";
 // import { useLogout } from "../utils/handleLogout";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs";
 
 type UserData = {
   id: string;
@@ -63,6 +63,7 @@ export default function LoginPage() {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(`Hashed Password: ${hashedPassword}`);
     try {
       const { data } = await loginAndRecord({
         variables: {
