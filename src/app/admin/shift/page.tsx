@@ -13,6 +13,7 @@ import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 import { CREATE_USER_SHIFT, UPDATE_USER_SHIFT } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
 import { FETCH_ALL_USER_SHIFT } from "@/app/graphql/query";
+import bcrypt from "bcryptjs";
 
 const Shift = () => {
   const router = useRouter();
@@ -47,10 +48,9 @@ const Shift = () => {
     }
   }, [loggedIn, userRole, router]);
 
-  //validates the manager account 
+  //validates the manager account
   const handleLoginSuccess = async (email: string, password: string) => {
-    const loggedInAt = "shift"
-
+    const loggedInAt = "shift";
     const success = await login(email, password, loggedInAt);
 
     if (success) {

@@ -1,12 +1,12 @@
 import { GraphQLError } from "graphql";
 import { GraphQLContext } from "@/app/lib/context";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs";
 
 export const loginMutation = {
   Mutation: {
     loginAndRecord: async (
       _: unknown,
-      args: { data: { email: string, password: string, loggedInAt: string} },
+      args: { data: { email: string; password: string; loggedInAt: string } },
       context: GraphQLContext
     ) => {
       const { email, password } = args.data;
@@ -14,7 +14,7 @@ export const loginMutation = {
       const userDataFormat = async () => {
         const user = await context.prisma.user.findUnique({ where: { email } });
 
-        if (!user || !!(await bcrypt.compare(password, user.password ))) {
+        if (!user || !!(await bcrypt.compare(password, user.password))) {
           throw new GraphQLError("Login Denied, Email or Password Incorrect!", {
             extensions: {
               code: "LOGIN_FAILED",
@@ -22,10 +22,15 @@ export const loginMutation = {
           });
         }
 
-        const loggedInAt = args.data.loggedInAt === "login"? user.role === "cashier" ? "cashier session" : "products" : args.data.loggedInAt;
+        const loggedInAt =
+          args.data.loggedInAt === "login"
+            ? user.role === "cashier"
+              ? "cashier session"
+              : "products"
+            : args.data.loggedInAt;
 
         const loginSession = await context.prisma.loginHistory.create({
-          data: { userId: user.id, loggedInAt, timeIn: new Date()},
+          data: { userId: user.id, loggedInAt, timeIn: new Date() },
         });
 
         return {
