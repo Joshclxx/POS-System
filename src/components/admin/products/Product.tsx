@@ -8,7 +8,6 @@ import React from "react";
 import Button from "@/components/Button";
 import { motion, AnimatePresence } from "motion/react";
 import useGlobal from "@/hooks/useGlobal";
-// import toast, { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/hooks/useUserSession";
@@ -30,10 +29,6 @@ import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 import { formatType } from "@/app/utils/capitalized";
 import { useLogout } from "@/app/utils/handleLogout";
 
-// import dynamic from "next/dynamic";
-// import ToasterProvider from "@/components/ToasterProvider";
-
-// Explicit type for menu items
 interface MenuItem {
   id: number;
   name: string;
@@ -45,10 +40,6 @@ interface MenuItem {
   };
 }
 
-// const Toaster = dynamic(
-//   () => import("react-hot-toast").then((mod) => mod.Toaster),
-//   { ssr: false }
-// );
 const Product: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [drawerMode, setDrawerMode] = useState<
@@ -77,7 +68,7 @@ const Product: React.FC = () => {
   const menus = useGlobal((state) => state.menus);
   const menuItems = useGlobal((state) => state.menuItems);
   const { userRole, loggedIn } = useUserStore.getState();
-  const {handleLogout} = useLogout();
+  const { handleLogout } = useLogout();
   const router = useRouter();
 
   useEffect(() => {
@@ -262,13 +253,10 @@ const Product: React.FC = () => {
   if (userRole !== "manager" || !loggedIn) return <div>Loading...</div>;
   return (
     <>
-      {/* Toast container */}
-      {/* <ToasterProvider /> */}
-
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
         <div className="grid grid-cols-12 gap-5 mt-4">
           {/* ADD MENU Section */}
-          <div className="col-span-3 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[700px] relative flex flex-col">
+          <div className="col-span-3 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[914px] relative flex flex-col">
             <div className="bg-primary w-full h-[52px] flex items-center justify-center rounded-lg">
               <div className="flex justify-between w-full items-center px-2">
                 <p className="text-colorDirtyWhite font-bold text-[24px]">
@@ -352,7 +340,7 @@ const Product: React.FC = () => {
           </div>
 
           {/* ADD MENU ITEM SECTION */}
-          <div className="col-span-9 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[700px] relative flex flex-col">
+          <div className="col-span-9 bg-colorDirtyWhite rounded-lg text-primary p-2 h-[914px] relative flex flex-col">
             <div className="bg-primary w-full h-[52px] flex items-center justify-center rounded-lg">
               <div className="flex justify-between w-full items-center px-2">
                 <p className="text-colorDirtyWhite font-bold text-[24px]">

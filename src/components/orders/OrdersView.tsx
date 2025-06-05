@@ -73,6 +73,11 @@ const OrdersView: React.FC<OrdersViewProps> = ({
     }
   };
 
+  const orderTypeLabels: Record<OrderTypeInum, string> = {
+    dine_in: "DINE IN",
+    take_out: "TAKE OUT",
+  };
+
   return (
     <SectionContainer background="mt-1 w-full max-w-[428px] h-[914px]">
       <Toaster position="top-center" />
@@ -124,7 +129,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({
                   className="flex items-center justify-between p-2 bg-colorBlue w-full h-[60px] text-white font-semibold"
                   onClick={() => setIsOpen(!isOpen)}
                 >
-                  <span className="text-lg">{formatType(orderType)}</span>
+                  <span className="text-lg">{orderTypeLabels[orderType]}</span>
                   <Image
                     src="/icon/dropdown.svg"
                     alt="DropDown"
@@ -138,14 +143,14 @@ const OrdersView: React.FC<OrdersViewProps> = ({
                       <button
                         key={option}
                         className={`w-full text-left p-2 text-black hover:bg-gray-200 ${
-                          orderType === (option) ? "font-bold" : ""
+                          orderType === option ? "font-bold" : ""
                         }`}
                         onClick={() => {
                           setOrderType(option);
                           setIsOpen(false);
                         }}
                       >
-                        {option}
+                        {orderTypeLabels[option]}
                       </button>
                     ))}
                   </div>
@@ -156,7 +161,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({
         </motion.div>
       </AnimatePresence>
 
-      <div className="bg-colorDirtyWhite w-full max-w-[428px] h-[600px] mt-1 p-2 overflow-y-auto">
+      <div className="bg-colorDirtyWhite w-full max-w-[428px] h-[760px] mt-1 p-2 overflow-y-auto">
         <div className="bg-primary w-full h-[40px] flex items-center">
           <div className="text-tertiary flex justify-between px-2 w-full">
             <p className="w-1/2">ITEMS</p>
@@ -167,7 +172,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({
 
         <div className="w-full text-left mt-2">
           <p className="text-[16px] font-semibold text-primary px-2">
-            {formatType(orderType)}
+            {orderTypeLabels[orderType]}
           </p>
         </div>
 

@@ -16,8 +16,6 @@ export default function AdminDrawer({ children, onClose }: AdminDrawerProps) {
     <VaulDrawer.Root
       open={showDrawer}
       onOpenChange={(open) => {
-        // When open becomes false, trigger onClose.
-        // (The drawer will only close via the X button.)
         if (!open) {
           onClose();
         }
@@ -26,12 +24,12 @@ export default function AdminDrawer({ children, onClose }: AdminDrawerProps) {
     >
       <VaulDrawer.Portal>
         <VaulDrawer.Overlay
-          className="fixed inset-0 bg-black/40"
+          className="fixed inset-0 bg-black/40 z-40"
           onClick={(e) => e.preventDefault()}
         />
         {showDrawer && (
           <VaulDrawer.Content
-            className="flex flex-col w-full max-w-[1280px] h-screen fixed top-[80px] left-0 outline-none z-50 bg-primary"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1280px] h-[914px] rounded-xl overflow-y-auto z-50 bg-primary p-6 hide-scrollbar"
             onPointerDownOutside={(e) => e.preventDefault()}
             onInteractOutside={(e) => e.preventDefault()}
             onEscapeKeyDown={(e) => e.preventDefault()}

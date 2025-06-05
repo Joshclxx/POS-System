@@ -18,7 +18,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import { CREATE_SPOTCHECK } from "@/app/graphql/mutations";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 
-
 // Define available denominations
 const denominations = [1, 5, 10, 20, 50, 100, 200, 500, 1000];
 
@@ -165,9 +164,9 @@ const Spotcheck = () => {
   }
 
   // Callback to mark manager as verified after login
-  //validates the manager account 
+  //validates the manager account
   const handleLoginSuccess = async (email: string, password: string) => {
-    const loggedInAt = "spotcheck"
+    const loggedInAt = "spotcheck";
 
     const success = await login(email, password, loggedInAt);
 
@@ -192,7 +191,7 @@ const Spotcheck = () => {
       <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
         <Toaster />
         <div className="grid grid-cols-12 mt-4">
-          <div className="bg-colorDirtyWhite w-[1280px] h-[700px] relative">
+          <div className="bg-colorDirtyWhite w-[1280px] h-[914px] relative">
             {/* Page Title & Action Buttons */}
             <div className="relative flex items-center justify-between w-full max-w-[1280px] px-6 mt-[20px]">
               <div className="absolute left-1/2 transform -translate-x-1/2">

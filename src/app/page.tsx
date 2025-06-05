@@ -18,74 +18,16 @@ export default function Home() {
   const [isPaying, setIsPaying] = useState(false);
   const [amountType, setAmountType] = useState("");
   const [total, setTotal] = useState(0);
-  // const [hydrated, setHydrated] = useState(false);
-  // const [loading, setLoading] = useState(true);
   const { userRole, loggedIn, hasHydrated } = useUserStore();
-
-  //  loading, ---> removed for a while
   const { data } = useQuery(GET_ALL_USERS);
-  // .getState --> useUserStore.getState();
   const router = useRouter();
 
   console.log("Hydrated:", hasHydrated);
   console.log("Logged In:", loggedIn);
   console.log("Role:", userRole);
 
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     if (!loggedIn) {
-  //       router.replace("/login?redirect=/");
-  //     } else {
-  //       setLoading(false);
-  //     }
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   if (userRole !== "cashier" || !useUserStore.getState().loggedIn) {
-  //     useUserStore.getState().logout();
-  //     router.push("/login");
-  //   }
-  // }, []);
-
-  // const handleConfirmPayment = () => {
-  //   // useOrderStore.getState().addOrderToQueue(Date.now()); //Connent for now
-  //   useOrderStore.getState().clearProducts();
-  //   setIsPaying(false);
-  // };
-
-  // if (loading) {
-  //   return <div>Loading...</div>; // Show when checking login
-  // }
-
-  // Wait for Zustand to hydrate from localStorage
-  // useEffect(() => {
-  //   setHydrated(true);
-  // }, []);
-
-  // Redirect only after Zustand state is hydrated
-  // useEffect(() => {
-  //   if (!hydrated) return;
-
-  //   if(!data || !data.getAllUsers) {
-  //     useUserStore.getState().logout();
-  //     router.replace("/login?redirect=/");
-  //   }
-
-  //   if (!loggedIn || userRole !== "cashier") {
-  //     router.replace("/login?redirect=/");
-  //   }
-  // }, [hydrated, loggedIn, userRole, router]);
-
   useEffect(() => {
     if (!hasHydrated) return;
-
-    // COMMENT KO MUNA, ITO REASON NG AUTO LOGOUT PAG NA REFRESH EH...
-
-    // if (!data || !data.getAllUsers) {
-    //   useUserStore.getState().logout();
-    //   router.replace("/login?redirect=/");
-    // }
 
     if (!loggedIn || userRole !== "cashier") {
       router.replace("/login?redirect=/");

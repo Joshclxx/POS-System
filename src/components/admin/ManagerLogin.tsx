@@ -1,9 +1,5 @@
 "use client";
 import React, { useState } from "react";
-
-// removed for a while
-// import { useRouter } from "next/navigation";
-
 interface Props {
   onLoginSuccess: (email: string, password: string) => void;
 }
@@ -12,13 +8,11 @@ const ManagerLogin = ({ onLoginSuccess }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // removed for a while
-  // const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLoginSuccess(email, password); //pass this to parent  for validation
+    onLoginSuccess(email, password);
   };
 
   return (

@@ -13,7 +13,7 @@ const OrdersMenuNavBar = ({ activeKey, setActiveKey }: Props) => {
   const { menus } = useGlobal();
 
   return (
-    <nav className="bg-colorDirtyWhite w-[585px] h-[60px] flex items-center mt-[12px]">
+    <nav className="bg-colorDirtyWhite w-[585px] h-[60px] flex items-center mt-3">
       <div className="w-full max-w-[1280px] mx-auto flex items-center px-4">
         <div
           className="overflow-x-auto scroll-smooth thin-scrollbar"

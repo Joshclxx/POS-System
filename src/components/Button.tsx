@@ -35,7 +35,7 @@ const Button = ({
   icon,
   className = "",
   children,
-  isSave, //use this directly so react can recognize 
+  isSave,
   ...props
 }: ButtonProps) => {
   //   BUTTON SWITCH
@@ -84,7 +84,7 @@ const Button = ({
         isActive ? "bg-[#ff8800] text-primary" : "bg-primary text-tertiary"
       }`;
       break;
-    case "btn-size":  
+    case "btn-size":
       className += `relative container w-[22px] h-[22px] text-[12px] font-medium text-center rounded-full transition-colors duration-200 ease-in-out mb-2 flex justify-center items-center ${
         isActive
           ? "bg-colorOrange text-primary font-semibold border-2 border-colorDirtyWhite"

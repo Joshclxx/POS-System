@@ -8,7 +8,6 @@ import toast, { Toaster } from "react-hot-toast";
 import { GET_ALL_ORDERS } from "@/app/graphql/query";
 import { UPDATE_ORDER_STATUS } from "@/app/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
-import { formatType } from "@/app/utils/capitalized";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 
 type OrderRawData = {
@@ -88,8 +87,13 @@ const OrdersQueue = () => {
     }
   };
 
+  const orderTypeLabels: Record<"dine_in" | "take_out", string> = {
+    dine_in: "DINE IN",
+    take_out: "TAKE OUT",
+  };
+
   return (
-    <SectionContainer background="mt-1 w-[235px] h-[700px]">
+    <SectionContainer background="mt-1 w-[235px] h-[914px]">
       <Toaster position="top-center" />
       {/* ORDER QUEUE HEADER */}
       <div className="bg-primary w-full h-[60px] flex items-center justify-center menu-total text-[18px]">
@@ -97,7 +101,7 @@ const OrdersQueue = () => {
       </div>
 
       {/* Order List */}
-      <div className="bg-colorDirtyWhite w-full h-[600px] mt-[4px] p-2 overflow-y-auto">
+      <div className="bg-colorDirtyWhite w-full h-[754px] mt-[4px] p-2 overflow-y-auto">
         <div className="flex flex-col gap-3 text-center">
           {ordersQueue.map((order) => (
             <div
@@ -113,7 +117,7 @@ const OrdersQueue = () => {
             >
               <div className="flex justify-between px-14">
                 <p className="primary-title">{order.id}</p>
-                <p className="primary-title">{formatType(order.type)}</p>
+                <p className="primary-title">{orderTypeLabels[order.type]}</p>
               </div>
 
               {/* Conditionally show items only if this order is selected */}
