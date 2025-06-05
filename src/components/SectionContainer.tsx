@@ -16,12 +16,17 @@ const SectionContainer = ({ background, children, container }: Props) => {
   return (
     <section
       className={classNames(
-        "flex flex-col items-center justify-start",
+        "flex flex-col items-center justify-start ",
         background
       )}
-      style={{ marginTop: "12px" }}
+      style={{ marginTop: "12px " }}
     >
-      <div className={classNames("w-full flex flex-col flex-grow", container)}>
+      <div
+        className={classNames(
+          "w-full max-w-[1280px] flex flex-col flex-grow",
+          container
+        )}
+      >
         {children}
       </div>
     </section>

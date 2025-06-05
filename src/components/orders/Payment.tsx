@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import SectionContainer from "../SectionContainer";
 import { useShiftStore } from "@/hooks/useShiftStore";
 import { useOrderStore } from "@/hooks/useOrder";
-// import { useHistoryStore } from "@/hooks/useOrderHistory";
 import toast, { Toaster } from "react-hot-toast";
 import { CREATE_ORDER } from "@/app/graphql/mutations";
 import { GET_ALL_ORDERS } from "@/app/graphql/query";
@@ -31,10 +30,6 @@ const Payment = ({
   const [finalAmount, setFinalAmount] = useState<number | null>(null);
   const [change, setChange] = useState<number>(0);
   const [okPressed, setOkPressed] = useState(false);
-  // const { addOrder } = useHistoryStore();
-
-  // const { selectedProducts, clearProducts, nextOrderNumber } = useOrderStore();
-
   const selectedProducts = useOrderStore((state) => state.selectedProducts);
   const clearProducts = useOrderStore((state) => state.clearProducts);
   const nextOrderNumber = useOrderStore((state) => state.nextOrderNumber);
@@ -223,23 +218,6 @@ const Payment = ({
                     } catch (error) {
                       handleGraphQLError(error);
                     }
-                    //NOT NEEDED for now
-                    // const orderId = nextOrderNumber;
-                    // const items = selectedProducts.map((item) => ({
-                    //   title: `${item.imageTitle} (${item.size})`,
-                    //   price: item.price[item.size],
-                    //   quantity: item.quantity ?? 1,
-                    // }));
-
-                    // const newOrder = {
-                    //   OrderId: orderId,
-                    //   items,
-                    //   Total: itemAmount,
-                    //   Date: new Date(),
-                    //   Status: "Queued" as const,
-                    // };
-
-                    // addOrder(newOrder);
                   } else {
                     toast.error(
                       `${label} is not yet available. Developer is working on it.`,

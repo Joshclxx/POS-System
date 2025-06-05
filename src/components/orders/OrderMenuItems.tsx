@@ -50,9 +50,9 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
   };
 
   return (
-    <SectionContainer background="mt-[4px] w-[585px] h-[700px]">
+    <SectionContainer background="w-[585px] h-[914px]">
       <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
-      <div className="bg-colorDirtyWhite w-[585px] h-[640px] flex items-start justify-center text-[14px]">
+      <div className="bg-colorDirtyWhite w-[585px] h-[800px] flex items-start justify-center text-[14px]">
         <div className="grid grid-cols-3 gap-4 max-h-[640px] overflow-y-auto w-[585px] mx-auto hide-scrollbar">
           {filteredItems.length === 0 ? (
             <p className="col-span-3 primary-title flex justify-center items-center text-center w-full h-[710px]">
@@ -105,7 +105,3 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
 };
 
 export default OrderMenuItems;
-
-// Make the transaction recorded in Orders history.
-// Make the shift transaction recorded and saved to determine the POS collected CASH. -> Connect it to spotcheck, void order, and close shift.
-// Create a DISCOUNT interface and function, and make it recorded. Fixed discount 20% for senior and pwd.

@@ -109,9 +109,9 @@ const VoidOrder = () => {
   const { logout, login } = useManagerAuth();
   const [isManagerVerified, setIsManagerVerified] = useState(false);
 
-  //validates the manager account 
+  //validates the manager account
   const handleLoginSuccess = async (email: string, password: string) => {
-    const loggedInAt = "void order"
+    const loggedInAt = "void order";
 
     const success = await login(email, password, loggedInAt);
 
@@ -246,7 +246,7 @@ const VoidOrder = () => {
       <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
 
       <div className="grid grid-cols-12 mt-4">
-        <div className="container bg-colorDirtyWhite w-[1280px] min-h-[700px] p-2.5 rounded-xl shadow flex flex-col">
+        <div className="container bg-colorDirtyWhite w-[1280px] min-h-[914px] p-2.5 rounded-xl shadow flex flex-col">
           {/* Header */}
           <div className="order-history-panel flex flex-col basis-full h-full">
             <div className="heading flex h-[52px] items-center bg-primary border rounded-lg mb-1.5 shadow-sm px-4">

@@ -143,7 +143,7 @@ const Shift = () => {
   }
 
   return (
-    <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
+    <SectionContainer background="w-full mx-auto max-w-[1280px] bg-colorDirtyWhite">
       <Toaster />
       <div className="container w-[1280px] h-[914px] p-8">
         {isShiftActive ? (

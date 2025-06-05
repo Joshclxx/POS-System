@@ -1,17 +1,16 @@
 @import "tailwindcss";
-/* @tailwind base;
-/* @tailwind components; */
+
 @tailwind utilities;
 
 :root {
-  --background: #e8f0fa; /*new*/
+  --background: #e8f0fa;
   --foreground: #171717;
 }
 
 /* Custom theme colors */
 @theme {
   --color-*: initial;
-  --color-bgWhite: #eeeeee;
+  --color-bgWhite: #f2f3f4;
   --color-navbar: #bcbbbb;
   --color-primary: #131a15;
   --color-secondary: #032124;
@@ -146,8 +145,8 @@ button.bg-green-600:hover {
 
 /* Hide scrollbar for IE, Edge, and Firefox */
 .hide-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Thin scrollbar styling for modern browsers */
@@ -209,7 +208,7 @@ button.bg-green-600:hover {
     transparent 90%
   );
   background-size: 200% auto;
-  z-index: 0; /* behind everything */
+  z-index: 0;
   animation: border-run 2s linear infinite;
   opacity: 0;
   pointer-events: none;
@@ -221,7 +220,7 @@ button.bg-green-600:hover {
 
 .login-form * {
   position: relative;
-  z-index: 1; /* above the border effect */
+  z-index: 1;
 }
 
 @keyframes border-run {

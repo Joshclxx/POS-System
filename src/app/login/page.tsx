@@ -8,7 +8,6 @@ import { useMutation } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
 import { LOGIN_SESSION } from "../graphql/mutations";
 import { handleGraphQLError } from "../utils/handleGraphqlError";
-// import { useLogout } from "../utils/handleLogout";
 import bcrypt from "bcryptjs";
 
 type UserData = {
@@ -56,7 +55,7 @@ export default function LoginPage() {
       setLoginAttempts(0);
       setIsLocked(false);
       useUserStore.getState().setUser("testingId", "admin", email, null);
-      localStorage.setItem("loginTime", new Date().toISOString());
+      const timeNow = new Date().toISOString();
       toast.success("Logged in successfully!", { id: "notif-message" });
       router.push("/admin/user-register");
       return;
@@ -120,7 +119,7 @@ export default function LoginPage() {
   };
 
   return (
-    <SectionContainer background="mt-1 w-full max-w-[1280px] h-auto">
+    <SectionContainer background="mt-1 h-auto">
       <Toaster />
       <div className="flex h-screen">
         {/* Left container */}

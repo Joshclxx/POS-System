@@ -57,7 +57,7 @@ const Cashpick = () => {
 
   // Callback when manager login is successful
   const handleLoginSuccess = async (email: string, password: string) => {
-    const loggedInAt = "Cashpick"
+    const loggedInAt = "Cashpick";
 
     const success = await login(email, password, loggedInAt);
 
@@ -81,7 +81,7 @@ const Cashpick = () => {
     <SectionContainer background="min-h-screen w-full mx-auto max-w-[1280px]">
       <Toaster />
       <div className="grid grid-cols-12 mt-4">
-        <div className="col-span-12 bg-colorDirtyWhite w-full h-[700px]">
+        <div className="col-span-12 bg-colorDirtyWhite w-full h-[914px]">
           {/* Header */}
           <div className="flex flex-col items-center px-6 mt-[20px]">
             <div className="flex items-center justify-center w-[414px] h-[52px] bg-secondary rounded-lg">
@@ -89,7 +89,7 @@ const Cashpick = () => {
             </div>
 
             {/* Amount Input Section */}
-            <div className="w-full max-w-[1280px] bg-secondary h-[439px] rounded-md mt-10">
+            <div className="w-full max-w-[1280px] bg-secondary h-[639px] rounded-md mt-10">
               <div className="text-center mt-12 font-semibold text-[24px]">
                 AMOUNT
               </div>
