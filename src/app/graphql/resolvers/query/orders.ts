@@ -22,7 +22,7 @@ export const ordersQuery = {
         const orders = await context.prisma.order.findMany({include: includeData});
         const formattedOrders = orders.map(order => ({
           ...order,
-          createdAt: order.createdAt ? format(order.createdAt, "MM/dd/yyyy hh:mm:dd a") : null
+          createdAt: order.createdAt ? format(order.createdAt, "MM/dd/yyyy hh:mm:ss a") : null
         }));
 
         return formattedOrders;
@@ -36,7 +36,7 @@ export const ordersQuery = {
               const orders = await context.prisma.order.findMany({include: includeData});
               const formattedOrders = orders.map(order => ({
                 ...order,
-               createdAt: order.createdAt ? format(order.createdAt, "MM/dd/yyyy hh:mm:dd a") : null
+               createdAt: order.createdAt ? format(order.createdAt, "MM/dd/yyyy hh:mm:ss a") : null
               }));
 
               return formattedOrders;
