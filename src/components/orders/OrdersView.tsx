@@ -8,7 +8,7 @@ import { useOrderStore } from "@/hooks/useOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { formatType } from "@/app/utils/capitalized";
+// import { formatType } from "@/app/utils/capitalized";
 type OrderTypeInum = "dine_in" | "take_out";
 interface OrdersViewProps {
   isPaying: boolean;
