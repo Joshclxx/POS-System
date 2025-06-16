@@ -13,6 +13,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { handleGraphQLError } from "@/app/utils/handleGraphqlError";
 import { formatType } from "@/app/utils/capitalized";
 import { useUserStore } from "@/hooks/useUserSession";
+import toast from "react-hot-toast";
 
 // Default initial form values
 const initialForm = {
@@ -459,13 +460,21 @@ const UserRegister = () => {
                 </Button>
                 <Button
                   onClick={async () => {
-                    try {
-                      await deleteUser({ variables: { id: selectedUser.id } });
-                      await refetch();
-                      setSelectedUser(null);
-                      setShowDeleteConfirm(false);
-                    } catch (error) {
-                      handleGraphQLError(error);
+                    if (!selectedUser.id) {
+                      toast.success("Laoding...");
+                    }
+
+                    if (selectedUser.id) {
+                      try {
+                        await deleteUser({
+                          variables: { id: String(selectedUser.id) },
+                        });
+                        await refetch();
+                        setSelectedUser(null);
+                        setShowDeleteConfirm(false);
+                      } catch (error) {
+                        handleGraphQLError(error);
+                      }
                     }
                   }}
                   variant="universal"

@@ -53,7 +53,7 @@ const OrderMenuItems: React.FC<OrderMenuItemsProps> = ({ activeMenu }) => {
     <SectionContainer background="w-[585px] h-[914px]">
       <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
       <div className="bg-colorDirtyWhite w-[585px] h-[800px] flex items-start justify-center text-[14px]">
-        <div className="grid grid-cols-3 gap-4 max-h-[640px] overflow-y-auto w-[585px] mx-auto hide-scrollbar">
+        <div className="grid grid-cols-3 gap-4 max-h-[780px] mt-2 overflow-y-auto w-[585px] mx-auto hide-scrollbar">
           {filteredItems.length === 0 ? (
             <p className="col-span-3 primary-title flex justify-center items-center text-center w-full h-[710px]">
               No items available
