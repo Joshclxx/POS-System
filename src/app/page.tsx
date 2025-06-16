@@ -12,23 +12,23 @@ import { useOrderStore } from "@/hooks/useOrder";
 import { useUserStore } from "@/hooks/useUserSession";
 import { GET_ALL_USERS } from "./graphql/query";
 import { useQuery } from "@apollo/client";
-
+import { useLogout } from "./utils/handleLogout";
 export default function Home() {
   const [activeKey, setActiveKey] = useState("espresso");
   const [isPaying, setIsPaying] = useState(false);
   const [amountType, setAmountType] = useState("");
   const [total, setTotal] = useState(0);
-  const { userRole, loggedIn, hasHydrated } = useUserStore();
+  const { userRole, loggedIn, hasHydrated, logout } = useUserStore();
   const { data } = useQuery(GET_ALL_USERS);
   const router = useRouter();
-
+  const { handleLogout } = useLogout();
   console.log("Hydrated:", hasHydrated);
   console.log("Logged In:", loggedIn);
   console.log("Role:", userRole);
 
   useEffect(() => {
     if (!hasHydrated) return;
-
+    // logout(); force logout
     if (!loggedIn || userRole !== "cashier") {
       router.replace("/login?redirect=/");
     }

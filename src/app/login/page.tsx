@@ -55,7 +55,7 @@ export default function LoginPage() {
       setLoginAttempts(0);
       setIsLocked(false);
       useUserStore.getState().setUser("testingId", "admin", email, null);
-      const timeNow = new Date().toISOString();
+      // const timeNow = new Date().toISOString();
       toast.success("Logged in successfully!", { id: "notif-message" });
       router.push("/admin/user-register");
       return;

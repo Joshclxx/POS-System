@@ -5,7 +5,6 @@ import { useQuery } from "@apollo/client";
 import useGlobal from "@/hooks/useGlobal";
 import { GET_ALL_PRODUCTS, GET_ALL_CATEGORIES } from "@/app/graphql/query";
 
-
 //types for raw data
 type RawProduct = {
   id: number;
@@ -51,15 +50,14 @@ const DataLoader = () => {
           return {
             // MenuItem format
             id: product.id,
-            name: (product.name),
+            name: product.name,
             menu: product.category.name,
             prices,
           };
         }
       );
-      console.log(formattedProducts)
+      console.log(formattedProducts);
       setMenuItems(formattedProducts);
-
     }
 
     if (categoryData?.getAllCategories) {

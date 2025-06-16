@@ -100,6 +100,14 @@ export const loginMutation = {
       context: GraphQLContext
     ) => {
       const updateLogin = async () => {
+        if (!userId) {
+          throw new GraphQLError("WALANG USER ID!", {
+            extensions: {
+              code: "NOT FOUND",
+            },
+          });
+        }
+
         const loginHistory = await context.prisma.loginHistory.findFirst({
           where: { userId, timeOut: null },
           orderBy: { timeIn: "desc" },

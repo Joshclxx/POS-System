@@ -31,7 +31,7 @@ model User {
   orders Order[]
   spotCheck Spotcheck[]
   // voidOrder VoidedOrder[]
-  loginHistory LoginHistory[]
+  loginHistory LoginHistory[] 
   createdAt  DateTime @default(now())
   updatedAt  DateTime?
 
@@ -55,7 +55,7 @@ model LoginHistory {
   userId String 
   shift Shift? @relation("ShiftToLoginHistory")
   loggedInAt String
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   timeIn DateTime @default(now())
   timeOut DateTime?
 }
