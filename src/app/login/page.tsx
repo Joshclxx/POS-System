@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
-import SectionContainer from "@/components/SectionContainer";
 import { useMutation } from "@apollo/client";
 import { useUserStore } from "@/hooks/useUserSession";
 import { LOGIN_SESSION } from "../graphql/mutations";
@@ -41,6 +40,20 @@ export default function LoginPage() {
     }
   }, []);
 
+  useEffect(() => {
+    const { body, documentElement } = document;
+    const previousBodyOverflow = body.style.overflow;
+    const previousDocumentOverflow = documentElement.style.overflow;
+
+    body.style.overflow = "hidden";
+    documentElement.style.overflow = "hidden";
+
+    return () => {
+      body.style.overflow = previousBodyOverflow;
+      documentElement.style.overflow = previousDocumentOverflow;
+    };
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -62,7 +75,6 @@ export default function LoginPage() {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(`Hashed Password: ${hashedPassword}`);
     try {
       const { data } = await loginAndRecord({
         variables: {
@@ -119,79 +131,120 @@ export default function LoginPage() {
   };
 
   return (
-    <SectionContainer background="mt-1 h-auto">
+    <div className="fixed inset-0 overflow-hidden bg-[#17110e] p-3 sm:p-4 lg:p-5">
       <Toaster />
-      <div className="flex h-screen">
-        {/* Left container */}
-        <div className="w-[462px] h-full bg-[#300b1c] flex flex-col gap-9 items-center justify-center">
-          <img
-            src="/image/heebrew.svg"
-            alt="Heebrew Logo"
-            className="w-[800px] h-auto"
-          />
-        </div>
-
-        {/* Right container */}
-        <div
-          className="flex-1 relative"
+      <div className="grid h-full overflow-hidden rounded-[24px] border border-white/10 bg-[#f9f7f4] shadow-2xl lg:grid-cols-[1.08fr_0.92fr]">
+        <aside
+          className="relative hidden min-h-full overflow-hidden lg:flex lg:flex-col lg:justify-between"
           style={{
-            backgroundImage: "url('/image/anime-bg.png')",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
+            backgroundImage:
+              "linear-gradient(120deg, rgba(35, 17, 12, 0.94), rgba(51, 25, 16, 0.68)), url('/image/login-bg-cafe.jpeg')",
             backgroundPosition: "center",
+            backgroundSize: "cover",
           }}
         >
-          <div className="absolute left-50 top-1/2 transform -translate-y-1/2 flex justify-center">
-            <form onSubmit={handleLogin} className="login-form">
-              <h1 className="text-2xl font-bold mb-4 text-tertiary text-center">
-                Login
-              </h1>
-
-              {isLocked && lockEndTime && (
-                <p className="text-red-500 text-sm text-center mb-2">
-                  Try again at {lockEndTime.toLocaleTimeString()}.
-                </p>
-              )}
-
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full mb-3 p-2 border-2 border-tertiary/45 rounded text-tertiary placeholder:text-tertiary/60"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                className="w-full mb-4 p-2 border-2 border-tertiary/45 rounded text-tertiary placeholder:text-tertiary/60"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <label className="text-sm text-tertiary flex justify-end gap-2 mb-4">
-                <input
-                  type="checkbox"
-                  checked={showPassword}
-                  onChange={() => setShowPassword(!showPassword)}
-                />
-                Show Password
-              </label>
-              <button
-                type="submit"
-                disabled={isLocked}
-                className={`w-full ${
-                  isLocked
-                    ? "bg-gray-500"
-                    : "bg-colorBlue hover:bg-colorBlue/80"
-                } text-white font-semibold py-2 px-4 rounded transition`}
-              >
-                Login
-              </button>
-            </form>
+          <div className="p-8 text-[#f6eee5] xl:p-12">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#deb982]">
+              Heebrew Cafe
+            </p>
+            <p className="mt-4 max-w-xs text-lg leading-8 text-[#f6eee5]/80">
+              A calmer way to begin your shift.
+            </p>
           </div>
-        </div>
+
+          <div className="relative flex min-h-0 flex-1 items-center justify-center px-10 py-4 xl:px-12">
+            <div className="absolute inset-x-14 inset-y-8 rounded-full bg-[#b9793f]/15 blur-3xl" />
+            <img
+              src="/image/heebrew.png"
+              alt="Heebrew Cafe"
+              className="relative w-full max-w-md object-contain drop-shadow-2xl"
+            />
+          </div>
+
+          <p className="p-8 text-xs tracking-wide text-[#f6eee5]/55 xl:p-12">
+            Point of Sale · Staff access
+          </p>
+        </aside>
+
+        <section className="flex h-full items-center justify-center overflow-hidden bg-[#f9f7f4] px-6 py-8 sm:px-12 lg:px-16 xl:px-24">
+          <form onSubmit={handleLogin} className="w-full max-w-sm">
+            <div className="mb-10">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9a6c42]">
+                Heebrew Cafe
+              </p>
+              <h1 className="mt-3 text-3xl font-semibold tracking-tight text-[#281711] sm:text-4xl">
+                Welcome back
+              </h1>
+              <p className="mt-3 text-sm leading-6 text-[#765f53]">
+                Sign in to continue to your workspace.
+              </p>
+            </div>
+
+            {isLocked && lockEndTime && (
+              <div
+                className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                role="alert"
+              >
+                Too many attempts. Try again at {lockEndTime.toLocaleTimeString()}.
+              </div>
+            )}
+
+            <div className="space-y-5">
+              <label className="block">
+                <span className="mb-2 block text-sm font-medium text-[#4b3429]">
+                  Email address
+                </span>
+                <input
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@heebrew.cafe"
+                  className="w-full rounded-xl border border-[#dfd4ca] bg-white px-4 py-3 text-[#281711] outline-none transition placeholder:text-[#ad9d92] focus:border-[#9a6c42] focus:ring-4 focus:ring-[#9a6c42]/15"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-medium text-[#4b3429]">
+                  Password
+                </span>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  placeholder="Enter your password"
+                  className="w-full rounded-xl border border-[#dfd4ca] bg-white px-4 py-3 text-[#281711] outline-none transition placeholder:text-[#ad9d92] focus:border-[#9a6c42] focus:ring-4 focus:ring-[#9a6c42]/15"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </label>
+            </div>
+
+            <label className="mt-5 flex cursor-pointer items-center gap-2.5 text-sm text-[#765f53]">
+              <input
+                type="checkbox"
+                checked={showPassword}
+                onChange={() => setShowPassword(!showPassword)}
+                className="h-4 w-4 rounded border-[#cdbdaf] accent-[#79451f]"
+              />
+              Show password
+            </label>
+
+            <button
+              type="submit"
+              disabled={isLocked}
+              className="mt-8 w-full rounded-xl bg-[#4f2d1d] px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#4f2d1d]/20 transition hover:bg-[#382015] focus:outline-none focus:ring-4 focus:ring-[#9a6c42]/30 disabled:cursor-not-allowed disabled:bg-[#b9aca3] disabled:shadow-none"
+            >
+              {isLocked ? "Account temporarily locked" : "Sign in"}
+            </button>
+
+            <p className="mt-6 text-center text-xs leading-5 text-[#9a887b]">
+              Use the staff account assigned by your manager.
+            </p>
+          </form>
+        </section>
       </div>
-    </SectionContainer>
+    </div>
   );
 }
